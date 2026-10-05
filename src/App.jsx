@@ -2348,25 +2348,169 @@ const PIEDRAS = [
   {n:"B",  piedra:"Amatista",           energia:"Calma profunda, claridad, intuición, protección espiritual", chakra:"Tercer ojo (violeta)"},
 ];
 
+// ─── PALETA INTERACTIVA (Cap. 0): elegí nota de partida y escala; la fila de
+// colores, la rueda y la fórmula se actualizan solas. ─────────────────────────
+const ESCALAS_INTRO = [
+  {id:"mayor",    nombre:"Mayor",             ivs:[0,2,4,5,7,9,11], desc:"La escala de referencia: suena luminosa y estable. Todo lo demás se mide contra ella."},
+  {id:"menor",    nombre:"Menor natural",     ivs:[0,2,3,5,7,8,10], desc:"La mayor vista desde su sexto grado: la misma paleta, pero con el centro corrido. Más oscura."},
+  {id:"menorA",   nombre:"Menor armónica",    ivs:[0,2,3,5,7,8,11], desc:"Menor con el séptimo grado elevado: esa sensible empuja a resolver. Muy usada en tango y música clásica."},
+  {id:"menorM",   nombre:"Menor melódica",    ivs:[0,2,3,5,7,9,11], desc:"Menor con sexto y séptimo elevados: una base habitual del jazz."},
+  {id:"pentaM",   nombre:"Pentatónica mayor", ivs:[0,2,4,7,9],      desc:"Solo cinco colores y ningún semitono: es difícil que suene mal."},
+  {id:"pentam",   nombre:"Pentatónica menor", ivs:[0,3,5,7,10],     desc:"Los cinco colores de la menor sin los grados que más tensionan."},
+  {id:"blues",    nombre:"Blues",             ivs:[0,3,5,6,7,10],   desc:"La pentatónica menor más la \"blue note\" (b5), el color de paso."},
+  {id:"dorico",   nombre:"Dórico",            ivs:[0,2,3,5,7,9,10], desc:"Menor con sexto grado mayor: menor, pero con una luz extra."},
+  {id:"mixo",     nombre:"Mixolidio",         ivs:[0,2,4,5,7,9,10], desc:"Mayor con séptimo menor: la escala del acorde dominante."},
+  {id:"crom",     nombre:"Cromática",         ivs:[0,1,2,3,4,5,6,7,8,9,10,11], desc:"Los doce colores seguidos: todo el alfabeto."},
+];
+const GRADO_LABEL = {0:"1",1:"b2",2:"2",3:"b3",4:"3",5:"4",6:"b5",7:"5",8:"b6",9:"6",10:"b7",11:"7"};
+const pasoLabel = d => d===1?"S":d===2?"T":d===3?"T½":String(d);
+const txtSobre = hex => { const [r,g,b]=hexToRgb(hex); return (0.299*r+0.587*g+0.114*b)>150 ? "#14110a" : "#ffffff"; };
+
+function PaletaInteractiva(){
+  const [root,setRoot]     = useState("C");
+  const [escId,setEscId]   = useState("mayor");
+  const [playing,setPlaying] = useState(-1);
+  const timers = useRef([]);
+  useEffect(()=>()=>timers.current.forEach(clearTimeout),[]);
+
+  const esc = ESCALAS_INTRO.find(e=>e.id===escId);
+  const r = CHROMATIC.indexOf(root);
+  const absOf = iv => r+iv;
+  const notes = esc.ivs.map(iv=>CHROMATIC[absOf(iv)%12]);
+  const pasos = esc.ivs.map((iv,i)=> (i===esc.ivs.length-1 ? 12 : esc.ivs[i+1]) - iv); // paso hacia la nota siguiente
+  const n = notes.length;
+  const dense = n>8;
+
+  const stop = ()=>{ timers.current.forEach(clearTimeout); timers.current=[]; setPlaying(-1); };
+  const tocarUna = (i)=>{ const a=absOf(esc.ivs[i]); playTone(CHROMATIC[a%12], 4+Math.floor(a/12), 0.6); };
+  const tocarEscala = ()=>{
+    stop();
+    const seq = [...esc.ivs, 12];
+    seq.forEach((iv,i)=>{
+      timers.current.push(setTimeout(()=>{
+        const a=absOf(iv); playTone(CHROMATIC[a%12], 4+Math.floor(a/12), 0.5);
+        setPlaying(i<esc.ivs.length ? i : 0);
+      }, i*(dense?200:380)));
+    });
+    timers.current.push(setTimeout(()=>setPlaying(-1), seq.length*(dense?200:380)+300));
+  };
+  const cambiarRoot = (x)=>{ stop(); setRoot(x); playTone(x,4,0.5); };
+  const cambiarEsc  = (x)=>{ stop(); setEscId(x); };
+
+  return(
+    <div className="rounded-2xl border my-4 p-3 sm:p-4" style={{background:"#0a0908",borderColor:"#3a362c"}}>
+      <style>{`@keyframes palIn{from{opacity:0;transform:translateY(10px) scale(.88)}to{opacity:1;transform:none}}`}</style>
+
+      {/* 1 · nota de partida */}
+      <p className="text-[10px] uppercase tracking-widest mb-2" style={{color:"#8f8878"}}>1 · Nota de partida</p>
+      <div className="grid grid-cols-6 sm:grid-cols-12 gap-1.5 mb-4">
+        {CHROMATIC.map(x=>{
+          const sel = x===root;
+          return(
+            <button key={x} onClick={()=>cambiarRoot(x)} className="flex flex-col items-center gap-1" style={{background:"none",border:"none",cursor:"pointer",padding:0}}>
+              <span style={{display:"block",width:"100%",maxWidth:40,aspectRatio:"1/1",borderRadius:"50%",background:nc(x),
+                border: sel?"3px solid #fff":"2px solid rgba(255,255,255,.15)",
+                boxShadow: sel?`0 0 14px ${nc(x)}`:"none",transform: sel?"scale(1.1)":"none",transition:"all .15s"}}/>
+              <span style={{fontSize:10,fontFamily:"monospace",color:sel?"#c9a86a":"#8f8878",fontWeight:sel?800:500}}>{CROM_SIMPLE[x]}</span>
+            </button>
+          );
+        })}
+      </div>
+
+      {/* 2 · escala */}
+      <p className="text-[10px] uppercase tracking-widest mb-2" style={{color:"#8f8878"}}>2 · Escala</p>
+      <div className="flex flex-wrap gap-1.5 mb-4">
+        {ESCALAS_INTRO.map(e=>{
+          const sel=e.id===escId;
+          return(
+            <button key={e.id} onClick={()=>cambiarEsc(e.id)}
+              style={{padding:"5px 11px",borderRadius:20,fontSize:11,fontFamily:"monospace",fontWeight:700,cursor:"pointer",
+                border:`1px solid ${sel?"#c9a86a":"#3a362c"}`,background:sel?"#c9a86a":"transparent",color:sel?"#0a0908":"#a79a7e"}}>
+              {e.nombre}
+            </button>
+          );
+        })}
+      </div>
+
+      {/* La fila de colores */}
+      <div className="flex items-center justify-between mb-2">
+        <p className="text-sm font-bold" style={{color:"#d9c08a",fontFamily:"'Libre Baskerville',serif"}}>
+          {CROM_SIMPLE[root]} · {esc.nombre} <span className="text-xs font-normal text-gray-500">({n} {n===1?"color":"colores"})</span>
+        </p>
+        <button onClick={playing>=0?stop:tocarEscala}
+          style={{padding:"5px 12px",borderRadius:9,border:"1px solid #c9a86a",background:"#191712",color:"#c9a86a",fontWeight:700,fontSize:11,cursor:"pointer",fontFamily:"monospace"}}>
+          {playing>=0?"■ Parar":"▶ Tocar escala"}
+        </button>
+      </div>
+      <div key={root+escId} style={{display:"flex",gap:dense?3:6}}>
+        {notes.map((x,i)=>{
+          const col = nc(x), on = playing===i, fg = txtSobre(col);
+          return(
+            <button key={i} onClick={()=>tocarUna(i)}
+              style={{flex:"1 1 0",minWidth:0,height:dense?92:112,borderRadius:dense?8:12,border:`2px solid ${on?"#fff":"rgba(255,255,255,.18)"}`,
+                background:col,color:fg,cursor:"pointer",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"space-between",
+                padding:"7px 0",animation:`palIn .35s ease both`,animationDelay:`${i*45}ms`,
+                transform:on?"translateY(-6px) scale(1.06)":"none",boxShadow:on?`0 8px 22px ${col}aa`:"none",transition:"transform .12s, box-shadow .12s"}}>
+              <span style={{fontSize:dense?8:10,fontWeight:700,opacity:.75,fontFamily:"monospace"}}>{GRADO_LABEL[esc.ivs[i]]}</span>
+              <span style={{fontSize:dense?9:15,fontWeight:900,fontFamily:"serif"}}>{CROM_SIMPLE[x]}</span>
+              <span style={{fontSize:dense?8:10,fontWeight:700,opacity:.75,fontFamily:"monospace"}}>{pasoLabel(pasos[i])}</span>
+            </button>
+          );
+        })}
+      </div>
+      <p className="text-[10px] text-gray-500 mt-2 text-center">
+        arriba: grado · abajo: distancia hasta la nota siguiente (<b>T</b> tono · <b>S</b> semitono · <b>T½</b> tono y medio) · tocá un color para oírlo
+      </p>
+
+      {/* Rueda + ficha */}
+      <div className="grid sm:grid-cols-2 gap-3 mt-4 items-center">
+        <div>
+          <RuedaCromatica size={250} highlight={notes}/>
+          <p className="text-[10px] text-gray-500 text-center mt-1">Los colores de la escala quedan encendidos; el resto se apaga.</p>
+        </div>
+        <div className="rounded-xl border p-3" style={{background:"#131210",borderColor:"#2a2722"}}>
+          <p className="text-[10px] uppercase tracking-widest mb-1" style={{color:"#8f8878"}}>Fórmula</p>
+          <p className="text-base font-mono font-bold mb-2" style={{color:"#c9a86a",letterSpacing:"0.12em"}}>{pasos.map(pasoLabel).join(" · ")}</p>
+          <p className="text-xs text-gray-400 leading-relaxed">{esc.desc}</p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+const PasoCard=({n,titulo,children})=>(
+  <div className="flex gap-3 rounded-xl border p-3 my-2" style={{background:"#131210",borderColor:"#2a2722"}}>
+    <div className="flex-shrink-0 flex items-center justify-center rounded-full font-black"
+      style={{width:30,height:30,background:"#c9a86a",color:"#0a0908",fontFamily:"serif",fontSize:15}}>{n}</div>
+    <div className="min-w-0">
+      <p className="text-sm font-bold mb-1" style={{color:"#d9c08a"}}>{titulo}</p>
+      <p className="text-xs text-gray-400 leading-relaxed">{children}</p>
+    </div>
+  </div>
+);
+
 // ─── Estructura del libro: partes y capítulos ────────────────────────────────
 const CAPITULOS = [
 { parte:"Parte I — Fundamentos", id:"cap0", titulo:"Cap. 0 — El código de color", body: (
   <>
-    <CapP>Antes de que este sistema te ahorre un solo segundo de cálculo, te va a pedir algo: que te aprendas doce colores de memoria, con la misma seriedad con la que en algún momento te aprendiste el nombre de las doce notas. Esto no es gratis, y vale la pena decirlo así, sin vueltas, en la primera página: hay una inversión inicial antes de que aparezca la ganancia. Cualquier método serio la tiene —el solfeo, la digitación, las escalas— y este no es la excepción.</CapP>
+    <div className="rounded-xl p-4 mb-4 border" style={{background:"#0a0908",borderColor:"#3a3326"}}>
+      <p className="text-[10px] uppercase tracking-widest mb-2" style={{color:"#8f8878"}}>Antes de empezar</p>
+      <p className="text-sm text-gray-300 leading-relaxed">Antes de que este sistema te ahorre un solo segundo de cálculo, te va a pedir algo: que te aprendas doce colores de memoria, con la misma seriedad con la que en algún momento te aprendiste el nombre de las doce notas. Esto no es gratis, y vale la pena decirlo así, sin vueltas, en la primera página: hay una inversión inicial antes de que aparezca la ganancia. Cualquier método serio la tiene —el solfeo, la digitación, las escalas— y este no es la excepción.</p>
+    </div>
     <CapP>Lo que sí cambia es qué estás memorizando. No estás memorizando teoría todavía. Estás memorizando una paleta: doce parches de color, cada uno con un nombre de nota al lado. Nada más. La teoría llega después, capítulo a capítulo, apoyada en esa memorización — pero si llegás al capítulo de acordes sin tener el color automatizado, vas a estar leyendo colores en vez de reconociéndolos, y ahí el sistema entero pierde su función.</CapP>
+
+    <CapH3>Probalo: la fila de colores cambia con la escala</CapH3>
+    <CapP>Elegí una nota de partida y una escala. La fila se rearma sola con los colores que le tocan, la rueda enciende los mismos y abajo ves la fórmula de tonos y semitonos. Tocá cualquier color para escucharlo.</CapP>
+    <PaletaInteractiva/>
+
     <CapH3>El orden en que conviene aprenderlo</CapH3>
     <CapP>Este libro presenta la paleta en tres pasos, cada uno con un propósito distinto.</CapP>
-    <CapP><b className="text-gray-200">Primero, una tira.</b> Las doce notas en fila, igual que las teclas de un piano o de un bandoneón desplegadas en línea recta. Es la forma más directa de un primer contacto — no hay ángulos que leer, no hay geometría que entender todavía. Solo doce colores, uno al lado del otro, cada uno con su nombre.</CapP>
-    <CapFig caption="Figura 0a. Tira lineal — primer contacto con la paleta.">
-      <TiraCromatica/>
-    </CapFig>
-    <CapP><b className="text-gray-200">Después, la rueda.</b> Las mismas doce notas, ahora en círculo. Acá aparece algo que la tira no podía mostrar: que las notas no son una lista que termina, sino un ciclo que vuelve sobre sí mismo — la relación circular entre semitonos que vas a necesitar más adelante para entender intervalos, el círculo de quintas, y la geometría de los acordes del capítulo 8.</CapP>
-    <CapFig caption="Figura 0b. Rueda cromática — la misma paleta, en ciclo.">
-      <RuedaCromatica/>
-    </CapFig>
-    <CapP><b className="text-gray-200">Por último, tarjetas de estudio.</b> Una nota por vez, con su color y su enarmónico (por ejemplo, Do sostenido y Re bemol comparten color). Este es el paso de memorización activa propiamente dicho: repetición, no explicación. Es donde el código deja de ser información y empieza a ser reflejo. (Podés practicar esto en la pestaña <b>Colores</b> de la app: tocá cada tarjeta para escuchar la nota mientras fijás el color.)</CapP>
+    <PasoCard n="1" titulo="Primero, una tira">Las doce notas en fila, igual que las teclas de un piano o de un bandoneón desplegadas en línea recta. Es la forma más directa de un primer contacto — no hay ángulos que leer, no hay geometría que entender todavía. Solo doce colores, uno al lado del otro, cada uno con su nombre.</PasoCard>
+    <PasoCard n="2" titulo="Después, la rueda">Las mismas doce notas, ahora en círculo. Acá aparece algo que la tira no podía mostrar: que las notas no son una lista que termina, sino un ciclo que vuelve sobre sí mismo — la relación circular entre semitonos que vas a necesitar más adelante para entender intervalos, el círculo de quintas, y la geometría de los acordes del capítulo 8.</PasoCard>
+    <PasoCard n="3" titulo="Por último, tarjetas de estudio">Una nota por vez, con su color y su enarmónico (por ejemplo, Do sostenido y Re bemol comparten color). Este es el paso de memorización activa propiamente dicho: repetición, no explicación. Es donde el código deja de ser información y empieza a ser reflejo. (Podés practicar esto en la pestaña <b>Colores</b> de la app: tocá cada tarjeta para escuchar la nota mientras fijás el color.)</PasoCard>
+
     <CapH3>Un aviso sobre lo que este código puede generar</CapH3>
-    <CapP>Una vez que la asociación color-nota está bien afianzada, puede pasar algo que vale la pena anticipar: empezar a "ver" notas en colores que no tienen nada que ver con este sistema — una partitura sin colorear, un semáforo, cualquier superficie con estos doce tonos. No es un efecto grave ni motivo de preocupación, pero sí una fricción real que otros métodos de asociación fuerte también generan. Este libro no lo esconde: es el precio de automatizar bien una asociación. Y como con cualquier escalera, el objetivo final es soltarla — llegar a un punto donde el color ya no hace falta, porque la nota se reconoce sola.</CapP>
+    <CapNota>Una vez que la asociación color-nota está bien afianzada, puede pasar algo que vale la pena anticipar: empezar a "ver" notas en colores que no tienen nada que ver con este sistema — una partitura sin colorear, un semáforo, cualquier superficie con estos doce tonos. No es un efecto grave ni motivo de preocupación, pero sí una fricción real que otros métodos de asociación fuerte también generan. Este libro no lo esconde: es el precio de automatizar bien una asociación. Y como con cualquier escalera, el objetivo final es soltarla — llegar a un punto donde el color ya no hace falta, porque la nota se reconoce sola.</CapNota>
   </>
 )},
 { parte:"Parte I — Fundamentos", id:"cap1", titulo:"Cap. 1 — Introducción", body: (
@@ -2636,33 +2780,55 @@ function ElCodigoTab(){
 // del sistema cromático, y puede corregirse contra el mapa real de notas.
 // ═══════════════════════════════════════════════════════════════════════════
 
-// Hoja de selección: abanico de los 12 colores + borrar
-function HojaDeColor({ onPick, onErase, onClose }){
+// Menú de color chico, anclado a la tecla tocada (no tapa la página ni la oscurece)
+function HojaDeColor({ rect, actual, onPick, onErase, onClose }){
+  const PW=244, PH=158, M=8;
+  const vw=window.innerWidth, vh=window.innerHeight;
+  const cx=rect.left+rect.width/2;
+  const left=Math.min(Math.max(cx-PW/2,M), vw-PW-M);
+  const arriba = rect.top-M >= PH+10;
+  let top = arriba ? rect.top-PH-10 : rect.bottom+10;
+  top=Math.min(Math.max(top,M), vh-PH-M);
+  const arrowLeft=Math.min(Math.max(cx-left,18), PW-18);
+
+  useEffect(()=>{
+    const close=()=>onClose();
+    const key=(e)=>{ if(e.key==="Escape") onClose(); };
+    window.addEventListener("scroll",close,true);
+    window.addEventListener("resize",close);
+    window.addEventListener("keydown",key);
+    return ()=>{
+      window.removeEventListener("scroll",close,true);
+      window.removeEventListener("resize",close);
+      window.removeEventListener("keydown",key);
+    };
+  },[onClose]);
+
   return (
-    <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,.75)",display:"flex",alignItems:"flex-end",justifyContent:"center",zIndex:1000}}
-      onClick={onClose}>
-      <div style={{background:"#131210",border:"1.5px solid #c9a86a",borderRadius:"18px 18px 0 0",padding:"18px 16px 22px",maxWidth:460,width:"100%"}}
-        onClick={e=>e.stopPropagation()}>
-        <p style={{color:"#c9a86a",fontWeight:700,fontSize:13,marginBottom:14,textAlign:"center"}}>
-          ¿Qué color le corresponde a esta tecla?
-        </p>
-        <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:10,marginBottom:16}}>
-          {CHROMATIC.map(n=>(
-            <button key={n} onClick={()=>onPick(nc(n))} style={{
-              display:"flex",flexDirection:"column",alignItems:"center",gap:5,padding:"8px 4px",
-              borderRadius:12,border:"1px solid #201d18",background:"#131210",cursor:"pointer"}}>
-              <div style={{width:52,height:52,borderRadius:"50%",background:nc(n),border:"2px solid rgba(255,255,255,.25)"}}/>
-              <span style={{fontSize:12,color:"#aaa",fontFamily:"monospace"}}>{CROM_SIMPLE[n]}</span>
-            </button>
-          ))}
+    <div style={{position:"fixed",inset:0,zIndex:1000}} onClick={onClose}>
+      <div onClick={e=>e.stopPropagation()}
+        style={{position:"fixed",left,top,width:PW,background:"#131210",border:"1.5px solid #c9a86a",borderRadius:12,
+          padding:"10px 10px 8px",boxShadow:"0 10px 30px rgba(0,0,0,.65)"}}>
+        <div style={{position:"absolute",left:arrowLeft-6,[arriba?"bottom":"top"]:-7,width:12,height:12,background:"#131210",
+          borderRight:arriba?"1.5px solid #c9a86a":"none",borderBottom:arriba?"1.5px solid #c9a86a":"none",
+          borderLeft:arriba?"none":"1.5px solid #c9a86a",borderTop:arriba?"none":"1.5px solid #c9a86a",
+          transform:"rotate(45deg)"}}/>
+        <div style={{display:"grid",gridTemplateColumns:"repeat(6,1fr)",gap:"6px 4px",marginBottom:8}}>
+          {CHROMATIC.map(n=>{
+            const sel = actual===nc(n);
+            return(
+              <button key={n} onClick={()=>onPick(nc(n))}
+                style={{display:"flex",flexDirection:"column",alignItems:"center",gap:2,padding:0,background:"none",border:"none",cursor:"pointer"}}>
+                <span style={{display:"block",width:30,height:30,borderRadius:"50%",background:nc(n),
+                  border:sel?"3px solid #fff":"2px solid rgba(255,255,255,.22)"}}/>
+                <span style={{fontSize:9,color:sel?"#c9a86a":"#aaa",fontFamily:"monospace"}}>{CROM_SIMPLE[n]}</span>
+              </button>
+            );
+          })}
         </div>
-        <div style={{display:"flex",gap:8}}>
-          <button onClick={onErase} style={{flex:1,padding:"10px",borderRadius:10,border:"1px solid #5c2d2d",background:"#1f0a0a",color:"#d98f88",fontWeight:700,fontSize:12,cursor:"pointer"}}>
-            🗑 Borrar
-          </button>
-          <button onClick={onClose} style={{flex:1,padding:"10px",borderRadius:10,border:"1px solid #2a2722",background:"transparent",color:"#8f8878",fontSize:12,cursor:"pointer"}}>
-            Cerrar
-          </button>
+        <div style={{display:"flex",gap:6}}>
+          <button onClick={onErase} style={{flex:1,padding:"5px",borderRadius:8,border:"1px solid #5c2d2d",background:"#1f0a0a",color:"#d98f88",fontWeight:700,fontSize:11,cursor:"pointer"}}>🗑 Borrar</button>
+          <button onClick={onClose} style={{flex:1,padding:"5px",borderRadius:8,border:"1px solid #2a2722",background:"transparent",color:"#8f8878",fontSize:11,cursor:"pointer"}}>Cerrar</button>
         </div>
       </div>
     </div>
@@ -2671,7 +2837,7 @@ function HojaDeColor({ onPick, onErase, onClose }){
 
 // Teclado en blanco, escalado para entrar siempre en el ancho disponible
 // (misma técnica de transform:scale ya usada en BandCanvas).
-function PaintCanvas({ buttons, guesses, keyOf, checked, correctOf, onTapButton, maxWidth, maxScale=3 }){
+function PaintCanvas({ buttons, guesses, keyOf, checked, correctOf, onTapButton, maxWidth, maxScale=3, activeId=null }){
   const W = Math.max(...buttons.map(b=>b.x)) + BTN_SIZE + 16;
   const H = Math.max(...buttons.map(b=>b.y)) + BTN_SIZE + 20;
   const target = maxWidth || W;
@@ -2696,12 +2862,12 @@ function PaintCanvas({ buttons, guesses, keyOf, checked, correctOf, onTapButton,
           const isRight = checked && guess && guess===correct;
           const isWrong = checked && guess && guess!==correct;
           return (
-            <button key={btn.id} onClick={()=>onTapButton(btn)}
+            <button key={btn.id} onClick={(e)=>onTapButton(btn, e.currentTarget.getBoundingClientRect())}
               style={{
                 position:"absolute", left:btn.x, top:btn.y, width:BTN_SIZE, height:BTN_SIZE, borderRadius:"50%",
                 background: guess || "#191712",
                 border:`3px solid ${isRight?"#6b9c7c":isWrong?"#b5564f":guess?"rgba(255,255,255,.5)":"#555"}`,
-                boxShadow: guess ? `0 0 10px ${guess}99` : "none",
+                boxShadow: btn.id===activeId ? "0 0 0 4px #c9a86a" : (guess ? `0 0 10px ${guess}99` : "none"),
                 cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center",
               }}>
               {isRight && <span style={{fontSize:13,color:"#fff"}}>✓</span>}
@@ -2753,13 +2919,14 @@ function EntrenadorTab(){
     return nc(LAT[noteLat]||noteLat);
   },[bellows]);
 
-  const openPicker = (btn)=> setPicker(btn);
+  const openPicker = (btn, rect)=> setPicker({btn, rect});
+  const closePicker = useCallback(()=>setPicker(null),[]);
   const pickColor = (hex)=>{
-    setGuesses(g=>({...g, [keyOf(picker.id)]: hex}));
+    setGuesses(g=>({...g, [keyOf(picker.btn.id)]: hex}));
     setPicker(null);
   };
   const erase = ()=>{
-    setGuesses(g=>{ const n={...g}; delete n[keyOf(picker.id)]; return n; });
+    setGuesses(g=>{ const n={...g}; delete n[keyOf(picker.btn.id)]; return n; });
     setPicker(null);
   };
 
@@ -2865,13 +3032,13 @@ function EntrenadorTab(){
         {(view==="ambas"||view==="izquierda")&&(
           <div style={{width:"100%"}}>
             <p style={{fontSize:11,color:"#8f8878",marginBottom:6,letterSpacing:"0.12em"}}>MANO IZQUIERDA · {leftBtns.length} botones</p>
-            <PaintCanvas buttons={leftBtns} guesses={guesses} keyOf={keyOf} checked={checked} correctOf={correctOf} onTapButton={openPicker} maxWidth={maxW} maxScale={3}/>
+            <PaintCanvas buttons={leftBtns} guesses={guesses} keyOf={keyOf} checked={checked} correctOf={correctOf} onTapButton={openPicker} maxWidth={maxW} maxScale={3} activeId={picker?.btn.id}/>
           </div>
         )}
         {(view==="ambas"||view==="derecha")&&(
           <div style={{width:"100%"}}>
             <p style={{fontSize:11,color:"#8f8878",marginBottom:6,letterSpacing:"0.12em"}}>MANO DERECHA · {rightBtns.length} botones</p>
-            <PaintCanvas buttons={rightBtns} guesses={guesses} keyOf={keyOf} checked={checked} correctOf={correctOf} onTapButton={openPicker} maxWidth={maxW} maxScale={3}/>
+            <PaintCanvas buttons={rightBtns} guesses={guesses} keyOf={keyOf} checked={checked} correctOf={correctOf} onTapButton={openPicker} maxWidth={maxW} maxScale={3} activeId={picker?.btn.id}/>
           </div>
         )}
       </div>
@@ -2892,7 +3059,7 @@ function EntrenadorTab(){
         </div>
       </div>
 
-      {picker&&<HojaDeColor onPick={pickColor} onErase={erase} onClose={()=>setPicker(null)}/>}
+      {picker&&<HojaDeColor rect={picker.rect} actual={guesses[keyOf(picker.btn.id)]} onPick={pickColor} onErase={erase} onClose={closePicker}/>}
     </div>
   );
 }
