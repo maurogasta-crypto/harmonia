@@ -285,7 +285,7 @@ const computeProg=(chords)=>{
 
 // ─── BIBLIOTECA DE PROGRESIONES ───────────────────────────────────────────────
 const BIBLIOTECA=[
-  {genero:"Tango",color:"#c9a86a",icon:"💃",items:[
+  {genero:"Tango",color:"#e6e6e6",icon:"💃",items:[
     {titulo:"ii–V–i tango oscuro",              prog:"Bm7b5 – E7b9 – Am",         nota:"La cadencia menor por excelencia del tango. La b9 crea tensión máxima."},
     {titulo:"Cadencia andaluza",                prog:"Am – G – F – E7",            nota:"Base del tango flamenco. El E7 con frigio dominante."},
     {titulo:"Turnaround Piazzolla",             prog:"Amaj7 – F#m7 – Bm7b5 – E7alt",nota:"Típico de Piazzolla: mayor 7ª → relativa → semidism. → dominante alterado."},
@@ -296,7 +296,7 @@ const BIBLIOTECA=[
     {titulo:"Milonga criolla",                  prog:"D – A7 – D – G – D – A7 – D",nota:"Base armónica de la milonga campera. Simple y efectiva."},
     {titulo:"Intercambio modal tanguero",       prog:"Am – Amaj7 – Am7 – D9 – Bm7b5 – E7 – Am",nota:"Línea cromática descendente en la 7ª. Muy expresiva."},
   ]},
-  {genero:"Jazz",color:"#c9a86a",icon:"🎷",items:[
+  {genero:"Jazz",color:"#e6e6e6",icon:"🎷",items:[
     {titulo:"ii–V–I en Do mayor",               prog:"Dm7 – G7 – Cmaj7",           nota:"La cadencia más importante del jazz. Base de toda improvisación."},
     {titulo:"Turnaround I–VI–II–V",             prog:"Cmaj7 – A7 – Dm7 – G7",      nota:"Turnaround clásico. El A7 es dominante secundario de Dm7."},
     {titulo:"Blues en Fa",                      prog:"F7 – Bb7 – F7 – C7 – Bb7 – F7",nota:"Blues de 12 compases simplificado. Todos los acordes son dominantes."},
@@ -308,7 +308,7 @@ const BIBLIOTECA=[
     {titulo:"All The Things You Are",           prog:"Fm7 – Bbm7 – Eb7 – Abmaj7 – Dbmaj7 – G7 – Cmaj7",nota:"Modulaciones por 3ras. Estándar armónicamente complejo."},
     {titulo:"Solar (Miles Davis)",              prog:"Cm – Gm7 – C7 – Fmaj7 – Fm7 – Bb7 – Ebmaj7 – Dm7b5 – G7",nota:"Forma de 12 compases con dos centros tonales."},
   ]},
-  {genero:"Choro / MPB",color:"#c9a86a",icon:"🎸",items:[
+  {genero:"Choro / MPB",color:"#e6e6e6",icon:"🎸",items:[
     {titulo:"Cadência do choro",                prog:"Am – E7 – Am – Dm – Am – E7 – Am",nota:"Cadência menor clásica do choro brasileiro."},
     {titulo:"ii–V–I brasileiro (Jobim)",        prog:"Dm7 – G7 – Cmaj7 – A7 – Dm7 – G7 – Cmaj7",nota:"El ii-V-I de Jobim tiene un A7 intercalado que da movimiento."},
     {titulo:"Bossa Nova clásica",               prog:"Cmaj7 – Dm7 – G7 – Em7 – A7 – Dm7 – G7",nota:"Movimiento típico de la bossa: tónica → subdominante → dominante."},
@@ -318,7 +318,7 @@ const BIBLIOTECA=[
     {titulo:"IV menor (intercambio modal)",     prog:"Cmaj7 – Fm7 – Bb7 – Cmaj7 – Am7 – D7 – Dm7 – G7",nota:"El Fm7-Bb7 viene del modo paralelo menor. Color oscuro inesperado."},
     {titulo:"Choro moderno",                    prog:"Am – D7 – Gmaj7 – Cmaj7 – Fmaj7 – Bm7b5 – E7 – Am",nota:"Ciclo de quintas descendente con ii-V-i al final."},
   ]},
-  {genero:"Latinoamérica",color:"#c9a86a",icon:"🌎",items:[
+  {genero:"Latinoamérica",color:"#e6e6e6",icon:"🌎",items:[
     {titulo:"Son montuno (Cuba)",               prog:"Cm – G7 – Cm – Fm – Cm – G7 – Cm",nota:"Base del son cubano. El G7 con frigio dominante sobre Cm."},
     {titulo:"Guajira (modo frigio-mayor)",      prog:"E – F – E – Am – E – Am",    nota:"El E mayor sobre contexto menor crea el sonido flamenco-cubano."},
     {titulo:"Bolero romántico",                 prog:"Cmaj7 – Am7 – Dm7 – G7 – Em7 – A7 – Dm7 – G7 – Cmaj7",nota:"El I-VI-II-V extendido del bolero latinoamericano."},
@@ -407,8 +407,8 @@ const Piano=({leftVoice=[],rightVoice=[]})=>{
     // fondo: color tonal suave si activo, clásico si no
     const fill=active
       ? tonal+(isBlack?"55":"28")
-      : (isBlack?"#1c1a18":"#f7f5ef");
-    const stroke=L?"#c9a86a":R?tonal:(isBlack?"#444":"#bbb");
+      : (isBlack?"#1c1c1c":"#f7f5ef");
+    const stroke=L?"#e6e6e6":R?tonal:(isBlack?"#444":"#bbb");
     const sw=active?2.5:0.8;
     const dotY=isBlack?h-15:h-25;
     const lblY=isBlack?h-6:h-10;
@@ -417,7 +417,7 @@ const Piano=({leftVoice=[],rightVoice=[]})=>{
         <rect x={x+0.5} y={0} width={w-1} height={h} rx={isBlack?2:3}
           fill={fill} stroke={stroke} strokeWidth={sw}/>
         {/* Barra superior: identifica la mano */}
-        {L&&<rect x={x+1} y={0} width={w-2} height={4} rx={1} fill="#c9a86a"/>}
+        {L&&<rect x={x+1} y={0} width={w-2} height={4} rx={1} fill="#e6e6e6"/>}
         {R&&<rect x={x+1} y={0} width={w-2} height={4} rx={1} fill={tonal}/>}
         {/* Punto de color tonal */}
         {active&&<circle cx={x+w/2} cy={dotY} r={isBlack?3.5:4.5} fill={tonal}/>}
@@ -466,18 +466,18 @@ const Piano=({leftVoice=[],rightVoice=[]})=>{
       {/* Leyenda */}
       <div className="flex gap-4 mt-2 text-xs text-gray-500 flex-wrap">
         <span className="flex items-center gap-1.5">
-          <span className="inline-block w-6 h-2 rounded" style={{background:"#c9a86a"}}/>
+          <span className="inline-block w-6 h-2 rounded" style={{background:"#e6e6e6"}}/>
           M.izquierda — tónica (bajo, oct.2)
         </span>
         <span className="flex items-center gap-1.5">
-          <span className="inline-block w-6 h-2 rounded" style={{background:"linear-gradient(90deg,#6b9c7c,#b5564f,#c9a86a)"}}/>
+          <span className="inline-block w-6 h-2 rounded" style={{background:"linear-gradient(90deg,#6b9c7c,#b5564f,#e6e6e6)"}}/>
           M.derecha — 3ª · 7ª · extensiones (oct.4-5)
         </span>
       </div>
       {/* Detalle de voces */}
       <div className="grid grid-cols-2 gap-2 mt-3">
-        <div className="rounded-lg p-2.5 border" style={{background:"#0a0908",borderColor:"#c9a86a"}}>
-          <p className="text-xs font-bold mb-2" style={{color:"#c9a86a"}}>← Mano izquierda</p>
+        <div className="rounded-lg p-2.5 border" style={{background:"#0a0a0a",borderColor:"#e6e6e6"}}>
+          <p className="text-xs font-bold mb-2" style={{color:"#e6e6e6"}}>← Mano izquierda</p>
           <div className="space-y-1">
             {leftVoice.map((v,i)=>(
               <div key={i} className="flex items-center gap-2">
@@ -489,7 +489,7 @@ const Piano=({leftVoice=[],rightVoice=[]})=>{
             ))}
           </div>
         </div>
-        <div className="rounded-lg p-2.5 border" style={{background:"#0a0908",borderColor:"#201d18"}}>
+        <div className="rounded-lg p-2.5 border" style={{background:"#0a0a0a",borderColor:"#232323"}}>
           <p className="text-xs font-bold mb-2 text-[#eee6d6]">Mano derecha →</p>
           <div className="space-y-1">
             {rightVoice.map((v,i)=>(
@@ -513,25 +513,25 @@ const FnCard=({fn,root,isOpen,onToggle})=>{
   const twn=useMemo(()=>(fn.tensions||[]).map(t=>({label:t,note:tNote(root,t)})),[root,fn.tensions]);
   const awn=useMemo(()=>(fn.avoid||[]).map(t=>({label:t,note:tNote(root,t)})),[root,fn.avoid]);
   return(
-    <div className="rounded-xl border overflow-hidden" style={{borderColor:isOpen?"#c9a86a":"#191712"}}>
+    <div className="rounded-xl border overflow-hidden" style={{borderColor:isOpen?"#e6e6e6":"#1a1a1a"}}>
       <button className="w-full text-left px-4 py-3 flex items-center justify-between gap-2"
-        style={{background:isOpen?"#191712":"#0a0908"}} onClick={onToggle}>
+        style={{background:isOpen?"#1a1a1a":"#0a0a0a"}} onClick={onToggle}>
         <div className="flex items-center gap-2 min-w-0">
           <span className="text-xs font-mono font-bold px-1.5 py-0.5 rounded border flex-shrink-0"
-            style={{background:"#191712",borderColor:"#3a362c",color:"#c9a86a"}}>{fn.degree}</span>
+            style={{background:"#1a1a1a",borderColor:"#333333",color:"#e6e6e6"}}>{fn.degree}</span>
           <div className="min-w-0">
-            <p className="font-bold text-sm text-[#d9c08a] truncate">{fn.fn}</p>
+            <p className="font-bold text-sm text-[#d4d4d4] truncate">{fn.fn}</p>
             <p className="text-xs text-gray-500 italic truncate">{fn.key}</p>
           </div>
         </div>
         <span className="text-gray-600 text-xs flex-shrink-0">{isOpen?"▲":"▼"}</span>
       </button>
       {isOpen&&(
-        <div className="px-4 pb-4 pt-3 space-y-3" style={{background:"#0a0908"}}>
+        <div className="px-4 pb-4 pt-3 space-y-3" style={{background:"#0a0a0a"}}>
           {/* Modo + Escala */}
-          <div className="rounded-lg p-3 border border-gray-800" style={{background:"#131210"}}>
+          <div className="rounded-lg p-3 border border-gray-800" style={{background:"#121212"}}>
             <div className="flex items-center gap-2 mb-2">
-              <span className="text-xs text-[#a79a7e] font-semibold">Modo:</span>
+              <span className="text-xs text-[#a3a3a3] font-semibold">Modo:</span>
               <span className="text-sm font-bold text-white">{fn.mode}</span>
             </div>
             <div className="flex flex-wrap gap-1.5 mb-1.5">
@@ -588,12 +588,12 @@ const FnCard=({fn,root,isOpen,onToggle})=>{
             )}
           </div>
           {fn.resolutions?.length>0&&(
-            <div className="rounded-lg p-2.5 border border-[#3a3326]" style={{background:"#0a0908"}}>
-              <span className="text-xs text-[#d9c08a] font-semibold">➜ </span>
-              <span className="text-sm text-[#e9ddc0] font-mono">{fn.resolutions.join(" · ")}</span>
+            <div className="rounded-lg p-2.5 border border-[#333333]" style={{background:"#0a0a0a"}}>
+              <span className="text-xs text-[#d4d4d4] font-semibold">➜ </span>
+              <span className="text-sm text-[#cfcfcf] font-mono">{fn.resolutions.join(" · ")}</span>
             </div>
           )}
-          <div className="rounded-lg p-3 border border-gray-800" style={{background:"#0a0908"}}>
+          <div className="rounded-lg p-3 border border-gray-800" style={{background:"#0a0a0a"}}>
             <p className="text-xs text-gray-500 mb-1">💡 Por qué funciona</p>
             <p className="text-sm text-gray-300 leading-relaxed">{fn.why}</p>
           </div>
@@ -605,10 +605,10 @@ const FnCard=({fn,root,isOpen,onToggle})=>{
 
 // Tabla comparativa
 const TablaComparativa=({fns,root})=>(
-  <div className="overflow-x-auto rounded-xl border border-gray-800" style={{background:"#131210"}}>
+  <div className="overflow-x-auto rounded-xl border border-gray-800" style={{background:"#121212"}}>
     <table className="w-full text-xs" style={{minWidth:"550px"}}>
       <thead>
-        <tr style={{background:"#191712",borderBottom:"1px solid #3a362c"}}>
+        <tr style={{background:"#1a1a1a",borderBottom:"1px solid #333333"}}>
           {["Grado","Función","Modo","Escala","Tensiones","Evitar"].map(h=>(
             <th key={h} className="text-left px-3 py-2 text-gray-500 uppercase tracking-widest font-normal text-xs">{h}</th>
           ))}
@@ -620,16 +620,16 @@ const TablaComparativa=({fns,root})=>(
           const twn=(f.tensions||[]).map(t=>{const n=tNote(root,t);return n?`${t}→${n}`:t;});
           const awn=(f.avoid||[]).map(t=>{const n=tNote(root,t);return n?`${t}→${n}`:t;});
           return(
-            <tr key={i} style={{borderBottom:"1px solid #2a2722",background:i%2===0?"transparent":"#191712"}}>
+            <tr key={i} style={{borderBottom:"1px solid #2a2a2a",background:i%2===0?"transparent":"#1a1a1a"}}>
               <td className="px-3 py-2">
                 <span className="font-mono font-bold px-1.5 py-0.5 rounded text-xs"
-                  style={{background:"#191712",color:"#c9a86a"}}>{f.degree}</span>
+                  style={{background:"#1a1a1a",color:"#e6e6e6"}}>{f.degree}</span>
               </td>
               <td className="px-3 py-2">
-                <p className="font-semibold text-[#d9c08a]">{f.fn}</p>
+                <p className="font-semibold text-[#d4d4d4]">{f.fn}</p>
                 <p className="text-gray-500 italic">{f.key}</p>
               </td>
-              <td className="px-3 py-2 text-[#a79a7e] whitespace-nowrap">{f.mode}</td>
+              <td className="px-3 py-2 text-[#a3a3a3] whitespace-nowrap">{f.mode}</td>
               <td className="px-3 py-2">
                 <div className="flex flex-wrap gap-1">
                   {scale.map((n,j)=>(
@@ -686,11 +686,11 @@ const Circulo=({highlighted=[],onSelect=null,selectedKey=null})=>{
       <svg viewBox="0 0 360 360" className="w-full max-w-sm mx-auto select-none">
         <defs>
           <radialGradient id="bgCOF" cx="50%" cy="50%">
-            <stop offset="0%" stopColor="#191712"/>
-            <stop offset="100%" stopColor="#0a0908"/>
+            <stop offset="0%" stopColor="#1a1a1a"/>
+            <stop offset="100%" stopColor="#0a0a0a"/>
           </radialGradient>
         </defs>
-        <circle cx={cx} cy={cy} r={175} fill="url(#bgCOF)" stroke="#201d18" strokeWidth="1"/>
+        <circle cx={cx} cy={cy} r={175} fill="url(#bgCOF)" stroke="#232323" strokeWidth="1"/>
 
         {/* Anillo externo: mayores */}
         {COF.map(({note,deg})=>{
@@ -703,8 +703,8 @@ const Circulo=({highlighted=[],onSelect=null,selectedKey=null})=>{
             <g key={"M"+note} style={{cursor:onSelect?"pointer":"default"}}
               onClick={()=>onSelect&&onSelect(isSel?null:note)}>
               <circle cx={ox} cy={oy} r={isSel?22:19}
-                fill={isSel?color:isHi?color+"cc":"#191712"}
-                stroke={isSel||isHi?color:"#c9a86a"}
+                fill={isSel?color:isHi?color+"cc":"#1a1a1a"}
+                stroke={isSel||isHi?color:"#e6e6e6"}
                 strokeWidth={isSel?3:isHi?2:1}
                 opacity={isSel||isHi?1:0.7}/>
               <text x={ox} y={oy+1} textAnchor="middle" dominantBaseline="middle"
@@ -724,7 +724,7 @@ const Circulo=({highlighted=[],onSelect=null,selectedKey=null})=>{
             <g key={"m"+note}>
               <circle cx={mx} cy={my} r={13}
                 fill={isHi?color+"22":"transparent"}
-                stroke={isHi?color+"88":"#3a362c"} strokeWidth="1"/>
+                stroke={isHi?color+"88":"#333333"} strokeWidth="1"/>
               <text x={mx} y={my+1} textAnchor="middle" dominantBaseline="middle"
                 fontSize="7.5" fill={isHi?"#ccc":"#555"} fontFamily="serif">{minor}</text>
             </g>
@@ -748,7 +748,7 @@ const Circulo=({highlighted=[],onSelect=null,selectedKey=null})=>{
         })}
 
         {/* Centro */}
-        <circle cx={cx} cy={cy} r={42} fill="#0a0908" stroke="#2a2722" strokeWidth="1"/>
+        <circle cx={cx} cy={cy} r={42} fill="#0a0a0a" stroke="#2a2a2a" strokeWidth="1"/>
         {selectedKey?(
           <>
             <text x={cx} y={cy-12} textAnchor="middle" fontSize="14" fontWeight="bold"
@@ -770,7 +770,7 @@ const Circulo=({highlighted=[],onSelect=null,selectedKey=null})=>{
       {selectedKey&&scaleData&&(
         <div className="mt-4 space-y-3">
           {/* Notas de la escala */}
-          <div className="rounded-xl p-3 border border-gray-800" style={{background:"#131210"}}>
+          <div className="rounded-xl p-3 border border-gray-800" style={{background:"#121212"}}>
             <p className="text-xs text-gray-500 uppercase tracking-widest mb-2">
               Escala de {selectedKey} Mayor — {COF.find(c=>c.note===selectedKey)?.sig}
             </p>
@@ -787,20 +787,20 @@ const Circulo=({highlighted=[],onSelect=null,selectedKey=null})=>{
             </div>
             <button onClick={()=>playChord(scaleData.map(s=>s.note))}
               className="text-xs px-3 py-1 rounded border mt-1"
-              style={{background:"#191712",borderColor:"#3a362c",color:"#c9a86a"}}>
+              style={{background:"#1a1a1a",borderColor:"#333333",color:"#e6e6e6"}}>
               ▶ Escuchar escala
             </button>
           </div>
 
           {/* Tabla completa: grados, modos, tensiones */}
-          <div className="rounded-xl border border-gray-800 overflow-hidden" style={{background:"#131210"}}>
+          <div className="rounded-xl border border-gray-800 overflow-hidden" style={{background:"#121212"}}>
             <p className="text-xs text-gray-500 uppercase tracking-widest px-4 py-2 border-b border-gray-800">
               Grados · Modos · Tensiones disponibles
             </p>
             <div className="overflow-x-auto">
               <table className="w-full text-xs" style={{minWidth:"480px"}}>
                 <thead>
-                  <tr style={{background:"#191712",borderBottom:"1px solid #3a362c"}}>
+                  <tr style={{background:"#1a1a1a",borderBottom:"1px solid #333333"}}>
                     {["Gr.","Nota","Acorde","Modo","Tensiones","Evitar"].map(h=>(
                       <th key={h} className="text-left px-3 py-2 text-gray-600 font-normal uppercase tracking-widest text-xs">{h}</th>
                     ))}
@@ -812,7 +812,7 @@ const Circulo=({highlighted=[],onSelect=null,selectedKey=null})=>{
                     const twn=sd.tensions.map(({label,note})=>note?`${label}→${note}`:label);
                     const awn=(sd.mode.avoid||[]).map(t=>{const n=tNote(sd.note,t);return n?`${t}→${n}`:t;});
                     return(
-                      <tr key={i} style={{borderBottom:"1px solid #2a2722",background:i%2===0?"transparent":"#191712"}}>
+                      <tr key={i} style={{borderBottom:"1px solid #2a2a2a",background:i%2===0?"transparent":"#1a1a1a"}}>
                         <td className="px-3 py-2">
                           <span className="font-mono font-bold px-1.5 py-0.5 rounded text-xs"
                             style={{background:color+"22",color}}>{sd.degree}</span>
@@ -827,7 +827,7 @@ const Circulo=({highlighted=[],onSelect=null,selectedKey=null})=>{
                             {sd.note}{sd.quality} ▶
                           </button>
                         </td>
-                        <td className="px-3 py-2 text-[#a79a7e] whitespace-nowrap">{sd.mode.name}</td>
+                        <td className="px-3 py-2 text-[#a3a3a3] whitespace-nowrap">{sd.mode.name}</td>
                         <td className="px-3 py-2">
                           <div className="flex flex-wrap gap-1">
                             {twn.map((t,j)=>(
@@ -855,7 +855,7 @@ const Circulo=({highlighted=[],onSelect=null,selectedKey=null})=>{
           </div>
 
           {/* Acordes diatónicos escuchables */}
-          <div className="rounded-xl p-3 border border-gray-800" style={{background:"#131210"}}>
+          <div className="rounded-xl p-3 border border-gray-800" style={{background:"#121212"}}>
             <p className="text-xs text-gray-500 uppercase tracking-widest mb-2">Acordes diatónicos — escuchá cada uno</p>
             <div className="flex flex-wrap gap-2">
               {scaleData.map((sd,i)=>{
@@ -875,7 +875,7 @@ const Circulo=({highlighted=[],onSelect=null,selectedKey=null})=>{
           </div>
 
           {/* Tonalidades vecinas para navegación */}
-          <div className="rounded-xl p-3 border border-gray-800" style={{background:"#131210"}}>
+          <div className="rounded-xl p-3 border border-gray-800" style={{background:"#121212"}}>
             <p className="text-xs text-gray-500 uppercase tracking-widest mb-2">Tonalidades vecinas</p>
             <div className="flex gap-2 flex-wrap">
               {[
@@ -937,7 +937,7 @@ const BGrid=({layout,pressed,onDown,onUp,title,size=36})=>(
   <div>
     <p className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-2 text-center">{title}</p>
     <div className="inline-block p-3 rounded-2xl"
-      style={{background:"linear-gradient(145deg,#281a08,#140e04)",border:"2px solid #6b4c1e",boxShadow:"0 8px 24px rgba(0,0,0,0.7)"}}>
+      style={{background:"linear-gradient(145deg,#1d1d1d,#101010)",border:"2px solid #3a3a3a",boxShadow:"0 8px 24px rgba(0,0,0,0.7)"}}>
       {layout.map((row,ri)=>(
         <div key={ri} className="flex gap-1 mb-1" style={{marginLeft:ri%2===1?(size+4)/2+"px":"0px"}}>
           {row.map((btn,bi)=>{
@@ -1349,7 +1349,7 @@ function BandBtn({ btn, bellows, pressed, isHeard, onDown, onUp, draggable=false
 
 // ─── CANVAS RESPONSIVE ───────────────────────────────────────────────────────
 function BandCanvas({ buttons, bellows, pressed, heardIds=[], onDown, onUp,
-  draggable=false, onMove, showGrid=false, onSelect=null, selected=null, octMap=null, maxWidth=null }) {
+  draggable=false, onMove, showGrid=false, onSelect=null, selected=null, octMap=null, maxWidth=null, maxScale=1 }) {
 
   const W = Math.max(...buttons.map(b=>b.x)) + BTN_SIZE + 16;
   const H = Math.max(...buttons.map(b=>b.y)) + BTN_SIZE + 20;
@@ -1361,7 +1361,7 @@ function BandCanvas({ buttons, bellows, pressed, heardIds=[], onDown, onUp,
   // Sin maxWidth, se muestra a tamaño real (usado por el editor drag&drop,
   // donde la escala 1:1 es necesaria para que el arrastre calcule bien la posición).
   const target = maxWidth || W;
-  const scale  = Math.min(1, target / W);
+  const scale  = Math.min(maxScale, target / W);
   const scaledW = Math.ceil(W * scale);
   const scaledH = Math.ceil(H * scale);
 
@@ -1375,10 +1375,10 @@ function BandCanvas({ buttons, bellows, pressed, heardIds=[], onDown, onUp,
         transform: `scale(${scale})`,
         transformOrigin: "top left",
         background: showGrid
-          ? `repeating-linear-gradient(0deg,transparent,transparent 9px,rgba(90,58,24,.18) 10px),
-             repeating-linear-gradient(90deg,transparent,transparent 9px,rgba(90,58,24,.18) 10px),#0e0701`
-          : "linear-gradient(145deg,#281a08,#140e04)",
-        border: `2px solid ${draggable?"#c9a86a55":"#6b4c1e"}`,
+          ? `repeating-linear-gradient(0deg,transparent,transparent 9px,rgba(255,255,255,.06) 10px),
+             repeating-linear-gradient(90deg,transparent,transparent 9px,rgba(255,255,255,.06) 10px),#0c0c0c`
+          : "linear-gradient(145deg,#1d1d1d,#101010)",
+        border: `2px solid ${draggable?"#e6e6e655":"#3a3a3a"}`,
         borderRadius: 16,
         boxShadow: "0 8px 24px rgba(0,0,0,.7)",
         touchAction: "none",
@@ -1397,7 +1397,7 @@ function BandCanvas({ buttons, bellows, pressed, heardIds=[], onDown, onUp,
 
   // Contenedor con el tamaño YA escalado, para que el layout reserve
   // exactamente ese espacio (el transform no cambia el tamaño en el flujo normal).
-  if (scale < 1) {
+  if (maxWidth || scale < 1) {
     return <div style={{width:scaledW, height:scaledH, overflow:"hidden", flexShrink:0}}>{canvas}</div>;
   }
   return <div style={{overflowX:"auto",paddingBottom:4}}>{canvas}</div>;
@@ -1408,32 +1408,32 @@ function SavedModal({ cssText, onClose }) {
   const [copied, setCopied] = useState(false);
   return (
     <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,.8)",display:"flex",alignItems:"center",justifyContent:"center",zIndex:1000,padding:16}}>
-      <div style={{background:"#131210",border:"1.5px solid #c9a86a",borderRadius:16,padding:"24px 24px 20px",maxWidth:440,width:"100%"}}>
+      <div style={{background:"#121212",border:"1.5px solid #e6e6e6",borderRadius:16,padding:"24px 24px 20px",maxWidth:440,width:"100%"}}>
         <div style={{fontSize:28,marginBottom:8}}>✅</div>
-        <h3 style={{color:"#c9a86a",fontWeight:700,fontSize:17,marginBottom:8}}>Configuración guardada</h3>
-        <p style={{color:"#8f8878",fontSize:13,lineHeight:1.6,marginBottom:14}}>
+        <h3 style={{color:"#e6e6e6",fontWeight:700,fontSize:17,marginBottom:8}}>Configuración guardada</h3>
+        <p style={{color:"#8a8a8a",fontSize:13,lineHeight:1.6,marginBottom:14}}>
           Tu configuración se guardó en este dispositivo y se cargará automáticamente la próxima vez.
         </p>
-        <div style={{background:"#201d18",border:"1px solid #c9a86a44",borderRadius:10,padding:"10px 14px",marginBottom:14}}>
-          <p style={{color:"#c9a86a",fontWeight:700,fontSize:12,marginBottom:5}}>📱 ¿Otro dispositivo?</p>
-          <p style={{color:"#8f8878",fontSize:12,lineHeight:1.6}}>
-            Se descargó un <b style={{color:"#c9a86a"}}>.csv</b> con tu configuración. En el otro dispositivo usá <b style={{color:"#c9a86a"}}>↑ Importar CSV</b>.
+        <div style={{background:"#232323",border:"1px solid #e6e6e644",borderRadius:10,padding:"10px 14px",marginBottom:14}}>
+          <p style={{color:"#e6e6e6",fontWeight:700,fontSize:12,marginBottom:5}}>📱 ¿Otro dispositivo?</p>
+          <p style={{color:"#8a8a8a",fontSize:12,lineHeight:1.6}}>
+            Se descargó un <b style={{color:"#e6e6e6"}}>.csv</b> con tu configuración. En el otro dispositivo usá <b style={{color:"#e6e6e6"}}>↑ Importar CSV</b>.
           </p>
         </div>
-        <div style={{background:"#131210",border:"1px solid #2a2722",borderRadius:10,padding:"8px 14px",marginBottom:16}}>
-          <p style={{color:"#8f8878",fontSize:11,lineHeight:1.6}}>
-            💡 Para que sea permanente en el código, usá <b style={{color:"#c9a86a"}}>↓ Ver JS</b> en el editor y pegá el resultado en tu <code style={{color:"#c9a86a"}}>App.jsx</code> reemplazando <code>DEFS_L</code> y <code>DEFS_R</code>.
+        <div style={{background:"#121212",border:"1px solid #2a2a2a",borderRadius:10,padding:"8px 14px",marginBottom:16}}>
+          <p style={{color:"#8a8a8a",fontSize:11,lineHeight:1.6}}>
+            💡 Para que sea permanente en el código, usá <b style={{color:"#e6e6e6"}}>↓ Ver JS</b> en el editor y pegá el resultado en tu <code style={{color:"#e6e6e6"}}>App.jsx</code> reemplazando <code>DEFS_L</code> y <code>DEFS_R</code>.
           </p>
         </div>
         <div style={{display:"flex",gap:8}}>
           <button onClick={()=>navigator.clipboard.writeText(cssText).then(()=>setCopied(true))} style={{
-            flex:1,padding:"7px",borderRadius:9,border:"1px solid #2a2722",background:"#131210",
-            color:copied?"#c9a86a":"#c9a86a",fontFamily:"monospace",fontWeight:700,fontSize:11,cursor:"pointer"
+            flex:1,padding:"7px",borderRadius:9,border:"1px solid #2a2a2a",background:"#121212",
+            color:copied?"#e6e6e6":"#e6e6e6",fontFamily:"monospace",fontWeight:700,fontSize:11,cursor:"pointer"
           }}>{copied?"✓ CSS copiado":"{} CSS"}</button>
           <button onClick={onClose} style={{
             flex:2,padding:"7px",borderRadius:9,border:"none",
-            background:"#c9a86a",
-            color:"#0a0908",fontWeight:700,fontSize:13,cursor:"pointer"
+            background:"#e6e6e6",
+            color:"#0a0a0a",fontWeight:700,fontSize:13,cursor:"pointer"
           }}>Entendido ✓</button>
         </div>
       </div>
@@ -1461,25 +1461,25 @@ function ImportModal({ onImport, onClose }) {
 
   return (
     <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,.8)",display:"flex",alignItems:"center",justifyContent:"center",zIndex:1000,padding:16}}>
-      <div style={{background:"#131210",border:"1.5px solid #c9a86a44",borderRadius:16,padding:"22px 22px 18px",maxWidth:400,width:"100%"}}>
-        <h3 style={{color:"#c9a86a",fontWeight:700,fontSize:16,marginBottom:8}}>📂 Importar configuración</h3>
-        <p style={{color:"#8f8878",fontSize:12,lineHeight:1.6,marginBottom:14}}>
+      <div style={{background:"#121212",border:"1.5px solid #e6e6e644",borderRadius:16,padding:"22px 22px 18px",maxWidth:400,width:"100%"}}>
+        <h3 style={{color:"#e6e6e6",fontWeight:700,fontSize:16,marginBottom:8}}>📂 Importar configuración</h3>
+        <p style={{color:"#8a8a8a",fontSize:12,lineHeight:1.6,marginBottom:14}}>
           Seleccioná el <b>.csv</b> descargado en una sesión anterior. Reemplazará la configuración actual.
         </p>
         <input ref={fileRef} type="file" accept=".csv,.txt" onChange={handleFile} style={{display:"none"}}/>
-        <button onClick={()=>fileRef.current?.click()} style={{width:"100%",padding:9,borderRadius:9,border:"1px solid #c9a86a44",background:"#c9a86a",color:"#c9a86a",fontWeight:700,fontSize:13,cursor:"pointer",marginBottom:10}}>
+        <button onClick={()=>fileRef.current?.click()} style={{width:"100%",padding:9,borderRadius:9,border:"1px solid #e6e6e644",background:"#e6e6e6",color:"#e6e6e6",fontWeight:700,fontSize:13,cursor:"pointer",marginBottom:10}}>
           Elegir archivo .csv
         </button>
-        {error&&<p style={{color:"#d98f88",fontSize:11,marginBottom:10,background:"#131210",padding:"5px 10px",borderRadius:6}}>⚠ {error}</p>}
+        {error&&<p style={{color:"#d98f88",fontSize:11,marginBottom:10,background:"#121212",padding:"5px 10px",borderRadius:6}}>⚠ {error}</p>}
         {preview&&(
-          <div style={{background:"#0a0908",border:"1px solid #c9a86a44",borderRadius:10,padding:"8px 12px",marginBottom:12}}>
+          <div style={{background:"#0a0a0a",border:"1px solid #e6e6e644",borderRadius:10,padding:"8px 12px",marginBottom:12}}>
             <p style={{color:"#8fc19f",fontWeight:700,fontSize:12,marginBottom:3}}>✓ Archivo válido</p>
-            <p style={{color:"#8f8878",fontSize:11}}>Izquierda: <b style={{color:"#c9a86a"}}>{preview.left}</b> · Derecha: <b style={{color:"#c9a86a"}}>{preview.right}</b></p>
+            <p style={{color:"#8a8a8a",fontSize:11}}>Izquierda: <b style={{color:"#e6e6e6"}}>{preview.left}</b> · Derecha: <b style={{color:"#e6e6e6"}}>{preview.right}</b></p>
           </div>
         )}
         <div style={{display:"flex",gap:8}}>
-          <button onClick={onClose} style={{flex:1,padding:"7px",borderRadius:9,border:"1px solid #2a2722",background:"transparent",color:"#8f8878",fontSize:12,cursor:"pointer"}}>Cancelar</button>
-          {parsed&&<button onClick={()=>onImport(parsed.left,parsed.right)} style={{flex:2,padding:"7px",borderRadius:9,border:"none",background:"#c9a86a",color:"#131210",fontWeight:700,fontSize:13,cursor:"pointer"}}>Aplicar y guardar</button>}
+          <button onClick={onClose} style={{flex:1,padding:"7px",borderRadius:9,border:"1px solid #2a2a2a",background:"transparent",color:"#8a8a8a",fontSize:12,cursor:"pointer"}}>Cancelar</button>
+          {parsed&&<button onClick={()=>onImport(parsed.left,parsed.right)} style={{flex:2,padding:"7px",borderRadius:9,border:"none",background:"#e6e6e6",color:"#121212",fontWeight:700,fontSize:13,cursor:"pointer"}}>Aplicar y guardar</button>}
         </div>
       </div>
     </div>
@@ -1529,32 +1529,32 @@ function BandEditor({ initialLeft, initialRight, onSave, onCancel }) {
   const pill=(active,v="orange")=>({
     padding:"5px 12px",borderRadius:8,border:"none",
     fontFamily:"'Courier New',monospace",fontWeight:700,fontSize:10,cursor:"pointer",
-    background:active?"#c9a86a":"transparent",
-    color:active?"#0a0908":"#8f8878",
+    background:active?"#e6e6e6":"transparent",
+    color:active?"#0a0a0a":"#8a8a8a",
   });
 
   return (
     <div style={{fontFamily:"'Courier New',monospace"}}>
       {/* Banner */}
-      <div style={{marginBottom:12,padding:"8px 14px",background:"#131210",border:"1.5px solid #c9a86a",borderRadius:10,display:"flex",alignItems:"center",gap:10,flexWrap:"wrap"}}>
-        <span style={{color:"#c9a86a",fontWeight:800,fontSize:12}}>✏️ MODO EDICIÓN</span>
-        <span style={{color:"#8f8878",fontSize:10}}>Arrastrá · Flechas=2px · Shift=10px</span>
-        <button onClick={()=>onSave(leftBtns,rightBtns)} style={{padding:"6px 16px",borderRadius:9,border:"none",background:"#c9a86a",color:"#0a0908",fontWeight:800,fontSize:12,cursor:"pointer",marginLeft:"auto"}}>💾 Guardar y salir</button>
-        <button onClick={onCancel} style={{padding:"6px 12px",borderRadius:9,border:"1px solid #2a2722",background:"transparent",color:"#8f8878",fontSize:11,cursor:"pointer"}}>Cancelar</button>
+      <div style={{marginBottom:12,padding:"8px 14px",background:"#121212",border:"1.5px solid #e6e6e6",borderRadius:10,display:"flex",alignItems:"center",gap:10,flexWrap:"wrap"}}>
+        <span style={{color:"#e6e6e6",fontWeight:800,fontSize:12}}>✏️ MODO EDICIÓN</span>
+        <span style={{color:"#8a8a8a",fontSize:10}}>Arrastrá · Flechas=2px · Shift=10px</span>
+        <button onClick={()=>onSave(leftBtns,rightBtns)} style={{padding:"6px 16px",borderRadius:9,border:"none",background:"#e6e6e6",color:"#0a0a0a",fontWeight:800,fontSize:12,cursor:"pointer",marginLeft:"auto"}}>💾 Guardar y salir</button>
+        <button onClick={onCancel} style={{padding:"6px 12px",borderRadius:9,border:"1px solid #2a2a2a",background:"transparent",color:"#8a8a8a",fontSize:11,cursor:"pointer"}}>Cancelar</button>
       </div>
 
       {/* Controles */}
       <div style={{display:"flex",gap:6,flexWrap:"wrap",marginBottom:10,alignItems:"center"}}>
-        <div style={{display:"flex",background:"#131210",border:"1.5px solid #2a2722",borderRadius:10,padding:3,gap:3}}>
+        <div style={{display:"flex",background:"#121212",border:"1.5px solid #2a2a2a",borderRadius:10,padding:3,gap:3}}>
           <button style={pill(mode==="abre")}   onClick={()=>setMode("abre")}>▷ Abre</button>
           <button style={pill(mode==="cierra")} onClick={()=>setMode("cierra")}>◁ Cierra</button>
         </div>
-        <div style={{display:"flex",background:"#131210",border:"1.5px solid #3a362c",borderRadius:10,padding:3,gap:3}}>
+        <div style={{display:"flex",background:"#121212",border:"1.5px solid #333333",borderRadius:10,padding:3,gap:3}}>
           <button style={pill(hand==="left","blue")}  onClick={()=>{setHand("left"); setSelected(null);}}>IZQ {leftBtns.length}</button>
           <button style={pill(hand==="right","blue")} onClick={()=>{setHand("right");setSelected(null);}}>DER {rightBtns.length}</button>
         </div>
-        <button onClick={()=>setShowGrid(p=>!p)} style={{padding:"5px 10px",borderRadius:9,border:"1.5px solid #2a2722",background:"#131210",color:showGrid?"#c9a86a":"#8f8878",fontFamily:"monospace",fontWeight:700,fontSize:10,cursor:"pointer"}}>{showGrid?"⊞ Grid ON":"⊞ Grid"}</button>
-        <button onClick={()=>setButtons(initials.map(b=>({...b})))} style={{padding:"5px 10px",borderRadius:9,border:"1px solid #2a2722",background:"transparent",color:"#8f8878",fontFamily:"monospace",fontSize:10,cursor:"pointer"}}>⟳ Reset mano</button>
+        <button onClick={()=>setShowGrid(p=>!p)} style={{padding:"5px 10px",borderRadius:9,border:"1.5px solid #2a2a2a",background:"#121212",color:showGrid?"#e6e6e6":"#8a8a8a",fontFamily:"monospace",fontWeight:700,fontSize:10,cursor:"pointer"}}>{showGrid?"⊞ Grid ON":"⊞ Grid"}</button>
+        <button onClick={()=>setButtons(initials.map(b=>({...b})))} style={{padding:"5px 10px",borderRadius:9,border:"1px solid #2a2a2a",background:"transparent",color:"#8a8a8a",fontFamily:"monospace",fontSize:10,cursor:"pointer"}}>⟳ Reset mano</button>
       </div>
 
       <div style={{display:"flex",gap:12,flexWrap:"wrap"}}>
@@ -1568,50 +1568,50 @@ function BandEditor({ initialLeft, initialRight, onSave, onCancel }) {
 
           {/* Info seleccionado */}
           {selBtn&&(
-            <div style={{marginTop:8,padding:"8px 12px",background:"#131210",border:"1px solid #2a2722",borderRadius:10}}>
+            <div style={{marginTop:8,padding:"8px 12px",background:"#121212",border:"1px solid #2a2a2a",borderRadius:10}}>
               {/* Fila superior: ID + posición + nudge */}
               <div style={{display:"flex",gap:6,alignItems:"center",flexWrap:"wrap",marginBottom:8}}>
-                <span style={{color:"#c9a86a",fontWeight:800,fontSize:12}}>{selBtn.id}</span>
-                <span style={{color:"#8f8878",fontSize:10}}>x:{selBtn.x} y:{selBtn.y}</span>
+                <span style={{color:"#e6e6e6",fontWeight:800,fontSize:12}}>{selBtn.id}</span>
+                <span style={{color:"#8a8a8a",fontSize:10}}>x:{selBtn.x} y:{selBtn.y}</span>
                 <div style={{marginLeft:"auto",display:"flex",gap:3}}>
                   {[["←",-SNAP,0],["→",SNAP,0],["↑",0,-SNAP],["↓",0,SNAP]].map(([l,dx,dy])=>(
                     <button key={l} onClick={()=>setButtons(p=>p.map(b=>b.id===selected?{...b,x:Math.max(0,b.x+dx),y:Math.max(0,b.y+dy)}:b))}
-                      style={{width:24,height:24,borderRadius:5,border:"1px solid #2a2722",background:"#131210",color:"#c9a86a",fontSize:11,cursor:"pointer",padding:0}}>{l}</button>
+                      style={{width:24,height:24,borderRadius:5,border:"1px solid #2a2a2a",background:"#121212",color:"#e6e6e6",fontSize:11,cursor:"pointer",padding:0}}>{l}</button>
                   ))}
                 </div>
               </div>
               {/* Fila abriendo: nota + octava + color */}
-              <div style={{display:"flex",gap:5,alignItems:"center",flexWrap:"wrap",marginBottom:5,padding:"5px 8px",background:"#0a0908",borderRadius:7,border:"1px solid #191712"}}>
-                <span style={{color:"#c9a86a",fontSize:9,fontWeight:700,width:56}}>▷ ABRIENDO</span>
+              <div style={{display:"flex",gap:5,alignItems:"center",flexWrap:"wrap",marginBottom:5,padding:"5px 8px",background:"#0a0a0a",borderRadius:7,border:"1px solid #1a1a1a"}}>
+                <span style={{color:"#e6e6e6",fontSize:9,fontWeight:700,width:56}}>▷ ABRIENDO</span>
                 <select value={selBtn.abre} onChange={e=>handleEdit(selBtn.id,"abre",e.target.value)}
-                  style={{background:"#131210",color:"#c9a86a",border:"1px solid #c9a86a55",borderRadius:5,padding:"2px 4px",fontFamily:"monospace",fontWeight:700,fontSize:10,cursor:"pointer",width:64}}>
+                  style={{background:"#121212",color:"#e6e6e6",border:"1px solid #e6e6e655",borderRadius:5,padding:"2px 4px",fontFamily:"monospace",fontWeight:700,fontSize:10,cursor:"pointer",width:64}}>
                   {ALL_NOTES_LAT.map(n=><option key={n} value={n}>{n}</option>)}
                 </select>
-                <span style={{color:"#8f8878",fontSize:9}}>oct.</span>
+                <span style={{color:"#8a8a8a",fontSize:9}}>oct.</span>
                 <select value={selBtn.oct_abre??3} onChange={e=>handleEdit(selBtn.id,"oct_abre",parseInt(e.target.value))}
-                  style={{background:"#131210",color:"#c9a86a",border:"1px solid #c9a86a55",borderRadius:5,padding:"2px 4px",fontFamily:"monospace",fontWeight:700,fontSize:10,cursor:"pointer",width:44}}>
+                  style={{background:"#121212",color:"#e6e6e6",border:"1px solid #e6e6e655",borderRadius:5,padding:"2px 4px",fontFamily:"monospace",fontWeight:700,fontSize:10,cursor:"pointer",width:44}}>
                   {[0,1,2,3,4,5,6].map(o=><option key={o} value={o}>{o}</option>)}
                 </select>
-                <span style={{color:"#8f8878",fontSize:8,marginLeft:4}}>🎨</span>
+                <span style={{color:"#8a8a8a",fontSize:8,marginLeft:4}}>🎨</span>
                 <input type="color" value={selBtn.color_abre||"#888"} onChange={e=>handleEdit(selBtn.id,"color_abre",e.target.value)}
                   style={{width:22,height:20,padding:1,borderRadius:4,border:"none",cursor:"pointer"}}/>
-                <span style={{color:"#8f8878",fontSize:8,marginLeft:2,opacity:.7}}>
+                <span style={{color:"#8a8a8a",fontSize:8,marginLeft:2,opacity:.7}}>
                   {selBtn.abre}{selBtn.oct_abre??3} = {(440*Math.pow(2,([0,2,4,5,7,9,11,0].indexOf(["DO","RE","MI","FA","SOL","LA","SI"].indexOf(selBtn.abre))||0)/12)).toFixed(0)}Hz
                 </span>
               </div>
               {/* Fila cerrando: nota + octava + color */}
-              <div style={{display:"flex",gap:5,alignItems:"center",flexWrap:"wrap",padding:"5px 8px",background:"#0a0908",borderRadius:7,border:"1px solid #191712"}}>
-                <span style={{color:"#c9a86a",fontSize:9,fontWeight:700,width:56}}>◁ CERRANDO</span>
+              <div style={{display:"flex",gap:5,alignItems:"center",flexWrap:"wrap",padding:"5px 8px",background:"#0a0a0a",borderRadius:7,border:"1px solid #1a1a1a"}}>
+                <span style={{color:"#e6e6e6",fontSize:9,fontWeight:700,width:56}}>◁ CERRANDO</span>
                 <select value={selBtn.cierra} onChange={e=>handleEdit(selBtn.id,"cierra",e.target.value)}
-                  style={{background:"#131210",color:"#c9a86a",border:"1px solid #c9a86a55",borderRadius:5,padding:"2px 4px",fontFamily:"monospace",fontWeight:700,fontSize:10,cursor:"pointer",width:64}}>
+                  style={{background:"#121212",color:"#e6e6e6",border:"1px solid #e6e6e655",borderRadius:5,padding:"2px 4px",fontFamily:"monospace",fontWeight:700,fontSize:10,cursor:"pointer",width:64}}>
                   {ALL_NOTES_LAT.map(n=><option key={n} value={n}>{n}</option>)}
                 </select>
-                <span style={{color:"#8f8878",fontSize:9}}>oct.</span>
+                <span style={{color:"#8a8a8a",fontSize:9}}>oct.</span>
                 <select value={selBtn.oct_cierra??3} onChange={e=>handleEdit(selBtn.id,"oct_cierra",parseInt(e.target.value))}
-                  style={{background:"#131210",color:"#c9a86a",border:"1px solid #c9a86a55",borderRadius:5,padding:"2px 4px",fontFamily:"monospace",fontWeight:700,fontSize:10,cursor:"pointer",width:44}}>
+                  style={{background:"#121212",color:"#e6e6e6",border:"1px solid #e6e6e655",borderRadius:5,padding:"2px 4px",fontFamily:"monospace",fontWeight:700,fontSize:10,cursor:"pointer",width:44}}>
                   {[0,1,2,3,4,5,6].map(o=><option key={o} value={o}>{o}</option>)}
                 </select>
-                <span style={{color:"#8f8878",fontSize:8,marginLeft:4}}>🎨</span>
+                <span style={{color:"#8a8a8a",fontSize:8,marginLeft:4}}>🎨</span>
                 <input type="color" value={selBtn.color_cierra||"#888"} onChange={e=>handleEdit(selBtn.id,"color_cierra",e.target.value)}
                   style={{width:22,height:20,padding:1,borderRadius:4,border:"none",cursor:"pointer"}}/>
               </div>
@@ -1620,15 +1620,15 @@ function BandEditor({ initialLeft, initialRight, onSave, onCancel }) {
 
           {/* Exportar JS */}
           <div style={{marginTop:10,display:"flex",gap:6}}>
-            <button onClick={()=>setShowJS(p=>!p)} style={{padding:"4px 12px",borderRadius:7,border:"1px solid #2a2722",background:"#131210",color:"#c9a86a",fontFamily:"monospace",fontWeight:700,fontSize:10,cursor:"pointer"}}>
+            <button onClick={()=>setShowJS(p=>!p)} style={{padding:"4px 12px",borderRadius:7,border:"1px solid #2a2a2a",background:"#121212",color:"#e6e6e6",fontFamily:"monospace",fontWeight:700,fontSize:10,cursor:"pointer"}}>
               {showJS?"Ocultar":"↓ Ver JS para el repo"}
             </button>
           </div>
           {showJS&&(
             <div style={{position:"relative",marginTop:8}}>
-              <textarea readOnly value={jsText()} style={{width:"100%",height:140,background:"#0a0908",color:"#c9a86a",border:"1px solid #2a2722",borderRadius:8,padding:8,fontSize:8,fontFamily:"'Courier New',monospace",resize:"vertical",boxSizing:"border-box"}}/>
+              <textarea readOnly value={jsText()} style={{width:"100%",height:140,background:"#0a0a0a",color:"#e6e6e6",border:"1px solid #2a2a2a",borderRadius:8,padding:8,fontSize:8,fontFamily:"'Courier New',monospace",resize:"vertical",boxSizing:"border-box"}}/>
               <button onClick={()=>navigator.clipboard.writeText(jsText()).then(()=>{setCopied(true);setTimeout(()=>setCopied(false),2000);})}
-                style={{position:"absolute",top:6,right:6,padding:"2px 9px",borderRadius:5,border:"1px solid #2a2722",background:copied?"#c9a86a":"#131210",color:copied?"#fff":"#8f8878",fontFamily:"monospace",fontSize:9,cursor:"pointer"}}>
+                style={{position:"absolute",top:6,right:6,padding:"2px 9px",borderRadius:5,border:"1px solid #2a2a2a",background:copied?"#e6e6e6":"#121212",color:copied?"#fff":"#8a8a8a",fontFamily:"monospace",fontSize:9,cursor:"pointer"}}>
                 {copied?"✓ Copiado":"Copiar"}
               </button>
             </div>
@@ -1637,13 +1637,13 @@ function BandEditor({ initialLeft, initialRight, onSave, onCancel }) {
 
         {/* Tabla */}
         <div style={{flex:"0 0 300px",minWidth:260}}>
-          <div style={{fontSize:10,fontWeight:800,color:"#c9a86a",marginBottom:6}}>TABLA · {hand==="left"?"IZQUIERDA":"DERECHA"}</div>
-          <div style={{overflowY:"auto",maxHeight:460,border:"1px solid #131210",borderRadius:8}}>
+          <div style={{fontSize:10,fontWeight:800,color:"#e6e6e6",marginBottom:6}}>TABLA · {hand==="left"?"IZQUIERDA":"DERECHA"}</div>
+          <div style={{overflowY:"auto",maxHeight:460,border:"1px solid #121212",borderRadius:8}}>
             <table style={{borderCollapse:"collapse",fontSize:9,width:"100%",fontFamily:"'Courier New',monospace"}}>
               <thead>
-                <tr style={{background:"#131210",position:"sticky",top:0}}>
+                <tr style={{background:"#121212",position:"sticky",top:0}}>
                   {["ID","X","Y","▷ Nota","oct","◁ Nota","oct","🎨▷","🎨◁"].map(h=>(
-                    <th key={h} style={{padding:"5px 4px",textAlign:"left",color:"#8f8878",borderBottom:"1px solid #131210",whiteSpace:"nowrap",fontSize:8}}>{h}</th>
+                    <th key={h} style={{padding:"5px 4px",textAlign:"left",color:"#8a8a8a",borderBottom:"1px solid #121212",whiteSpace:"nowrap",fontSize:8}}>{h}</th>
                   ))}
                 </tr>
               </thead>
@@ -1654,29 +1654,29 @@ function BandEditor({ initialLeft, initialRight, onSave, onCancel }) {
                   return(
                     <tr key={btn.id} onClick={()=>setSelected(btn.id)} style={{background:isSel?"rgba(245,192,96,.09)":"transparent",cursor:"pointer",borderBottom:"1px solid rgba(26,14,4,.5)",outline:isSel?"1px solid rgba(245,192,96,.25)":"none"}}>
                       <td style={{padding:"2px 4px"}}><span style={{color:cNow||"#888",fontWeight:700}}>{btn.id}</span></td>
-                      <td style={{padding:"2px 4px",color:"#8f8878"}}>{btn.x}</td>
-                      <td style={{padding:"2px 4px",color:"#8f8878"}}>{btn.y}</td>
+                      <td style={{padding:"2px 4px",color:"#8a8a8a"}}>{btn.x}</td>
+                      <td style={{padding:"2px 4px",color:"#8a8a8a"}}>{btn.y}</td>
                       <td style={{padding:"2px 2px"}}>
                         <select value={btn.abre} onChange={e=>{e.stopPropagation();handleEdit(btn.id,"abre",e.target.value);}} onClick={e=>e.stopPropagation()}
-                          style={{background:"#131210",color:"#c9a86a",border:"none",borderRadius:4,padding:"1px 2px",fontFamily:"monospace",fontSize:8,cursor:"pointer",width:48}}>
+                          style={{background:"#121212",color:"#e6e6e6",border:"none",borderRadius:4,padding:"1px 2px",fontFamily:"monospace",fontSize:8,cursor:"pointer",width:48}}>
                           {ALL_NOTES_LAT.map(n=><option key={n} value={n}>{n}</option>)}
                         </select>
                       </td>
                       <td style={{padding:"2px 2px"}} onClick={e=>e.stopPropagation()}>
                         <select value={btn.oct_abre??3} onChange={e=>{e.stopPropagation();handleEdit(btn.id,"oct_abre",parseInt(e.target.value));}} onClick={e=>e.stopPropagation()}
-                          style={{background:"#131210",color:"#c9a86a",border:"none",borderRadius:4,padding:"1px 2px",fontFamily:"monospace",fontSize:8,cursor:"pointer",width:30}}>
+                          style={{background:"#121212",color:"#e6e6e6",border:"none",borderRadius:4,padding:"1px 2px",fontFamily:"monospace",fontSize:8,cursor:"pointer",width:30}}>
                           {[0,1,2,3,4,5,6].map(o=><option key={o} value={o}>{o}</option>)}
                         </select>
                       </td>
                       <td style={{padding:"2px 2px"}}>
                         <select value={btn.cierra} onChange={e=>{e.stopPropagation();handleEdit(btn.id,"cierra",e.target.value);}} onClick={e=>e.stopPropagation()}
-                          style={{background:"#131210",color:"#c9a86a",border:"none",borderRadius:4,padding:"1px 2px",fontFamily:"monospace",fontSize:8,cursor:"pointer",width:48}}>
+                          style={{background:"#121212",color:"#e6e6e6",border:"none",borderRadius:4,padding:"1px 2px",fontFamily:"monospace",fontSize:8,cursor:"pointer",width:48}}>
                           {ALL_NOTES_LAT.map(n=><option key={n} value={n}>{n}</option>)}
                         </select>
                       </td>
                       <td style={{padding:"2px 2px"}} onClick={e=>e.stopPropagation()}>
                         <select value={btn.oct_cierra??3} onChange={e=>{e.stopPropagation();handleEdit(btn.id,"oct_cierra",parseInt(e.target.value));}} onClick={e=>e.stopPropagation()}
-                          style={{background:"#131210",color:"#c9a86a",border:"none",borderRadius:4,padding:"1px 2px",fontFamily:"monospace",fontSize:8,cursor:"pointer",width:30}}>
+                          style={{background:"#121212",color:"#e6e6e6",border:"none",borderRadius:4,padding:"1px 2px",fontFamily:"monospace",fontSize:8,cursor:"pointer",width:30}}>
                           {[0,1,2,3,4,5,6].map(o=><option key={o} value={o}>{o}</option>)}
                         </select>
                       </td>
@@ -1964,8 +1964,8 @@ function BandoneonTab() {
   const pill=(active,v="orange")=>({
     padding:"5px 12px",borderRadius:8,border:"none",
     fontFamily:"'Courier New',monospace",fontWeight:700,fontSize:10,cursor:"pointer",transition:"all .18s",
-    background:active?"#c9a86a":"transparent",
-    color:active?"#0a0908":"#8f8878",
+    background:active?"#e6e6e6":"transparent",
+    color:active?"#0a0a0a":"#8a8a8a",
   });
 
   // Detectar móvil
@@ -1992,9 +1992,7 @@ function BandoneonTab() {
     return () => { ro.disconnect(); window.removeEventListener("resize", update); };
   },[]);
   const bothVisible = view==="ambas";
-  const canvasMaxWidth = isMobile
-    ? wrapWidth
-    : (bothVisible ? Math.max(180, Math.floor((wrapWidth-14)/2)) : wrapWidth);
+  const canvasMaxWidth = wrapWidth; // cada teclado usa todo el ancho (apilados) para verse lo más grande posible
 
   if (!leftBtns.length) return <div style={{color:"#555",padding:20,fontSize:13}}>Cargando...</div>;
 
@@ -2006,38 +2004,38 @@ function BandoneonTab() {
     <div style={{fontFamily:"'Courier New',monospace"}}>
 
       {/* Barra herramientas */}
-      <div style={{display:"flex",gap:8,flexWrap:"wrap",alignItems:"center",marginBottom:14,padding:"8px 12px",background:"#0a0908",border:"1px solid #191712",borderRadius:10}}>
+      <div style={{display:"flex",gap:8,flexWrap:"wrap",alignItems:"center",marginBottom:14,padding:"8px 12px",background:"#0a0a0a",border:"1px solid #1a1a1a",borderRadius:10}}>
         <div style={{display:"flex",alignItems:"center",gap:5,flex:"1 1 auto"}}>
-          <div style={{width:7,height:7,borderRadius:"50%",background:fromStorage?"#c9a86a":"#8f8878"}}/>
-          <span style={{fontSize:10,color:fromStorage?"#c9a86a":"#8f8878",fontFamily:"monospace"}}>
+          <div style={{width:7,height:7,borderRadius:"50%",background:fromStorage?"#e6e6e6":"#8a8a8a"}}/>
+          <span style={{fontSize:10,color:fromStorage?"#e6e6e6":"#8a8a8a",fontFamily:"monospace"}}>
             {fromStorage?"Config. personalizada":"Config. por defecto"}
           </span>
         </div>
-        <button onClick={()=>{stopAllNotes();setIsListening(false);setEditMode(true);}} style={{padding:"5px 13px",borderRadius:9,border:"1px solid #c9a86a",background:"#191712",color:"#c9a86a",fontWeight:700,fontSize:11,cursor:"pointer",fontFamily:"monospace"}}>✏️ Editar teclado</button>
-        <button onClick={()=>setShowImport(true)} style={{padding:"5px 13px",borderRadius:9,border:"1px solid #c9a86a44",background:"transparent",color:"#c9a86a",fontWeight:700,fontSize:11,cursor:"pointer",fontFamily:"monospace"}}>↑ Importar CSV</button>
+        <button onClick={()=>{stopAllNotes();setIsListening(false);setEditMode(true);}} style={{padding:"5px 13px",borderRadius:9,border:"1px solid #e6e6e6",background:"#1a1a1a",color:"#e6e6e6",fontWeight:700,fontSize:11,cursor:"pointer",fontFamily:"monospace"}}>✏️ Editar teclado</button>
+        <button onClick={()=>setShowImport(true)} style={{padding:"5px 13px",borderRadius:9,border:"1px solid #e6e6e644",background:"transparent",color:"#e6e6e6",fontWeight:700,fontSize:11,cursor:"pointer",fontFamily:"monospace"}}>↑ Importar CSV</button>
         {fromStorage&&(
           <button
             onClick={()=>{clearBtns();const{left,right}=loadBtns();setLeftBtns(left);setRightBtns(right);setFromStorage(false);}}
-            style={{padding:"5px 10px",borderRadius:9,border:"1px solid #2a2722",
-              background:"transparent",color:"#8f8878",fontSize:10,cursor:"pointer",fontFamily:"monospace"}}>
+            style={{padding:"5px 10px",borderRadius:9,border:"1px solid #2a2a2a",
+              background:"transparent",color:"#8a8a8a",fontSize:10,cursor:"pointer",fontFamily:"monospace"}}>
             ⟳ Defaults
           </button>
         )}
       </div>
 
       {/* Panel mic */}
-      <div style={{marginBottom:10,padding:"8px 12px",background:"#131210",border:"1.5px dashed #c9a86a",borderRadius:12,display:"flex",alignItems:"center",justifyContent:"space-between",flexWrap:"wrap",gap:6,minHeight:56}}>
+      <div style={{marginBottom:10,padding:"8px 12px",background:"#121212",border:"1.5px dashed #e6e6e6",borderRadius:12,display:"flex",alignItems:"center",justifyContent:"space-between",flexWrap:"wrap",gap:6,minHeight:56}}>
         <div style={{display:"flex",alignItems:"center",gap:8,flex:"1 1 auto"}}>
-          <div style={{width:9,height:9,borderRadius:"50%",background:isListening?"#c9a86a":"#201d18",boxShadow:isListening?"0 0 8px #c9a86a":"none",flexShrink:0}}/>
+          <div style={{width:9,height:9,borderRadius:"50%",background:isListening?"#e6e6e6":"#232323",boxShadow:isListening?"0 0 8px #e6e6e6":"none",flexShrink:0}}/>
           <div>
-            <div style={{fontSize:10,fontWeight:800,color:"#c9a86a"}}>MODO ESCUCHA FÍSICA</div>
-            <div style={{fontSize:8,color:"#8f8878"}}>Tocá tu instrumento. Los botones con esa nota brillan en blanco.</div>
+            <div style={{fontSize:10,fontWeight:800,color:"#e6e6e6"}}>MODO ESCUCHA FÍSICA</div>
+            <div style={{fontSize:8,color:"#8a8a8a"}}>Tocá tu instrumento. Los botones con esa nota brillan en blanco.</div>
           </div>
         </div>
         {isListening&&(
-          <div style={{background:"#131210",border:"1px solid #c9a86a44",padding:"3px 10px",borderRadius:8,minWidth:55,textAlign:"center"}}>
-            <span style={{fontSize:8,color:"#8f8878",display:"block"}}>NOTA MIC</span>
-            <span style={{fontSize:13,fontWeight:900,color:heardNote?"#c9a86a":"#201d18"}}>
+          <div style={{background:"#121212",border:"1px solid #e6e6e644",padding:"3px 10px",borderRadius:8,minWidth:55,textAlign:"center"}}>
+            <span style={{fontSize:8,color:"#8a8a8a",display:"block"}}>NOTA MIC</span>
+            <span style={{fontSize:13,fontWeight:900,color:heardNote?"#e6e6e6":"#232323"}}>
               {heardNote
                 ? heardNote.replace(/(\d+)$/, "") + " " + (heardNote.match(/\d+$/) || [""])[0]
                 : "..."}
@@ -2049,32 +2047,32 @@ function BandoneonTab() {
           style={{
             padding:"5px 12px",borderRadius:9,border:"none",
             fontFamily:"monospace",fontWeight:700,fontSize:10,cursor:"pointer",
-            background:isListening?"linear-gradient(135deg,#b5564f,#b5564f)":"#c9a86a",
-            color:isListening?"#fff":"#131210",
+            background:isListening?"linear-gradient(135deg,#b5564f,#b5564f)":"#e6e6e6",
+            color:isListening?"#fff":"#121212",
           }}>
           {isListening?"✕ Apagar Mic":"🎙️ Escuchar"}
         </button>
       </div>
-      {errorAudio&&<div style={{marginBottom:10,padding:"5px 10px",background:"#131210",border:"1px solid #b5564f55",borderRadius:6,fontSize:9,color:"#d98f88"}}>⚠ {errorAudio}</div>}
+      {errorAudio&&<div style={{marginBottom:10,padding:"5px 10px",background:"#121212",border:"1px solid #b5564f55",borderRadius:6,fontSize:9,color:"#d98f88"}}>⚠ {errorAudio}</div>}
 
       {/* Controles fuelle/vista */}
       <div style={{display:"flex",gap:6,flexWrap:"wrap",marginBottom:10,alignItems:"center"}}>
         {/* Fuelle */}
-        <div style={{display:"flex",background:"#131210",border:"1.5px solid #2a2722",borderRadius:10,padding:3,gap:2}}>
+        <div style={{display:"flex",background:"#121212",border:"1.5px solid #2a2a2a",borderRadius:10,padding:3,gap:2}}>
           {[["abre","▷ Abre"],["cierra","◁ Cierra"]].map(([b,l])=>(
             <button key={b} style={{...pill(bellows===b),padding:isMobile?"5px 10px":"5px 12px"}}
               onClick={()=>{stopAllNotes();setBellows(b);setPressedL([]);setPressedR([]);}}>{l}</button>
           ))}
         </div>
         {/* Vista — en móvil solo mostrar si es "ambas" para ahorrar espacio */}
-        <div style={{display:"flex",background:"#131210",border:"1.5px solid #3a362c",borderRadius:10,padding:3,gap:2}}>
+        <div style={{display:"flex",background:"#121212",border:"1.5px solid #333333",borderRadius:10,padding:3,gap:2}}>
           {[["ambas","Ambas"],["izquierda","IZQ"],["derecha","DER"]].map(([v,l])=>(
             <button key={v} style={{...pill(view===v,"blue"),padding:isMobile?"5px 8px":"5px 12px"}}
               onClick={()=>setView(v)}>{l}</button>
           ))}
         </div>
         <button onClick={()=>{stopAllNotes();setPressedL([]);setPressedR([]);}}
-          style={{padding:"5px 9px",borderRadius:9,border:"1px solid #2a2722",background:"transparent",color:"#8f8878",fontFamily:"monospace",fontSize:10,cursor:"pointer",marginLeft:"auto"}}>
+          style={{padding:"5px 9px",borderRadius:9,border:"1px solid #2a2a2a",background:"transparent",color:"#8a8a8a",fontFamily:"monospace",fontSize:10,cursor:"pointer",marginLeft:"auto"}}>
           ✕
         </button>
       </div>
@@ -2085,8 +2083,8 @@ function BandoneonTab() {
         <div style={{
           marginBottom:10,
           padding:isMobile?"6px 10px":"7px 12px",
-          background:"#131210",
-          border:"1px solid #3a362c",
+          background:"#121212",
+          border:"1px solid #333333",
           borderRadius:10,
           display:"flex",
           alignItems:"center",
@@ -2096,7 +2094,7 @@ function BandoneonTab() {
         }}>
           <div style={{display:"flex",gap:4,flexWrap:"wrap",flex:"1 1 auto"}}>
             {heardNote&&(
-              <span style={{padding:"2px 8px",borderRadius:20,background:"#c9a86a22",border:"1px solid #c9a86a",color:"#c9a86a",fontWeight:700,fontSize:isMobile?10:11}}>
+              <span style={{padding:"2px 8px",borderRadius:20,background:"#e6e6e622",border:"1px solid #e6e6e6",color:"#e6e6e6",fontWeight:700,fontSize:isMobile?10:11}}>
                 🎙️ {heardNote}
               </span>
             )}
@@ -2114,7 +2112,7 @@ function BandoneonTab() {
           {detected&&(
             <div style={{textAlign:"right",flexShrink:0}}>
               <div style={{fontSize:8,color:"#555"}}>Acorde</div>
-              <div style={{fontSize:isMobile?17:20,fontWeight:900,color:"#c9a86a",fontFamily:"serif"}}>{detected}</div>
+              <div style={{fontSize:isMobile?17:20,fontWeight:900,color:"#e6e6e6",fontFamily:"serif"}}>{detected}</div>
             </div>
           )}
         </div>
@@ -2125,14 +2123,14 @@ function BandoneonTab() {
           que estén visibles, para garantizar que SIEMPRE entren sin recortarse. */}
       <div ref={canvasWrapRef} style={{
         display: "flex",
-        flexDirection: isMobile ? "column" : "row",
-        gap: isMobile ? 10 : 14,
-        alignItems: "flex-start",
+        flexDirection: "column",
+        gap: 18,
+        alignItems: "stretch",
         paddingBottom: 8,
       }}>
         {(view==="ambas"||view==="izquierda")&&(
-          <div style={{width: isMobile ? "100%" : "auto"}}>
-            <div style={{fontSize:9,color:"#8f8878",marginBottom:5,letterSpacing:"0.12em",
+          <div style={{width:"100%"}}>
+            <div style={{fontSize:11,color:"#8a8a8a",marginBottom:5,letterSpacing:"0.12em",
               display:"flex",alignItems:"center",gap:6}}>
               <span>MANO IZQUIERDA · {leftBtns.length} botones</span>
               {isMobile&&<span style={{opacity:.5,fontSize:8}}>↑ abre / cierra ↓</span>}
@@ -2140,27 +2138,27 @@ function BandoneonTab() {
             <BandCanvas buttons={leftBtns} bellows={bellows}
               pressed={pressedL} heardIds={heardIdsL}
               onDown={downL} onUp={upL} mobile={isMobile}
-              maxWidth={canvasMaxWidth}
+              maxWidth={canvasMaxWidth} maxScale={3}
               octMap={bellows==="abre" ? OCT_L_OPEN : OCT_L_CLOSE}/>
           </div>
         )}
         {(view==="ambas"||view==="derecha")&&(
-          <div style={{width: isMobile ? "100%" : "auto"}}>
-            <div style={{fontSize:9,color:"#8f8878",marginBottom:5,letterSpacing:"0.12em"}}>
+          <div style={{width:"100%"}}>
+            <div style={{fontSize:11,color:"#8a8a8a",marginBottom:5,letterSpacing:"0.12em"}}>
               MANO DERECHA · {rightBtns.length} botones
             </div>
             <BandCanvas buttons={rightBtns} bellows={bellows}
               pressed={pressedR} heardIds={heardIdsR}
               onDown={downR} onUp={upR} mobile={isMobile}
-              maxWidth={canvasMaxWidth}
+              maxWidth={canvasMaxWidth} maxScale={3}
               octMap={bellows==="abre" ? OCT_R_OPEN : OCT_R_CLOSE}/>
           </div>
         )}
       </div>
 
-      <div style={{marginTop:10,padding:"7px 11px",background:"#131210",border:"1px solid #2a2722",borderRadius:8,fontSize:11,color:"#555"}}>
-        <b style={{color:"#8f8878"}}>Sistema Rheinische</b> · 71 botones · Bisonoro: nota diferente al{" "}
-        <span style={{color:"#c9a86a"}}>abrir</span> y al <span style={{color:"#c9a86a"}}>cerrar</span> el fuelle.
+      <div style={{marginTop:10,padding:"7px 11px",background:"#121212",border:"1px solid #2a2a2a",borderRadius:8,fontSize:11,color:"#555"}}>
+        <b style={{color:"#8a8a8a"}}>Sistema Rheinische</b> · 71 botones · Bisonoro: nota diferente al{" "}
+        <span style={{color:"#e6e6e6"}}>abrir</span> y al <span style={{color:"#e6e6e6"}}>cerrar</span> el fuelle.
       </div>
 
       {showSaved&&<SavedModal cssText={cssText} onClose={()=>setShowSaved(false)}/>}
@@ -2263,7 +2261,7 @@ const RuedaCromatica=({size=270, highlight=[], usePaletteReal=false, showHex=fal
   const cx=size/2, cy=size/2, R=size*0.36;
   return(
     <svg viewBox={`0 0 ${size} ${size}`} className="mx-auto block" style={{maxWidth:size, width:"100%"}}>
-      <circle cx={cx} cy={cy} r={R+28} fill="#0a0908" stroke="#201d18" strokeWidth="1"/>
+      <circle cx={cx} cy={cy} r={R+28} fill="#0a0a0a" stroke="#232323" strokeWidth="1"/>
       {CHROMATIC.map((n,i)=>{
         const angle=(i*30-90)*(Math.PI/180);
         const x=cx+R*Math.cos(angle), y=cy+R*Math.sin(angle);
@@ -2286,7 +2284,7 @@ const RuedaCromatica=({size=270, highlight=[], usePaletteReal=false, showHex=fal
 const MixFigure=({titulo, notes, rootWeight=0.8, nota})=>{
   const mix = mixLuzRaizDominante(notes, rootWeight);
   return(
-    <div className="rounded-xl border border-gray-800 p-3" style={{background:"#131210"}}>
+    <div className="rounded-xl border border-gray-800 p-3" style={{background:"#121212"}}>
       <p className="text-xs text-gray-500 mb-2">{titulo}</p>
       <div className="flex items-center gap-2 flex-wrap mb-2">
         {notes.map((n,i)=>(
@@ -2308,26 +2306,26 @@ const MixFigure=({titulo, notes, rootWeight=0.8, nota})=>{
 
 // ─── Pequeños helpers de presentación reutilizados en todos los capítulos ────
 const CapP=({children})=>(<p className="text-sm text-gray-300 leading-relaxed mb-3">{children}</p>);
-const CapH3=({children})=>(<h3 className="text-base font-bold text-[#d9c08a] mt-5 mb-2" style={{fontFamily:"'Libre Baskerville',serif"}}>{children}</h3>);
+const CapH3=({children})=>(<h3 className="text-base font-bold text-[#d4d4d4] mt-5 mb-2" style={{fontFamily:"'Libre Baskerville',serif"}}>{children}</h3>);
 const CapNota=({children})=>(
-  <div className="rounded-lg p-3 border border-[#3a3326] my-3" style={{background:"#0a0908"}}>
-    <p className="text-xs text-[#e9ddc0] leading-relaxed italic">{children}</p>
+  <div className="rounded-lg p-3 border border-[#333333] my-3" style={{background:"#0a0a0a"}}>
+    <p className="text-xs text-[#cfcfcf] leading-relaxed italic">{children}</p>
   </div>
 );
 const CapFig=({caption, children})=>(
-  <div className="rounded-xl p-4 border border-gray-800 my-4" style={{background:"#131210"}}>
+  <div className="rounded-xl p-4 border border-gray-800 my-4" style={{background:"#121212"}}>
     {children}
     {caption&&<p className="text-xs text-gray-500 italic mt-3 text-center">{caption}</p>}
   </div>
 );
 const CapImgPend=({texto})=>(
-  <div className="rounded-lg p-3 border border-dashed border-gray-700 my-3" style={{background:"#131210"}}>
+  <div className="rounded-lg p-3 border border-dashed border-gray-700 my-3" style={{background:"#121212"}}>
     <p className="text-xs text-gray-500 italic">🖼️ Imagen pendiente en el libro — {texto}</p>
   </div>
 );
 const ConceptoPar=({a,b,descA,descB})=>(
-  <div className="rounded-lg p-3 border border-gray-800" style={{background:"#131210"}}>
-    <p className="text-sm font-bold text-[#c9a86a] italic mb-1">{a} ↔ {b}</p>
+  <div className="rounded-lg p-3 border border-gray-800" style={{background:"#121212"}}>
+    <p className="text-sm font-bold text-[#e6e6e6] italic mb-1">{a} ↔ {b}</p>
     <p className="text-xs text-gray-500 leading-relaxed">{descA}</p>
   </div>
 );
@@ -2348,130 +2346,130 @@ const PIEDRAS = [
   {n:"B",  piedra:"Amatista",           energia:"Calma profunda, claridad, intuición, protección espiritual", chakra:"Tercer ojo (violeta)"},
 ];
 
-// ─── PALETA INTERACTIVA (Cap. 0): elegí nota de partida y escala; la fila de
-// colores, la rueda y la fórmula se actualizan solas. ─────────────────────────
-const ESCALAS_INTRO = [
-  {id:"mayor",    nombre:"Mayor",             ivs:[0,2,4,5,7,9,11], desc:"La escala de referencia: suena luminosa y estable. Todo lo demás se mide contra ella."},
-  {id:"menor",    nombre:"Menor natural",     ivs:[0,2,3,5,7,8,10], desc:"La mayor vista desde su sexto grado: la misma paleta, pero con el centro corrido. Más oscura."},
-  {id:"menorA",   nombre:"Menor armónica",    ivs:[0,2,3,5,7,8,11], desc:"Menor con el séptimo grado elevado: esa sensible empuja a resolver. Muy usada en tango y música clásica."},
-  {id:"menorM",   nombre:"Menor melódica",    ivs:[0,2,3,5,7,9,11], desc:"Menor con sexto y séptimo elevados: una base habitual del jazz."},
-  {id:"pentaM",   nombre:"Pentatónica mayor", ivs:[0,2,4,7,9],      desc:"Solo cinco colores y ningún semitono: es difícil que suene mal."},
-  {id:"pentam",   nombre:"Pentatónica menor", ivs:[0,3,5,7,10],     desc:"Los cinco colores de la menor sin los grados que más tensionan."},
-  {id:"blues",    nombre:"Blues",             ivs:[0,3,5,6,7,10],   desc:"La pentatónica menor más la \"blue note\" (b5), el color de paso."},
-  {id:"dorico",   nombre:"Dórico",            ivs:[0,2,3,5,7,9,10], desc:"Menor con sexto grado mayor: menor, pero con una luz extra."},
-  {id:"mixo",     nombre:"Mixolidio",         ivs:[0,2,4,5,7,9,10], desc:"Mayor con séptimo menor: la escala del acorde dominante."},
-  {id:"crom",     nombre:"Cromática",         ivs:[0,1,2,3,4,5,6,7,8,9,10,11], desc:"Los doce colores seguidos: todo el alfabeto."},
+// ─── PRESENTACIÓN: CRISTALES SONOROS ─────────────────────────────────────────
+// Los doce colores como cristales. Tocar uno hace sonar la nota con timbre de
+// fuelle (el mismo del bandoneón de la app). Abajo se elige la escala y solo
+// sus colores quedan encendidos. Interfaz neutra para que lo único con color
+// sean las notas.
+const ESCALAS_HERO = [
+  {id:"mayor",  corto:"Mayor",       nombre:"mayor",           ivs:[0,2,4,5,7,9,11]},
+  {id:"menor",  corto:"Menor",       nombre:"menor natural",   ivs:[0,2,3,5,7,8,10]},
+  {id:"menorA", corto:"Menor armónica", nombre:"menor armónica", ivs:[0,2,3,5,7,8,11]},
+  {id:"menorM", corto:"Menor melódica", nombre:"menor melódica", ivs:[0,2,3,5,7,9,11]},
+  {id:"pentaM", corto:"Pent. mayor", nombre:"pentatónica mayor", ivs:[0,2,4,7,9]},
+  {id:"pentam", corto:"Pent. menor", nombre:"pentatónica menor", ivs:[0,3,5,7,10]},
+  {id:"blues",  corto:"Blues",       nombre:"blues",           ivs:[0,3,5,6,7,10]},
 ];
 const GRADO_LABEL = {0:"1",1:"b2",2:"2",3:"b3",4:"3",5:"4",6:"b5",7:"5",8:"b6",9:"6",10:"b7",11:"7"};
 const pasoLabel = d => d===1?"S":d===2?"T":d===3?"T½":String(d);
-const txtSobre = hex => { const [r,g,b]=hexToRgb(hex); return (0.299*r+0.587*g+0.114*b)>150 ? "#14110a" : "#ffffff"; };
 
-function PaletaInteractiva(){
-  const [root,setRoot]     = useState("C");
-  const [escId,setEscId]   = useState("mayor");
-  const [playing,setPlaying] = useState(-1);
+function Cristal({color, size=64}){
+  return(
+    <svg viewBox="0 0 64 76" width="100%" style={{display:"block",maxWidth:size,overflow:"visible"}}>
+      <polygon points="14,6 50,6 62,26 32,72 2,26" fill={color}/>
+      <polygon points="14,6 50,6 44,26 20,26" fill="#fff" fillOpacity=".30"/>
+      <polygon points="14,6 20,26 2,26" fill="#fff" fillOpacity=".12"/>
+      <polygon points="50,6 62,26 44,26" fill="#000" fillOpacity=".10"/>
+      <polygon points="2,26 20,26 32,72" fill="#000" fillOpacity=".16"/>
+      <polygon points="20,26 44,26 32,72" fill="#fff" fillOpacity=".07"/>
+      <polygon points="62,26 44,26 32,72" fill="#000" fillOpacity=".32"/>
+      <polygon points="18,9 30,9 26,20" fill="#fff" fillOpacity=".45"/>
+      <polygon points="14,6 50,6 62,26 32,72 2,26" fill="none" stroke="#fff" strokeOpacity=".35" strokeWidth="1.2" strokeLinejoin="round"/>
+    </svg>
+  );
+}
+
+function CristalesColor(){
+  const [root,setRoot]   = useState("C");
+  const [escId,setEscId] = useState("mayor");
+  const [playing,setPlaying] = useState(null);   // nota que está sonando (escala)
   const timers = useRef([]);
   useEffect(()=>()=>timers.current.forEach(clearTimeout),[]);
 
-  const esc = ESCALAS_INTRO.find(e=>e.id===escId);
-  const r = CHROMATIC.indexOf(root);
-  const absOf = iv => r+iv;
-  const notes = esc.ivs.map(iv=>CHROMATIC[absOf(iv)%12]);
-  const pasos = esc.ivs.map((iv,i)=> (i===esc.ivs.length-1 ? 12 : esc.ivs[i+1]) - iv); // paso hacia la nota siguiente
-  const n = notes.length;
-  const dense = n>8;
+  const esc   = ESCALAS_HERO.find(e=>e.id===escId);
+  const r     = CHROMATIC.indexOf(root);
+  const notes = esc.ivs.map(iv=>CHROMATIC[(r+iv)%12]);
+  const gradoDe = {}; esc.ivs.forEach(iv=>{ gradoDe[CHROMATIC[(r+iv)%12]] = GRADO_LABEL[iv]; });
+  const pasos = esc.ivs.map((iv,i)=>(i===esc.ivs.length-1?12:esc.ivs[i+1])-iv);
 
-  const stop = ()=>{ timers.current.forEach(clearTimeout); timers.current=[]; setPlaying(-1); };
-  const tocarUna = (i)=>{ const a=absOf(esc.ivs[i]); playTone(CHROMATIC[a%12], 4+Math.floor(a/12), 0.6); };
+  const stop = ()=>{ timers.current.forEach(clearTimeout); timers.current=[]; setPlaying(null); };
+  const tocarNota = (x)=>{ playBand(x,4); };
   const tocarEscala = ()=>{
     stop();
-    const seq = [...esc.ivs, 12];
+    const seq=[...esc.ivs,12];
     seq.forEach((iv,i)=>{
       timers.current.push(setTimeout(()=>{
-        const a=absOf(iv); playTone(CHROMATIC[a%12], 4+Math.floor(a/12), 0.5);
-        setPlaying(i<esc.ivs.length ? i : 0);
-      }, i*(dense?200:380)));
+        const a=r+iv; const x=CHROMATIC[a%12];
+        playBand(x, 4+Math.floor(a/12)); setPlaying(x);
+      }, i*480));
     });
-    timers.current.push(setTimeout(()=>setPlaying(-1), seq.length*(dense?200:380)+300));
+    timers.current.push(setTimeout(()=>setPlaying(null), seq.length*480+300));
   };
-  const cambiarRoot = (x)=>{ stop(); setRoot(x); playTone(x,4,0.5); };
-  const cambiarEsc  = (x)=>{ stop(); setEscId(x); };
+
+  const UI = {bg:"#101010", line:"#262626", text:"#e6e6e6", mute:"#8a8a8a", pillOn:"#e6e6e6"};
+  const pill=(on)=>({padding:"5px 11px",borderRadius:8,fontSize:11,fontFamily:"monospace",fontWeight:600,cursor:"pointer",
+    border:`1px solid ${on?UI.pillOn:UI.line}`,background:on?UI.pillOn:"transparent",color:on?"#101010":UI.mute});
 
   return(
-    <div className="rounded-2xl border my-4 p-3 sm:p-4" style={{background:"#0a0908",borderColor:"#3a362c"}}>
-      <style>{`@keyframes palIn{from{opacity:0;transform:translateY(10px) scale(.88)}to{opacity:1;transform:none}}`}</style>
+    <div className="rounded-2xl mb-5" style={{background:UI.bg,border:`1px solid ${UI.line}`,padding:"16px 14px"}}>
+      <div className="flex items-baseline justify-between flex-wrap gap-2 mb-3">
+        <p style={{fontSize:11,letterSpacing:"0.14em",color:UI.mute,textTransform:"uppercase"}}>Los doce colores</p>
+        <p style={{fontSize:11,color:UI.mute}}>Tocá un cristal para escucharlo</p>
+      </div>
 
-      {/* 1 · nota de partida */}
-      <p className="text-[10px] uppercase tracking-widest mb-2" style={{color:"#8f8878"}}>1 · Nota de partida</p>
-      <div className="grid grid-cols-6 sm:grid-cols-12 gap-1.5 mb-4">
+      {/* Cristales */}
+      <div className="grid grid-cols-6 sm:grid-cols-12 gap-x-2 gap-y-4 mb-5">
         {CHROMATIC.map(x=>{
-          const sel = x===root;
+          const on = notes.includes(x);
+          const sonando = playing===x;
           return(
-            <button key={x} onClick={()=>cambiarRoot(x)} className="flex flex-col items-center gap-1" style={{background:"none",border:"none",cursor:"pointer",padding:0}}>
-              <span style={{display:"block",width:"100%",maxWidth:40,aspectRatio:"1/1",borderRadius:"50%",background:nc(x),
-                border: sel?"3px solid #fff":"2px solid rgba(255,255,255,.15)",
-                boxShadow: sel?`0 0 14px ${nc(x)}`:"none",transform: sel?"scale(1.1)":"none",transition:"all .15s"}}/>
-              <span style={{fontSize:10,fontFamily:"monospace",color:sel?"#c9a86a":"#8f8878",fontWeight:sel?800:500}}>{CROM_SIMPLE[x]}</span>
+            <button key={x} onClick={()=>tocarNota(x)}
+              style={{background:"none",border:"none",padding:0,cursor:"pointer",display:"flex",flexDirection:"column",alignItems:"center",gap:6,
+                opacity:on?1:0.16, filter:on?"none":"saturate(.3)",
+                transform: sonando ? "translateY(-8px) scale(1.12)" : on ? "translateY(-3px)" : "none",
+                transition:"transform .14s ease, opacity .25s ease, filter .25s ease"}}>
+              <div style={{width:"100%",display:"flex",justifyContent:"center",
+                filter: sonando ? `drop-shadow(0 6px 14px ${nc(x)}cc)` : on ? `drop-shadow(0 4px 8px ${nc(x)}55)` : "none"}}>
+                <Cristal color={nc(x)}/>
+              </div>
+              <span style={{fontSize:11,fontFamily:"serif",fontWeight:700,color:on?UI.text:UI.mute}}>{CROM_SIMPLE[x]}</span>
+              <span style={{fontSize:9,fontFamily:"monospace",color:UI.mute,height:11}}>{on?gradoDe[x]:""}</span>
             </button>
           );
         })}
       </div>
 
-      {/* 2 · escala */}
-      <p className="text-[10px] uppercase tracking-widest mb-2" style={{color:"#8f8878"}}>2 · Escala</p>
-      <div className="flex flex-wrap gap-1.5 mb-4">
-        {ESCALAS_INTRO.map(e=>{
-          const sel=e.id===escId;
-          return(
-            <button key={e.id} onClick={()=>cambiarEsc(e.id)}
-              style={{padding:"5px 11px",borderRadius:20,fontSize:11,fontFamily:"monospace",fontWeight:700,cursor:"pointer",
-                border:`1px solid ${sel?"#c9a86a":"#3a362c"}`,background:sel?"#c9a86a":"transparent",color:sel?"#0a0908":"#a79a7e"}}>
-              {e.nombre}
-            </button>
-          );
-        })}
-      </div>
-
-      {/* La fila de colores */}
-      <div className="flex items-center justify-between mb-2">
-        <p className="text-sm font-bold" style={{color:"#d9c08a",fontFamily:"'Libre Baskerville',serif"}}>
-          {CROM_SIMPLE[root]} · {esc.nombre} <span className="text-xs font-normal text-gray-500">({n} {n===1?"color":"colores"})</span>
-        </p>
-        <button onClick={playing>=0?stop:tocarEscala}
-          style={{padding:"5px 12px",borderRadius:9,border:"1px solid #c9a86a",background:"#191712",color:"#c9a86a",fontWeight:700,fontSize:11,cursor:"pointer",fontFamily:"monospace"}}>
-          {playing>=0?"■ Parar":"▶ Tocar escala"}
-        </button>
-      </div>
-      <div key={root+escId} style={{display:"flex",gap:dense?3:6}}>
-        {notes.map((x,i)=>{
-          const col = nc(x), on = playing===i, fg = txtSobre(col);
-          return(
-            <button key={i} onClick={()=>tocarUna(i)}
-              style={{flex:"1 1 0",minWidth:0,height:dense?92:112,borderRadius:dense?8:12,border:`2px solid ${on?"#fff":"rgba(255,255,255,.18)"}`,
-                background:col,color:fg,cursor:"pointer",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"space-between",
-                padding:"7px 0",animation:`palIn .35s ease both`,animationDelay:`${i*45}ms`,
-                transform:on?"translateY(-6px) scale(1.06)":"none",boxShadow:on?`0 8px 22px ${col}aa`:"none",transition:"transform .12s, box-shadow .12s"}}>
-              <span style={{fontSize:dense?8:10,fontWeight:700,opacity:.75,fontFamily:"monospace"}}>{GRADO_LABEL[esc.ivs[i]]}</span>
-              <span style={{fontSize:dense?9:15,fontWeight:900,fontFamily:"serif"}}>{CROM_SIMPLE[x]}</span>
-              <span style={{fontSize:dense?8:10,fontWeight:700,opacity:.75,fontFamily:"monospace"}}>{pasoLabel(pasos[i])}</span>
-            </button>
-          );
-        })}
-      </div>
-      <p className="text-[10px] text-gray-500 mt-2 text-center">
-        arriba: grado · abajo: distancia hasta la nota siguiente (<b>T</b> tono · <b>S</b> semitono · <b>T½</b> tono y medio) · tocá un color para oírlo
-      </p>
-
-      {/* Rueda + ficha */}
-      <div className="grid sm:grid-cols-2 gap-3 mt-4 items-center">
-        <div>
-          <RuedaCromatica size={250} highlight={notes}/>
-          <p className="text-[10px] text-gray-500 text-center mt-1">Los colores de la escala quedan encendidos; el resto se apaga.</p>
+      {/* Selector de escala */}
+      <div style={{borderTop:`1px solid ${UI.line}`,paddingTop:12}}>
+        <p style={{fontSize:10,letterSpacing:"0.14em",color:UI.mute,textTransform:"uppercase",marginBottom:8}}>Tonalidad</p>
+        <div className="flex flex-wrap gap-1.5 mb-3">
+          {CHROMATIC.map(x=>(
+            <button key={x} style={pill(x===root)} onClick={()=>{stop();setRoot(x);}}>{CROM_SIMPLE[x]}</button>
+          ))}
         </div>
-        <div className="rounded-xl border p-3" style={{background:"#131210",borderColor:"#2a2722"}}>
-          <p className="text-[10px] uppercase tracking-widest mb-1" style={{color:"#8f8878"}}>Fórmula</p>
-          <p className="text-base font-mono font-bold mb-2" style={{color:"#c9a86a",letterSpacing:"0.12em"}}>{pasos.map(pasoLabel).join(" · ")}</p>
-          <p className="text-xs text-gray-400 leading-relaxed">{esc.desc}</p>
+        <p style={{fontSize:10,letterSpacing:"0.14em",color:UI.mute,textTransform:"uppercase",marginBottom:8}}>Escala</p>
+        <div className="flex flex-wrap gap-1.5 mb-4">
+          {ESCALAS_HERO.map(e=>(
+            <button key={e.id} style={pill(e.id===escId)} onClick={()=>{stop();setEscId(e.id);}}>{e.corto}</button>
+          ))}
+        </div>
+
+        <div className="flex items-center justify-between flex-wrap gap-3">
+          <div>
+            <p style={{fontSize:15,fontFamily:"'Libre Baskerville',serif",color:UI.text,fontWeight:700}}>
+              {CROM_SIMPLE[root]} {esc.nombre}
+            </p>
+            <p style={{fontSize:11,fontFamily:"monospace",color:UI.mute,marginTop:3}}>
+              {notes.map(n=>CROM_SIMPLE[n]).join(" · ")}
+            </p>
+            <p style={{fontSize:11,fontFamily:"monospace",color:UI.mute,marginTop:2,letterSpacing:"0.12em"}}>
+              {pasos.map(pasoLabel).join(" ")} <span style={{opacity:.6,letterSpacing:0}}>(T tono · S semitono)</span>
+            </p>
+          </div>
+          <button onClick={playing?stop:tocarEscala}
+            style={{padding:"8px 16px",borderRadius:10,border:`1px solid ${UI.pillOn}`,background:"transparent",color:UI.text,fontWeight:700,fontSize:12,cursor:"pointer",fontFamily:"monospace"}}>
+            {playing?"■ Parar":"▶ Tocar escala"}
+          </button>
         </div>
       </div>
     </div>
@@ -2479,11 +2477,11 @@ function PaletaInteractiva(){
 }
 
 const PasoCard=({n,titulo,children})=>(
-  <div className="flex gap-3 rounded-xl border p-3 my-2" style={{background:"#131210",borderColor:"#2a2722"}}>
+  <div className="flex gap-3 rounded-xl border p-3 my-2" style={{background:"#121212",borderColor:"#2a2a2a"}}>
     <div className="flex-shrink-0 flex items-center justify-center rounded-full font-black"
-      style={{width:30,height:30,background:"#c9a86a",color:"#0a0908",fontFamily:"serif",fontSize:15}}>{n}</div>
+      style={{width:30,height:30,background:"#e6e6e6",color:"#0a0a0a",fontFamily:"serif",fontSize:15}}>{n}</div>
     <div className="min-w-0">
-      <p className="text-sm font-bold mb-1" style={{color:"#d9c08a"}}>{titulo}</p>
+      <p className="text-sm font-bold mb-1" style={{color:"#d4d4d4"}}>{titulo}</p>
       <p className="text-xs text-gray-400 leading-relaxed">{children}</p>
     </div>
   </div>
@@ -2493,15 +2491,11 @@ const PasoCard=({n,titulo,children})=>(
 const CAPITULOS = [
 { parte:"Parte I — Fundamentos", id:"cap0", titulo:"Cap. 0 — El código de color", body: (
   <>
-    <div className="rounded-xl p-4 mb-4 border" style={{background:"#0a0908",borderColor:"#3a3326"}}>
-      <p className="text-[10px] uppercase tracking-widest mb-2" style={{color:"#8f8878"}}>Antes de empezar</p>
+    <div className="rounded-xl p-4 mb-4 border" style={{background:"#0a0a0a",borderColor:"#333333"}}>
+      <p className="text-[10px] uppercase tracking-widest mb-2" style={{color:"#8a8a8a"}}>Antes de empezar</p>
       <p className="text-sm text-gray-300 leading-relaxed">Antes de que este sistema te ahorre un solo segundo de cálculo, te va a pedir algo: que te aprendas doce colores de memoria, con la misma seriedad con la que en algún momento te aprendiste el nombre de las doce notas. Esto no es gratis, y vale la pena decirlo así, sin vueltas, en la primera página: hay una inversión inicial antes de que aparezca la ganancia. Cualquier método serio la tiene —el solfeo, la digitación, las escalas— y este no es la excepción.</p>
     </div>
     <CapP>Lo que sí cambia es qué estás memorizando. No estás memorizando teoría todavía. Estás memorizando una paleta: doce parches de color, cada uno con un nombre de nota al lado. Nada más. La teoría llega después, capítulo a capítulo, apoyada en esa memorización — pero si llegás al capítulo de acordes sin tener el color automatizado, vas a estar leyendo colores en vez de reconociéndolos, y ahí el sistema entero pierde su función.</CapP>
-
-    <CapH3>Probalo: la fila de colores cambia con la escala</CapH3>
-    <CapP>Elegí una nota de partida y una escala. La fila se rearma sola con los colores que le tocan, la rueda enciende los mismos y abajo ves la fórmula de tonos y semitonos. Tocá cualquier color para escucharlo.</CapP>
-    <PaletaInteractiva/>
 
     <CapH3>El orden en que conviene aprenderlo</CapH3>
     <CapP>Este libro presenta la paleta en tres pasos, cada uno con un propósito distinto.</CapP>
@@ -2675,10 +2669,10 @@ const CAPITULOS = [
     <CapP>Este capítulo nace de una inquietud personal: las piedras preciosas tienen colores propios —ya vimos, en el capítulo 6, que ese color tiene una causa atómica real y verificable—, pero en muchas tradiciones espirituales, además, se les atribuyen propiedades energéticas. La pregunta que dio origen a este capítulo fue simple: si cada piedra de este sistema ya tiene asignada una nota musical propia, ¿podría esa nota funcionar como una forma de "sintonizar" o reforzar simbólicamente la energía que la tradición le atribuye a esa piedra?</CapP>
     <CapNota>Lo que sigue es tradición espiritual, no evidencia científica. La sanación con cristales (litoterapia) y la sanación con sonido son prácticas con siglos de historia —documentadas ya en la Mesopotamia sumeria, hacia el 3000 a.C.— pero no cuentan con respaldo científico validado. Se presentan acá como una capa de sentido para quien la busca, no como un hecho comprobado.</CapNota>
     <CapH3>Correspondencia entre piedra, energía tradicional y nota</CapH3>
-    <div className="overflow-x-auto rounded-xl border border-gray-800" style={{background:"#131210"}}>
+    <div className="overflow-x-auto rounded-xl border border-gray-800" style={{background:"#121212"}}>
       <table className="w-full text-xs" style={{minWidth:"520px"}}>
         <thead>
-          <tr style={{background:"#191712",borderBottom:"1px solid #3a362c"}}>
+          <tr style={{background:"#1a1a1a",borderBottom:"1px solid #333333"}}>
             {["Nota","Piedra","Energía tradicional","Chakra"].map(h=>(
               <th key={h} className="text-left px-3 py-2 text-gray-500 uppercase tracking-widest font-normal">{h}</th>
             ))}
@@ -2686,7 +2680,7 @@ const CAPITULOS = [
         </thead>
         <tbody>
           {PIEDRAS.map((p,i)=>(
-            <tr key={p.n} style={{borderBottom:"1px solid #2a2722",background:i%2===0?"transparent":"#191712"}}>
+            <tr key={p.n} style={{borderBottom:"1px solid #2a2a2a",background:i%2===0?"transparent":"#1a1a1a"}}>
               <td className="px-3 py-2">
                 <button onClick={()=>playTone(p.n,4,0.6)} className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full font-bold border-2"
                   style={{backgroundColor:nc(p.n)+"18",borderColor:nc(p.n),color:nc(p.n)}}>
@@ -2708,7 +2702,7 @@ const CAPITULOS = [
 { parte:"Anexos", id:"anexo", titulo:"Anexo — Ficha de referencia rápida", body: (
   <>
     <CapP>Los doce colores oficiales del sistema, con su hex y su piedra correspondiente — la misma paleta que usa toda esta app.</CapP>
-    <div className="rounded-xl border border-gray-800 divide-y divide-gray-800 overflow-hidden" style={{background:"#131210"}}>
+    <div className="rounded-xl border border-gray-800 divide-y divide-gray-800 overflow-hidden" style={{background:"#121212"}}>
       {PIEDRAS.map(p=>(
         <div key={p.n} className="flex items-center gap-3 px-4 py-2.5">
           <div className="w-8 h-8 rounded-full border-2 flex-shrink-0" style={{background:nc(p.n),borderColor:nc(p.n)}}/>
@@ -2738,6 +2732,8 @@ function ElCodigoTab(){
         <p className="text-xs text-gray-500">Temperamento cromático: un sistema de doce colores para leer música más rápido de lo que se la puede calcular.</p>
       </div>
 
+      {capIdx===0 && <CristalesColor/>}
+
       {/* Selector de capítulo, agrupado por parte */}
       <select value={capIdx} onChange={e=>setCapIdx(parseInt(e.target.value))}
         className="w-full bg-gray-900 border border-gray-700 rounded-xl px-3 py-2.5 text-sm text-gray-200 mb-4"
@@ -2751,21 +2747,21 @@ function ElCodigoTab(){
         ))}
       </select>
 
-      <div className="rounded-2xl p-5 border border-gray-700" style={{background:"#131210"}}>
+      <div className="rounded-2xl p-5 border border-gray-700" style={{background:"#121212"}}>
         <p className="text-xs text-gray-500 uppercase tracking-widest mb-1">{cap.parte}</p>
-        <h3 className="text-lg font-bold mb-4" style={{fontFamily:"'Libre Baskerville',serif",color:"#c9a86a"}}>{cap.titulo}</h3>
+        <h3 className="text-lg font-bold mb-4" style={{fontFamily:"'Libre Baskerville',serif",color:"#e6e6e6"}}>{cap.titulo}</h3>
         {cap.body}
       </div>
 
       <div className="flex justify-between mt-4">
         <button disabled={capIdx===0} onClick={()=>setCapIdx(i=>Math.max(0,i-1))}
           className="px-4 py-2 rounded-xl text-sm border disabled:opacity-30"
-          style={{background:"#191712",borderColor:"#3a362c",color:"#c9a86a"}}>
+          style={{background:"#1a1a1a",borderColor:"#333333",color:"#e6e6e6"}}>
           ← Anterior
         </button>
         <button disabled={capIdx===CAPITULOS.length-1} onClick={()=>setCapIdx(i=>Math.min(CAPITULOS.length-1,i+1))}
           className="px-4 py-2 rounded-xl text-sm border disabled:opacity-30"
-          style={{background:"#191712",borderColor:"#3a362c",color:"#c9a86a"}}>
+          style={{background:"#1a1a1a",borderColor:"#333333",color:"#e6e6e6"}}>
           Siguiente →
         </button>
       </div>
@@ -2807,11 +2803,11 @@ function HojaDeColor({ rect, actual, onPick, onErase, onClose }){
   return (
     <div style={{position:"fixed",inset:0,zIndex:1000}} onClick={onClose}>
       <div onClick={e=>e.stopPropagation()}
-        style={{position:"fixed",left,top,width:PW,background:"#131210",border:"1.5px solid #c9a86a",borderRadius:12,
+        style={{position:"fixed",left,top,width:PW,background:"#121212",border:"1.5px solid #e6e6e6",borderRadius:12,
           padding:"10px 10px 8px",boxShadow:"0 10px 30px rgba(0,0,0,.65)"}}>
-        <div style={{position:"absolute",left:arrowLeft-6,[arriba?"bottom":"top"]:-7,width:12,height:12,background:"#131210",
-          borderRight:arriba?"1.5px solid #c9a86a":"none",borderBottom:arriba?"1.5px solid #c9a86a":"none",
-          borderLeft:arriba?"none":"1.5px solid #c9a86a",borderTop:arriba?"none":"1.5px solid #c9a86a",
+        <div style={{position:"absolute",left:arrowLeft-6,[arriba?"bottom":"top"]:-7,width:12,height:12,background:"#121212",
+          borderRight:arriba?"1.5px solid #e6e6e6":"none",borderBottom:arriba?"1.5px solid #e6e6e6":"none",
+          borderLeft:arriba?"none":"1.5px solid #e6e6e6",borderTop:arriba?"none":"1.5px solid #e6e6e6",
           transform:"rotate(45deg)"}}/>
         <div style={{display:"grid",gridTemplateColumns:"repeat(6,1fr)",gap:"6px 4px",marginBottom:8}}>
           {CHROMATIC.map(n=>{
@@ -2821,14 +2817,14 @@ function HojaDeColor({ rect, actual, onPick, onErase, onClose }){
                 style={{display:"flex",flexDirection:"column",alignItems:"center",gap:2,padding:0,background:"none",border:"none",cursor:"pointer"}}>
                 <span style={{display:"block",width:30,height:30,borderRadius:"50%",background:nc(n),
                   border:sel?"3px solid #fff":"2px solid rgba(255,255,255,.22)"}}/>
-                <span style={{fontSize:9,color:sel?"#c9a86a":"#aaa",fontFamily:"monospace"}}>{CROM_SIMPLE[n]}</span>
+                <span style={{fontSize:9,color:sel?"#e6e6e6":"#aaa",fontFamily:"monospace"}}>{CROM_SIMPLE[n]}</span>
               </button>
             );
           })}
         </div>
         <div style={{display:"flex",gap:6}}>
           <button onClick={onErase} style={{flex:1,padding:"5px",borderRadius:8,border:"1px solid #5c2d2d",background:"#1f0a0a",color:"#d98f88",fontWeight:700,fontSize:11,cursor:"pointer"}}>🗑 Borrar</button>
-          <button onClick={onClose} style={{flex:1,padding:"5px",borderRadius:8,border:"1px solid #2a2722",background:"transparent",color:"#8f8878",fontSize:11,cursor:"pointer"}}>Cerrar</button>
+          <button onClick={onClose} style={{flex:1,padding:"5px",borderRadius:8,border:"1px solid #2a2a2a",background:"transparent",color:"#8a8a8a",fontSize:11,cursor:"pointer"}}>Cerrar</button>
         </div>
       </div>
     </div>
@@ -2852,8 +2848,8 @@ function PaintCanvas({ buttons, guesses, keyOf, checked, correctOf, onTapButton,
       <div style={{
         position:"relative", width:W, height:H,
         transform:`scale(${scale})`, transformOrigin:"top left",
-        background:"linear-gradient(145deg,#281a08,#140e04)",
-        border:"2px solid #6b4c1e", borderRadius:16,
+        background:"linear-gradient(145deg,#1d1d1d,#101010)",
+        border:"2px solid #3a3a3a", borderRadius:16,
         boxShadow:"0 8px 24px rgba(0,0,0,.7)",
       }}>
         {buttons.map(btn=>{
@@ -2865,9 +2861,9 @@ function PaintCanvas({ buttons, guesses, keyOf, checked, correctOf, onTapButton,
             <button key={btn.id} onClick={(e)=>onTapButton(btn, e.currentTarget.getBoundingClientRect())}
               style={{
                 position:"absolute", left:btn.x, top:btn.y, width:BTN_SIZE, height:BTN_SIZE, borderRadius:"50%",
-                background: guess || "#191712",
+                background: guess || "#1a1a1a",
                 border:`3px solid ${isRight?"#6b9c7c":isWrong?"#b5564f":guess?"rgba(255,255,255,.5)":"#555"}`,
-                boxShadow: btn.id===activeId ? "0 0 0 4px #c9a86a" : (guess ? `0 0 10px ${guess}99` : "none"),
+                boxShadow: btn.id===activeId ? "0 0 0 4px #e6e6e6" : (guess ? `0 0 10px ${guess}99` : "none"),
                 cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center",
               }}>
               {isRight && <span style={{fontSize:13,color:"#fff"}}>✓</span>}
@@ -2982,8 +2978,8 @@ function EntrenadorTab(){
   const pill=(active,v="orange")=>({
     padding:"5px 12px",borderRadius:8,border:"none",
     fontFamily:"'Courier New',monospace",fontWeight:700,fontSize:10,cursor:"pointer",
-    background:active?"#c9a86a":"transparent",
-    color:active?"#0a0908":"#8f8878",
+    background:active?"#e6e6e6":"transparent",
+    color:active?"#0a0a0a":"#8a8a8a",
   });
 
   if(!leftBtns.length) return <div style={{color:"#555",padding:20,fontSize:13}}>Cargando...</div>;
@@ -3001,59 +2997,59 @@ function EntrenadorTab(){
 
       {/* Controles */}
       <div style={{display:"flex",gap:6,flexWrap:"wrap",marginBottom:10,alignItems:"center"}}>
-        <div style={{display:"flex",background:"#131210",border:"1.5px solid #2a2722",borderRadius:10,padding:3,gap:2}}>
+        <div style={{display:"flex",background:"#121212",border:"1.5px solid #2a2a2a",borderRadius:10,padding:3,gap:2}}>
           {[["abre","▷ Abre"],["cierra","◁ Cierra"]].map(([b,l])=>(
             <button key={b} style={pill(bellows===b)} onClick={()=>setBellows(b)}>{l}</button>
           ))}
         </div>
-        <div style={{display:"flex",background:"#131210",border:"1.5px solid #3a362c",borderRadius:10,padding:3,gap:2}}>
+        <div style={{display:"flex",background:"#121212",border:"1.5px solid #333333",borderRadius:10,padding:3,gap:2}}>
           {[["ambas","Ambas"],["izquierda","IZQ"],["derecha","DER"]].map(([v,l])=>(
             <button key={v} style={pill(view===v,"blue")} onClick={()=>setView(v)}>{l}</button>
           ))}
         </div>
         <div style={{marginLeft:"auto",display:"flex",gap:6}}>
-          <button onClick={()=>setChecked(true)} style={{padding:"6px 14px",borderRadius:9,border:"none",background:"#c9a86a",color:"#0a0908",fontWeight:800,fontSize:11,cursor:"pointer"}}>
+          <button onClick={()=>setChecked(true)} style={{padding:"6px 14px",borderRadius:9,border:"none",background:"#e6e6e6",color:"#0a0a0a",fontWeight:800,fontSize:11,cursor:"pointer"}}>
             ✓ Corregir
           </button>
-          <button onClick={reiniciarFuelle} style={{padding:"6px 12px",borderRadius:9,border:"1px solid #2a2722",background:"transparent",color:"#8f8878",fontSize:10,cursor:"pointer"}}>
+          <button onClick={reiniciarFuelle} style={{padding:"6px 12px",borderRadius:9,border:"1px solid #2a2a2a",background:"transparent",color:"#8a8a8a",fontSize:10,cursor:"pointer"}}>
             ⟳ Reiniciar
           </button>
         </div>
       </div>
 
       {/* Marcador */}
-      <div style={{marginBottom:10,padding:"8px 12px",background:"#131210",border:"1px solid #3a362c",borderRadius:10,display:"flex",gap:16,flexWrap:"wrap",fontSize:11}}>
-        <span style={{color:"#8f8878"}}>Pintados: <b style={{color:"#c9a86a"}}>{painted.length}/{allButtons.length}</b></span>
-        {checked && <span style={{color:"#8f8878"}}>Correctos: <b style={{color:"#c9a86a"}}>{correctos.length}/{painted.length}</b></span>}
+      <div style={{marginBottom:10,padding:"8px 12px",background:"#121212",border:"1px solid #333333",borderRadius:10,display:"flex",gap:16,flexWrap:"wrap",fontSize:11}}>
+        <span style={{color:"#8a8a8a"}}>Pintados: <b style={{color:"#e6e6e6"}}>{painted.length}/{allButtons.length}</b></span>
+        {checked && <span style={{color:"#8a8a8a"}}>Correctos: <b style={{color:"#e6e6e6"}}>{correctos.length}/{painted.length}</b></span>}
       </div>
 
       {/* Teclados */}
       <div ref={wrapRef} style={{display:"flex",flexDirection:"column",gap:18,alignItems:"stretch",paddingBottom:8}}>
         {(view==="ambas"||view==="izquierda")&&(
           <div style={{width:"100%"}}>
-            <p style={{fontSize:11,color:"#8f8878",marginBottom:6,letterSpacing:"0.12em"}}>MANO IZQUIERDA · {leftBtns.length} botones</p>
+            <p style={{fontSize:11,color:"#8a8a8a",marginBottom:6,letterSpacing:"0.12em"}}>MANO IZQUIERDA · {leftBtns.length} botones</p>
             <PaintCanvas buttons={leftBtns} guesses={guesses} keyOf={keyOf} checked={checked} correctOf={correctOf} onTapButton={openPicker} maxWidth={maxW} maxScale={3} activeId={picker?.btn.id}/>
           </div>
         )}
         {(view==="ambas"||view==="derecha")&&(
           <div style={{width:"100%"}}>
-            <p style={{fontSize:11,color:"#8f8878",marginBottom:6,letterSpacing:"0.12em"}}>MANO DERECHA · {rightBtns.length} botones</p>
+            <p style={{fontSize:11,color:"#8a8a8a",marginBottom:6,letterSpacing:"0.12em"}}>MANO DERECHA · {rightBtns.length} botones</p>
             <PaintCanvas buttons={rightBtns} guesses={guesses} keyOf={keyOf} checked={checked} correctOf={correctOf} onTapButton={openPicker} maxWidth={maxW} maxScale={3} activeId={picker?.btn.id}/>
           </div>
         )}
       </div>
 
       {/* Enviar para revisión */}
-      <div style={{marginTop:14,padding:"10px 14px",background:"#131210",border:"1px solid #2a2722",borderRadius:10}}>
-        <p style={{fontSize:10,color:"#8f8878",marginBottom:8,fontWeight:700}}>📤 MANDAR PARA REVISIÓN</p>
+      <div style={{marginTop:14,padding:"10px 14px",background:"#121212",border:"1px solid #2a2a2a",borderRadius:10}}>
+        <p style={{fontSize:10,color:"#8a8a8a",marginBottom:8,fontWeight:700}}>📤 MANDAR PARA REVISIÓN</p>
         <p style={{fontSize:10,color:"#555",marginBottom:10,lineHeight:1.5}}>
           La app todavía no tiene un servidor donde juntar esto automáticamente. Por ahora: descargá el CSV o copiá el resumen y mandámelo por WhatsApp o mail.
         </p>
         <div style={{display:"flex",gap:8,flexWrap:"wrap"}}>
-          <button onClick={descargarCSV} disabled={!painted.length} style={{padding:"7px 14px",borderRadius:9,border:"1px solid #c9a86a44",background:"transparent",color:"#c9a86a",fontWeight:700,fontSize:11,cursor:"pointer",opacity:painted.length?1:0.4}}>
+          <button onClick={descargarCSV} disabled={!painted.length} style={{padding:"7px 14px",borderRadius:9,border:"1px solid #e6e6e644",background:"transparent",color:"#e6e6e6",fontWeight:700,fontSize:11,cursor:"pointer",opacity:painted.length?1:0.4}}>
             ↓ Descargar CSV
           </button>
-          <button onClick={copiarResumen} disabled={!painted.length} style={{padding:"7px 14px",borderRadius:9,border:"1px solid #c9a86a",background:"#191712",color:"#c9a86a",fontWeight:700,fontSize:11,cursor:"pointer",opacity:painted.length?1:0.4}}>
+          <button onClick={copiarResumen} disabled={!painted.length} style={{padding:"7px 14px",borderRadius:9,border:"1px solid #e6e6e6",background:"#1a1a1a",color:"#e6e6e6",fontWeight:700,fontSize:11,cursor:"pointer",opacity:painted.length?1:0.4}}>
             {copied?"✓ Copiado":"⧉ Copiar resumen"}
           </button>
         </div>
@@ -3111,12 +3107,12 @@ export default function HarmoniaApp(){
 
   return(
     <div className="min-h-screen text-gray-100 flex flex-col" style={{
-      background:"linear-gradient(135deg,#0a0908 0%,#131210 50%,#131210 100%)",
+      background:"linear-gradient(135deg,#0a0a0a 0%,#121212 50%,#121212 100%)",
       fontFamily:"'Crimson Text',Georgia,serif",
     }}>
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Crimson+Text:ital,wght@0,400;0,600;1,400&family=Libre+Baskerville:wght@400;700&display=swap');
-        .glow-input:focus{outline:none;box-shadow:0 0 0 2px #c9a86a55}
+        .glow-input:focus{outline:none;box-shadow:0 0 0 2px #e6e6e655}
         .stagger>*{animation:fadeUp 0.3s ease both}
         .stagger>*:nth-child(1){animation-delay:.03s}.stagger>*:nth-child(2){animation-delay:.08s}
         .stagger>*:nth-child(3){animation-delay:.13s}.stagger>*:nth-child(4){animation-delay:.18s}
@@ -3138,7 +3134,7 @@ export default function HarmoniaApp(){
         <div>
           <h1 className="text-2xl font-bold" style={{fontFamily:"'Libre Baskerville',serif",letterSpacing:"0.06em"}}>
             <span style={{color:"#eee6d6"}}>Har</span>
-            <span style={{color:"#c9a86a"}}>mo</span>
+            <span style={{color:"#e6e6e6"}}>mo</span>
             <span style={{color:"#eee6d6"}}>nía</span>
           </h1>
           <p className="text-xs text-gray-500 italic">Bandoneón · Tango · Jazz · Colores tonales</p>
@@ -3153,16 +3149,16 @@ export default function HarmoniaApp(){
 
         {/* ── SIDEBAR VERTICAL ── */}
         <div className={`flex-shrink-0 border-r border-gray-800 transition-all duration-200 ${navOpen?"w-48":"w-0 overflow-hidden md:w-48"}`}
-          style={{background:"#0a0908"}}>
+          style={{background:"#0a0a0a"}}>
           <nav className="py-3 px-2 space-y-1 w-48">
             {TABS.map(t=>(
               <button key={t.id}
                 onClick={()=>{setTab(t.id);setNavOpen(false);}}
                 className="w-full text-left px-3 py-2.5 rounded-xl flex items-center gap-3 text-sm transition-all"
                 style={{
-                  background:tab===t.id?"#191712":"transparent",
-                  borderLeft:tab===t.id?"3px solid #c9a86a":"3px solid transparent",
-                  color:tab===t.id?"#c9a86a":"#666",
+                  background:tab===t.id?"#1a1a1a":"transparent",
+                  borderLeft:tab===t.id?"3px solid #e6e6e6":"3px solid transparent",
+                  color:tab===t.id?"#e6e6e6":"#666",
                   fontWeight:tab===t.id?"600":"400",
                 }}>
                 <span>{t.icon}</span>
@@ -3190,13 +3186,13 @@ export default function HarmoniaApp(){
                     style={{fontFamily:"monospace"}}/>
                   <button onClick={analyzeChord}
                     className="px-5 py-3 rounded-xl text-sm font-bold"
-                    style={{background:"#191712",border:"1px solid #c9a86a",color:"#c9a86a",whiteSpace:"nowrap"}}>
+                    style={{background:"#1a1a1a",border:"1px solid #e6e6e6",color:"#e6e6e6",whiteSpace:"nowrap"}}>
                     Analizar
                   </button>
                 </div>
 
                 {chord&&<>
-                  <div className="rounded-2xl p-5 border border-gray-700" style={{background:"#131210"}}>
+                  <div className="rounded-2xl p-5 border border-gray-700" style={{background:"#121212"}}>
                     <p className="text-xs text-gray-500 uppercase tracking-widest mb-2">Acorde</p>
                     <div className="flex items-baseline gap-3 mb-4 flex-wrap">
                       <h2 className="text-3xl font-bold" style={{fontFamily:"'Libre Baskerville',serif"}}>
@@ -3210,14 +3206,14 @@ export default function HarmoniaApp(){
                     {voicing&&(
                       <div>
                         <p className="text-xs text-gray-500 uppercase tracking-widest mb-3">Voicing real en piano</p>
-                        <div className="rounded-xl p-3 border border-gray-700" style={{background:"#131210"}}>
+                        <div className="rounded-xl p-3 border border-gray-700" style={{background:"#121212"}}>
                           <Piano leftVoice={voicing.L} rightVoice={voicing.R}/>
                         </div>
                       </div>
                     )}
                     <button onClick={()=>playChord(chord.notes)}
                       className="mt-4 w-full py-2.5 rounded-xl text-sm font-semibold border"
-                      style={{background:"#191712",borderColor:"#3a362c",color:"#c9a86a"}}>
+                      style={{background:"#1a1a1a",borderColor:"#333333",color:"#e6e6e6"}}>
                       ▶ Escuchar acorde
                     </button>
                   </div>
@@ -3230,9 +3226,9 @@ export default function HarmoniaApp(){
                       {["Detalle","Tabla"].map((v,vi)=>(
                         <button key={v} onClick={()=>setShowTable(vi===1)}
                           className="px-3 py-1 rounded-lg text-xs border"
-                          style={{background:showTable===(vi===1)?"#191712":"transparent",
-                            borderColor:showTable===(vi===1)?"#c9a86a":"#333",
-                            color:showTable===(vi===1)?"#c9a86a":"#666"}}>
+                          style={{background:showTable===(vi===1)?"#1a1a1a":"transparent",
+                            borderColor:showTable===(vi===1)?"#e6e6e6":"#333",
+                            color:showTable===(vi===1)?"#e6e6e6":"#666"}}>
                           {v}
                         </button>
                       ))}
@@ -3249,7 +3245,7 @@ export default function HarmoniaApp(){
                       </div>
                   }
 
-                  <div className="rounded-xl p-4 border border-gray-800" style={{background:"#131210"}}>
+                  <div className="rounded-xl p-4 border border-gray-800" style={{background:"#121212"}}>
                     <p className="text-xs text-gray-500 uppercase tracking-widest mb-3">Círculo de Quintas</p>
                     <Circulo highlighted={[chord.root]}/>
                   </div>
@@ -3270,7 +3266,7 @@ export default function HarmoniaApp(){
                       style={{fontFamily:"monospace"}}/>
                     <button onClick={analyzeProg}
                       className="px-5 py-3 rounded-xl text-sm font-bold"
-                      style={{background:"#191712",border:"1px solid #c9a86a",color:"#c9a86a"}}>
+                      style={{background:"#1a1a1a",border:"1px solid #e6e6e6",color:"#e6e6e6"}}>
                       Analizar
                     </button>
                   </div>
@@ -3288,7 +3284,7 @@ export default function HarmoniaApp(){
                   <div className="space-y-4">
                     <p className="text-sm text-gray-500 uppercase tracking-widest">
                       Tonalidad probable:
-                      <span className="ml-2 text-[#d9c08a] font-bold text-base">{progression[0]?.key} Mayor</span>
+                      <span className="ml-2 text-[#d4d4d4] font-bold text-base">{progression[0]?.key} Mayor</span>
                     </p>
                     {progression.map((ch,i)=>{
                       const f=ch.fn;
@@ -3305,13 +3301,13 @@ export default function HarmoniaApp(){
                       }).filter(Boolean):[];
 
                       return(
-                        <div key={i} className="rounded-2xl border border-gray-700 overflow-hidden" style={{background:"#131210"}}>
+                        <div key={i} className="rounded-2xl border border-gray-700 overflow-hidden" style={{background:"#121212"}}>
                           <div className="px-4 pt-4 pb-3 border-b border-gray-800">
                             <div className="flex items-baseline gap-3 mb-3 flex-wrap">
                               <span className="text-2xl font-bold" style={{fontFamily:"'Libre Baskerville',serif"}}>{ch.raw}</span>
-                              <button onClick={()=>playChord(ch.notes)} className="text-sm text-gray-600 hover:text-[#d9c08a]">▶</button>
+                              <button onClick={()=>playChord(ch.notes)} className="text-sm text-gray-600 hover:text-[#d4d4d4]">▶</button>
                               <span className="text-xs px-2.5 py-1 rounded-full border"
-                                style={{background:"#201d18",borderColor:"#c9a86a",color:"#c9a86a"}}>
+                                style={{background:"#232323",borderColor:"#e6e6e6",color:"#e6e6e6"}}>
                                 {ch.degree} en {ch.key}
                               </span>
                             </div>
@@ -3319,13 +3315,13 @@ export default function HarmoniaApp(){
                               {ch.notes.map(n=><Nota key={n} note={n} size="sm"/>)}
                             </div>
                             {/* Piano voicing */}
-                            <div className="rounded-xl p-2.5 border border-gray-700 mb-3" style={{background:"#131210"}}>
+                            <div className="rounded-xl p-2.5 border border-gray-700 mb-3" style={{background:"#121212"}}>
                               <p className="text-xs text-gray-600 mb-1.5">Voicing en piano</p>
                               <Piano leftVoice={v.L} rightVoice={v.R}/>
                             </div>
                             {f&&(
                               <div className="text-sm flex flex-wrap gap-x-4 gap-y-1">
-                                <span><span className="text-[#a79a7e]">Modo: </span><span className="text-white font-semibold">{f.mode}</span></span>
+                                <span><span className="text-[#a3a3a3]">Modo: </span><span className="text-white font-semibold">{f.mode}</span></span>
                                 {twn.length>0&&(
                                   <span className="flex gap-1.5 flex-wrap items-center">
                                     <span className="text-gray-500">Tensiones:</span>
@@ -3358,7 +3354,7 @@ export default function HarmoniaApp(){
                               <div className="overflow-x-auto">
                                 <table className="w-full text-xs" style={{minWidth:"460px"}}>
                                   <thead>
-                                    <tr style={{borderBottom:"1px solid #191712"}}>
+                                    <tr style={{borderBottom:"1px solid #1a1a1a"}}>
                                       {["Gr.","Acorde","Notas","Modo","Tensiones","Evitar"].map(h=>(
                                         <th key={h} className="text-left pb-1.5 text-gray-600 font-normal">{h}</th>
                                       ))}
@@ -3368,7 +3364,7 @@ export default function HarmoniaApp(){
                                     {dia.map((dc,di)=>{
                                       const rc=nc(dc.root);
                                       return(
-                                        <tr key={di} style={{borderBottom:"1px solid #131210",background:di%2===0?"transparent":"#0a0908"}}>
+                                        <tr key={di} style={{borderBottom:"1px solid #121212",background:di%2===0?"transparent":"#0a0a0a"}}>
                                           <td className="py-1.5 pr-2">
                                             <span className="font-mono font-bold px-1.5 py-0.5 rounded"
                                               style={{background:rc+"22",color:rc}}>{dc.degree}</span>
@@ -3389,7 +3385,7 @@ export default function HarmoniaApp(){
                                               ))}
                                             </div>
                                           </td>
-                                          <td className="py-1.5 pr-2 text-[#a79a7e] whitespace-nowrap">{dc.mode}</td>
+                                          <td className="py-1.5 pr-2 text-[#a3a3a3] whitespace-nowrap">{dc.mode}</td>
                                           <td className="py-1.5 pr-2">
                                             <div className="flex gap-0.5 flex-wrap">
                                               {dc.tens.map(({label,note},ti)=>(
@@ -3433,7 +3429,7 @@ export default function HarmoniaApp(){
               <div className="space-y-4 stagger">
                 <div>
                   <h2 className="text-xl font-bold mb-1" style={{fontFamily:"'Libre Baskerville',serif"}}>
-                    <span style={{color:"#c9a86a"}}>📚</span>
+                    <span style={{color:"#e6e6e6"}}>📚</span>
                     <span className="ml-2">Biblioteca de Progresiones</span>
                   </h2>
                   <p className="text-sm text-gray-500">Progresiones del tango, jazz y música latinoamericana. Hacé click para analizar.</p>
@@ -3461,7 +3457,7 @@ export default function HarmoniaApp(){
                       const parts=item.prog.split(/[\s–\-,|]+/).filter(Boolean);
                       const parsed=parts.map(p=>parseChord(p)).filter(Boolean);
                       return(
-                        <div key={i} className="rounded-xl border border-gray-700 overflow-hidden" style={{background:"#131210"}}>
+                        <div key={i} className="rounded-xl border border-gray-700 overflow-hidden" style={{background:"#121212"}}>
                           <div className="px-4 py-3">
                             <div className="flex items-start justify-between gap-2 mb-2 flex-wrap">
                               <div className="min-w-0">
@@ -3474,7 +3470,7 @@ export default function HarmoniaApp(){
                                   parsed.forEach(ch=>{setTimeout(()=>playChord(ch.notes),d);d+=700;});
                                 }}
                                   className="px-2.5 py-1 rounded-lg text-xs border"
-                                  style={{background:"#191712",borderColor:"#3a362c",color:"#c9a86a"}}>
+                                  style={{background:"#1a1a1a",borderColor:"#333333",color:"#e6e6e6"}}>
                                   ▶
                                 </button>
                                 <button onClick={()=>{
@@ -3486,7 +3482,7 @@ export default function HarmoniaApp(){
                                   },50);
                                 }}
                                   className="px-2.5 py-1 rounded-lg text-xs border font-semibold"
-                                  style={{background:"#191712",borderColor:"#c9a86a",color:"#c9a86a"}}>
+                                  style={{background:"#1a1a1a",borderColor:"#e6e6e6",color:"#e6e6e6"}}>
                                   Analizar →
                                 </button>
                               </div>
@@ -3527,7 +3523,7 @@ export default function HarmoniaApp(){
               <div className="stagger">
                 <div className="mb-4">
                   <h2 className="text-xl font-bold mb-1" style={{fontFamily:"'Libre Baskerville',serif"}}>
-                    <span style={{color:"#c9a86a"}}>🎵 Bandoneón</span>
+                    <span style={{color:"#e6e6e6"}}>🎵 Bandoneón</span>
                     <span className="text-gray-500 text-sm font-normal ml-2 italic">Rheinische · 71 botones</span>
                   </h2>
                   <p className="text-xs text-gray-500">Presioná botones para tocar y detectar acordes</p>
@@ -3568,8 +3564,8 @@ export default function HarmoniaApp(){
                   const twn=md.tensions.map(t=>({label:t,note:tNote(rootOfMode,t)}));
                   const awn=md.avoid.map(t=>({label:t,note:tNote(rootOfMode,t)}));
                   return(
-                    <div key={i} className="rounded-xl border border-gray-700 overflow-hidden" style={{background:"#131210"}}>
-                      <div className="px-4 py-3 border-b border-gray-800" style={{background:"#131210"}}>
+                    <div key={i} className="rounded-xl border border-gray-700 overflow-hidden" style={{background:"#121212"}}>
+                      <div className="px-4 py-3 border-b border-gray-800" style={{background:"#121212"}}>
                         <div className="flex items-center gap-3">
                           <span className="font-mono font-bold px-2 py-1 rounded text-sm"
                             style={{background:nc(CHROMATIC[(noteIdx("C")+MSI[i])%12])+"33",
@@ -3629,7 +3625,7 @@ export default function HarmoniaApp(){
                           </div>
                         </div>
                         <div className="text-xs text-gray-500">
-                          <span className="text-[#a79a7e] font-semibold">Uso típico: </span>
+                          <span className="text-[#a3a3a3] font-semibold">Uso típico: </span>
                           {[
                             "Tónica mayor, jazz, bossa nova, pop",
                             "ii grado, jazz-funk, tango luminoso",
