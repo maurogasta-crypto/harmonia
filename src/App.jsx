@@ -2671,17 +2671,17 @@ function HojaDeColor({ onPick, onErase, onClose }){
 
 // Teclado en blanco, escalado para entrar siempre en el ancho disponible
 // (misma técnica de transform:scale ya usada en BandCanvas).
-function PaintCanvas({ buttons, guesses, keyOf, checked, correctOf, onTapButton, maxWidth, minScale=1, maxScale=2 }){
+function PaintCanvas({ buttons, guesses, keyOf, checked, correctOf, onTapButton, maxWidth, maxScale=3 }){
   const W = Math.max(...buttons.map(b=>b.x)) + BTN_SIZE + 16;
   const H = Math.max(...buttons.map(b=>b.y)) + BTN_SIZE + 20;
   const target = maxWidth || W;
-  // Se agranda para llenar el ancho disponible (hasta maxScale) y nunca baja de minScale:
-  // si no entra, el contenedor scrollea en horizontal en vez de achicar los botones.
-  const scale = Math.max(minScale, Math.min(maxScale, target / W));
+  // El teclado se ajusta exactamente al ancho disponible (sin scroll lateral):
+  // se agranda o achica según la pantalla, hasta maxScale.
+  const scale = Math.min(maxScale, target / W);
   const scaledW = Math.ceil(W * scale), scaledH = Math.ceil(H * scale);
 
   return (
-    <div style={{width:"100%", overflowX:"auto", overflowY:"hidden", WebkitOverflowScrolling:"touch"}}>
+    <div style={{width:"100%", overflow:"hidden"}}>
     <div style={{width:scaledW, height:scaledH, overflow:"hidden", flexShrink:0, margin:"0 auto"}}>
       <div style={{
         position:"relative", width:W, height:H,
@@ -2865,13 +2865,13 @@ function EntrenadorTab(){
         {(view==="ambas"||view==="izquierda")&&(
           <div style={{width:"100%"}}>
             <p style={{fontSize:11,color:"#8f8878",marginBottom:6,letterSpacing:"0.12em"}}>MANO IZQUIERDA · {leftBtns.length} botones</p>
-            <PaintCanvas buttons={leftBtns} guesses={guesses} keyOf={keyOf} checked={checked} correctOf={correctOf} onTapButton={openPicker} maxWidth={maxW} minScale={isMobile?2:2.6} maxScale={3.4}/>
+            <PaintCanvas buttons={leftBtns} guesses={guesses} keyOf={keyOf} checked={checked} correctOf={correctOf} onTapButton={openPicker} maxWidth={maxW} maxScale={3}/>
           </div>
         )}
         {(view==="ambas"||view==="derecha")&&(
           <div style={{width:"100%"}}>
             <p style={{fontSize:11,color:"#8f8878",marginBottom:6,letterSpacing:"0.12em"}}>MANO DERECHA · {rightBtns.length} botones</p>
-            <PaintCanvas buttons={rightBtns} guesses={guesses} keyOf={keyOf} checked={checked} correctOf={correctOf} onTapButton={openPicker} maxWidth={maxW} minScale={isMobile?2:2.6} maxScale={3.4}/>
+            <PaintCanvas buttons={rightBtns} guesses={guesses} keyOf={keyOf} checked={checked} correctOf={correctOf} onTapButton={openPicker} maxWidth={maxW} maxScale={3}/>
           </div>
         )}
       </div>
