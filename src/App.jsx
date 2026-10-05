@@ -14,7 +14,7 @@ const NC = {
   "G#":"#dc7212","Ab":"#dc7212",
   "A#":"#da4571","Bb":"#da4571",
 };
-const nc = (n) => NC[n?.replace(/[0-9]/g,"").trim()] || "#888";
+const nc = (n) => { const k=n?.replace(/[0-9]/g,"").trim(); if(NC[k]) return NC[k]; const i=noteIdx(k); return (i>=0 && NC[CHROMATIC[i]]) || "#888"; };
 
 // ─── MEZCLA DE COLOR DE ACORDES (Capítulo 10 del manual) ──────────────────────
 // Modelo "luz" (promedio aditivo en RGB) con criterio "raíz dominante":
@@ -43,16 +43,66 @@ const mixLuzRaizDominante = (notes, rootWeight=0.8) => {
 const CHROMATIC  = ["C","C#","D","D#","E","F","F#","G","G#","A","A#","B"];
 const ENHARMONIC = {"C#":"Db","D#":"Eb","F#":"Gb","G#":"Ab","A#":"Bb"};
 const enh = n => ENHARMONIC[n]||n;
+const NAT_PC = {C:0,D:2,E:4,F:5,G:7,A:9,B:11};
+const LETRAS = ["C","D","E","F","G","A","B"];
+const LAT_NOMBRE = {C:"Do",D:"Re",E:"Mi",F:"Fa",G:"Sol",A:"La",B:"Si"};
+// Altura (0-11) de cualquier nombre bien escrito: C, C#, Db, F##, Bbb…
 const noteIdx = n => {
   const i=CHROMATIC.indexOf(n); if(i>=0) return i;
-  const e=Object.entries(ENHARMONIC).find(([,v])=>v===n);
-  return e?CHROMATIC.indexOf(e[0]):-1;
+  const m=/^([A-G])(#{1,2}|b{1,2}|x)?$/.exec(String(n||"").trim());
+  if(!m) return -1;
+  const acc = !m[2] ? 0 : m[2]==="x" ? 2 : m[2][0]==="#" ? m[2].length : -m[2].length;
+  return ((NAT_PC[m[1]]+acc)%12+12)%12;
 };
-const fromRoot = (root,semi) => CHROMATIC[(noteIdx(root)+semi+120)%12];
-const buildScale = (root,ivs) => ivs.map(i=>fromRoot(root,i));
-
+// Grado (letra) por defecto según la distancia en semitonos, cuando no se conoce el intervalo exacto.
+const GRADO_DEF  = {0:0,1:1,2:1,3:2,4:2,5:3,6:4,7:4,8:5,9:5,10:6,11:6};
+const GRADO_DEF_SOST = {0:0,1:0,2:1,3:1,4:2,5:3,6:3,7:4,8:4,9:5,10:5,11:6};
+// Deletrea respetando la regla: cada grado usa una letra distinta (3ª = dos letras arriba, 7ª = seis, etc.).
+const spell = (root,semi,deg,sost=false) => {
+  const ri=noteIdx(root); if(ri<0) return CHROMATIC[((semi%12)+12)%12];
+  const sm=((semi%12)+12)%12;
+  const d = deg!==undefined ? deg : (sost?GRADO_DEF_SOST:GRADO_DEF)[sm];
+  const letter = LETRAS[(LETRAS.indexOf(root[0])+d)%7];
+  const target=(ri+sm)%12;
+  let diff=((target-NAT_PC[letter])%12+12)%12; if(diff>6) diff-=12;
+  if(Math.abs(diff)>2) return CHROMATIC[target];
+  return letter+(diff===0?"":diff>0?"#".repeat(diff):"b".repeat(-diff));
+};
+const fromRoot = (root,semi,deg) => spell(root,semi,deg);
+const buildScale = (root,ivs) => {
+  const key=ivs.join(",");
+  if(ivs.length===7) return ivs.map((iv,i)=>spell(root,iv,i));
+  if(key==="0,3,5,6,7,10") return ivs.map((iv,i)=>spell(root,iv,[0,2,3,4,4,6][i]));
+  if(key==="0,2,3,5,6,8,9,11") return ivs.map((iv,i)=>spell(root,iv,[0,1,2,3,4,5,5,6][i]));
+  if(ivs.length===12){ // cromática: sostenidos o bemoles según la tonalidad
+    const usaBemoles = /b/.test(root) || root==="F";
+    const nombres = usaBemoles ? ["C","Db","D","Eb","E","F","Gb","G","Ab","A","Bb","B"] : CHROMATIC;
+    return ivs.map(iv=>nombres[(noteIdx(root)+iv)%12]);
+  }
+  return ivs.map(iv=>spell(root,iv));
+};
+// Nombre en español con símbolos (Si♭, Fa♯, Do𝄪…)
+const nombreLat = (n) => {
+  const m=/^([A-G])(.*)$/.exec(String(n||"")); if(!m) return n;
+  const acc=m[2].replace(/##/g,"𝄪").replace(/#/g,"♯").replace(/bb/g,"♭♭").replace(/b/g,"♭");
+  return LAT_NOMBRE[m[1]]+acc;
+};
 const LAT={"DO":"C","DO#":"C#","RE":"D","RE#":"D#","MI":"E","FA":"F","FA#":"F#","SOL":"G","SOL#":"G#","LA":"A","LA#":"A#","SI":"B"};
 const ENG_LAT=Object.fromEntries(Object.entries(LAT).map(([k,v])=>[v,k]));
+
+// ─── SISTEMA DE DISEÑO: botones tipo "pill" compartidos ──────────────────────
+const UI_FONT = "'Inter',system-ui,-apple-system,'Segoe UI',sans-serif";
+const uiPill = (on, extra={}) => ({
+  padding:"6px 13px", borderRadius:9, fontFamily:UI_FONT, fontSize:11.5, fontWeight:600, letterSpacing:"0.02em",
+  cursor:"pointer", lineHeight:1.2,
+  border:`1px solid ${on?"#ececec":"#2c2c30"}`,
+  background:on?"#ececec":"rgba(255,255,255,.015)",
+  color:on?"#0d0d0e":"#a0a0a6",
+  boxShadow:on?"0 1px 0 rgba(255,255,255,.35) inset, 0 4px 14px rgba(0,0,0,.35)":"none",
+  transition:"background .15s, border-color .15s, color .15s, transform .12s, box-shadow .15s",
+  ...extra,
+});
+const uiLabel = {fontFamily:UI_FONT,fontSize:10,letterSpacing:"0.18em",color:"#7c7c82",textTransform:"uppercase",fontWeight:600};
 
 // ─── AUDIO ────────────────────────────────────────────────────────────────────
 let _ctx=null;
@@ -63,7 +113,7 @@ const playTone=(note,octave=4,dur=0.7)=>{
   try{
     const ctx=getCtx();if(!ctx)return;
     if(ctx.state==="suspended")ctx.resume();
-    const midi=(MIDI[note]??60)+(octave-4)*12;
+    const midi=(noteIdx(note)>=0?60+noteIdx(note):60)+(octave-4)*12;
     const freq=440*Math.pow(2,(midi-69)/12);
     const osc=ctx.createOscillator(),gain=ctx.createGain();
     osc.connect(gain);gain.connect(ctx.destination);
@@ -79,7 +129,7 @@ const playBand=(noteLat,octave)=>{
     try{
       const ctx=getCtx();if(!ctx)return;
       if(ctx.state==="suspended")ctx.resume();
-      const midi=(MIDI[eng]??60)+(octave-4)*12;
+      const midi=(noteIdx(eng)>=0?60+noteIdx(eng):60)+(octave-4)*12;
       const freq=440*Math.pow(2,(midi-69)/12)*h;
       const osc=ctx.createOscillator(),gain=ctx.createGain();
       osc.connect(gain);gain.connect(ctx.destination);
@@ -95,24 +145,24 @@ const playChord=(notes)=>notes.forEach((n,i)=>setTimeout(()=>playTone(n,4,1.2),i
 
 // ─── TEORÍA ───────────────────────────────────────────────────────────────────
 const FORMULAS={
-  "maj": {intervals:[0,4,7],          label:"Mayor",      symbol:"△"   },
-  "min": {intervals:[0,3,7],          label:"Menor",      symbol:"m"   },
-  "7":   {intervals:[0,4,7,10],       label:"Dom. 7ª",    symbol:"7"   },
-  "maj7":{intervals:[0,4,7,11],       label:"Mayor 7ª",   symbol:"△7"  },
-  "min7":{intervals:[0,3,7,10],       label:"Menor 7ª",   symbol:"m7"  },
-  "dim": {intervals:[0,3,6],          label:"Disminuido", symbol:"°"   },
-  "dim7":{intervals:[0,3,6,9],        label:"Dim. 7ª",    symbol:"°7"  },
-  "m7b5":{intervals:[0,3,6,10],       label:"Semidism.",  symbol:"ø7"  },
-  "aug": {intervals:[0,4,8],          label:"Aumentado",  symbol:"+"   },
-  "sus2":{intervals:[0,2,7],          label:"Sus2",       symbol:"sus2"},
-  "sus4":{intervals:[0,5,7],          label:"Sus4",       symbol:"sus4"},
-  "9":   {intervals:[0,4,7,10,2],     label:"Dom. 9ª",    symbol:"9"   },
-  "maj9":{intervals:[0,4,7,11,2],     label:"Mayor 9ª",   symbol:"△9"  },
-  "min9":{intervals:[0,3,7,10,2],     label:"Menor 9ª",   symbol:"m9"  },
-  "13":  {intervals:[0,4,7,10,2,9],   label:"Dom. 13ª",   symbol:"13"  },
-  "7b9": {intervals:[0,4,7,10,1],     label:"Dom. b9",    symbol:"7b9" },
-  "7#9": {intervals:[0,4,7,10,3],     label:"Dom. #9",    symbol:"7#9" },
-  "7alt":{intervals:[0,4,7,10,1,3,8], label:"Alt.",       symbol:"7alt"},
+  "maj": {intervals:[0,4,7], degs:[0,2,4],          label:"Mayor",      symbol:"△"   },
+  "min": {intervals:[0,3,7], degs:[0,2,4],          label:"Menor",      symbol:"m"   },
+  "7":   {intervals:[0,4,7,10], degs:[0,2,4,6],       label:"Dom. 7ª",    symbol:"7"   },
+  "maj7":{intervals:[0,4,7,11], degs:[0,2,4,6],       label:"Mayor 7ª",   symbol:"△7"  },
+  "min7":{intervals:[0,3,7,10], degs:[0,2,4,6],       label:"Menor 7ª",   symbol:"m7"  },
+  "dim": {intervals:[0,3,6], degs:[0,2,4],          label:"Disminuido", symbol:"°"   },
+  "dim7":{intervals:[0,3,6,9], degs:[0,2,4,6],        label:"Dim. 7ª",    symbol:"°7"  },
+  "m7b5":{intervals:[0,3,6,10], degs:[0,2,4,6],       label:"Semidism.",  symbol:"ø7"  },
+  "aug": {intervals:[0,4,8], degs:[0,2,4],          label:"Aumentado",  symbol:"+"   },
+  "sus2":{intervals:[0,2,7], degs:[0,1,4],          label:"Sus2",       symbol:"sus2"},
+  "sus4":{intervals:[0,5,7], degs:[0,3,4],          label:"Sus4",       symbol:"sus4"},
+  "9":   {intervals:[0,4,7,10,2], degs:[0,2,4,6,1],     label:"Dom. 9ª",    symbol:"9"   },
+  "maj9":{intervals:[0,4,7,11,2], degs:[0,2,4,6,1],     label:"Mayor 9ª",   symbol:"△9"  },
+  "min9":{intervals:[0,3,7,10,2], degs:[0,2,4,6,1],     label:"Menor 9ª",   symbol:"m9"  },
+  "13":  {intervals:[0,4,7,10,2,9], degs:[0,2,4,6,1,5],   label:"Dom. 13ª",   symbol:"13"  },
+  "7b9": {intervals:[0,4,7,10,1], degs:[0,2,4,6,1],     label:"Dom. b9",    symbol:"7b9" },
+  "7#9": {intervals:[0,4,7,10,3], degs:[0,2,4,6,1],     label:"Dom. #9",    symbol:"7#9" },
+  "7alt":{intervals:[0,4,7,10,1,3,8], degs:[0,2,4,6,1,1,5], label:"Alt.",       symbol:"7alt"},
 };
 
 const MODES={
@@ -132,7 +182,8 @@ const MODES={
 };
 
 const T_SEMI={"9":2,"b9":1,"#9":3,"11":5,"#11":6,"13":9,"b13":8,"6":9,"b6":8,"b7":10,"7":11};
-const tNote=(root,t)=>{const s=T_SEMI[t];return s!==undefined?fromRoot(root,s):null;};
+const T_DEG={"9":1,"b9":1,"#9":1,"11":3,"#11":3,"13":5,"b13":5,"6":5,"b6":5,"b7":6,"7":6};
+const tNote=(root,t)=>{const s=T_SEMI[t];return s!==undefined?fromRoot(root,s,T_DEG[t]):null;};
 
 const MODE_BY_DEGREE=[
   {name:"Jónico",   ivs:MODES["Jónico"],   q:"△7", tensions:["9","#11","13"],avoid:["11"]},
@@ -193,15 +244,15 @@ const buildVoicing=(root,quality)=>{
   const has7=has(10)||has(11);
   const L=[];
   L.push({note:root,role:"Tónica (bajo)",oct:2});
-  if(!has7&&has(7)) L.push({note:fromRoot(root,7),role:"Quinta",oct:2});
-  if(has(6))        L.push({note:fromRoot(root,6),role:"5ª dim.",oct:2});
-  if(has(8))        L.push({note:fromRoot(root,8),role:"5ª aum.",oct:2});
+  if(!has7&&has(7)) L.push({note:fromRoot(root,7,4),role:"Quinta",oct:2});
+  if(has(6))        L.push({note:fromRoot(root,6,4),role:"5ª dim.",oct:2});
+  if(has(8))        L.push({note:fromRoot(root,8,4),role:"5ª aum.",oct:2});
   const R=[];
-  if(has(3))  R.push({note:fromRoot(root,3), role:"3ª menor",oct:4});
-  if(has(4))  R.push({note:fromRoot(root,4), role:"3ª mayor",oct:4});
-  if(has(10)) R.push({note:fromRoot(root,10),role:"7ª menor", oct:4});
-  if(has(11)) R.push({note:fromRoot(root,11),role:"7ª mayor", oct:4});
-  if(!has7&&has(7)) R.push({note:fromRoot(root,7),role:"Quinta",oct:4});
+  if(has(3))  R.push({note:fromRoot(root,3,2), role:"3ª menor",oct:4});
+  if(has(4))  R.push({note:fromRoot(root,4,2), role:"3ª mayor",oct:4});
+  if(has(10)) R.push({note:fromRoot(root,10,6),role:"7ª menor", oct:4});
+  if(has(11)) R.push({note:fromRoot(root,11,6),role:"7ª mayor", oct:4});
+  if(!has7&&has(7)) R.push({note:fromRoot(root,7,4),role:"Quinta",oct:4});
   const extL={1:"b9",2:"9ª",3:"#9",5:"11ª",6:"#11",8:"b13",9:"13ª"};
   ivs.filter(i=>i>11).forEach(i=>{
     const s=i%12;
@@ -232,7 +283,7 @@ const DL=["Tónica","Supertónica","Mediante","Subdominante","Dominante","Relati
 
 const getMSD=(root)=>{
   const ri=noteIdx(root);if(ri===-1)return null;
-  const notes=MSI.map(i=>CHROMATIC[(ri+i)%12]);
+  const notes=buildScale(root,MSI);
   return{notes,diatonic:notes.map((n,i)=>({note:n,degree:DN[i],quality:DQ[i],label:DL[i],full:`${n}${DQ[i]}`}))};
 };
 
@@ -262,7 +313,7 @@ const parseChord=(input)=>{
     else if(rest.includes("sus4")||rest.includes("sus"))q="sus4";
     else if(rest.includes("m"))q="min";
     const formula=FORMULAS[q]||FORMULAS["maj"];
-    const notes=formula.intervals.map(i=>fromRoot(root,i%12));
+    const notes=formula.intervals.map((i,k)=>fromRoot(root,i%12,formula.degs?formula.degs[k]:undefined));
     return{root,quality:q,notes,formula,raw:s};
   }catch(e){return null;}
 };
@@ -271,14 +322,14 @@ const computeProg=(chords)=>{
   const scores={};
   COF.forEach(({note})=>{
     const ri=noteIdx(note);if(ri===-1)return;
-    let sc=0;const scale=MSI.map(i=>CHROMATIC[(ri+i)%12]);
-    chords.forEach(({root})=>{if(scale.includes(root))sc+=2;if(scale.includes(enh(root)))sc+=2;});
+    let sc=0;const scalePcs=MSI.map(i=>(ri+i)%12);
+    chords.forEach(({root})=>{ if(scalePcs.includes(noteIdx(root))) sc+=4; });
     scores[note]=sc;
   });
   const key=Object.entries(scores).sort((a,b)=>b[1]-a[1])[0][0];
-  const ki=noteIdx(key);const sn=MSI.map(i=>CHROMATIC[(ki+i)%12]);
+  const ki=noteIdx(key);const snPcs=MSI.map(i=>(ki+i)%12);
   return chords.map(({root,quality,raw,notes})=>{
-    const ri=sn.indexOf(root)!==-1?sn.indexOf(root):sn.indexOf(enh(root));
+    const ri=snPcs.indexOf(noteIdx(root));
     return{raw,root,quality,notes,degree:ri>=0?DN[ri]:"?",key,fn:getFns(quality)[0]};
   });
 };
@@ -1287,7 +1338,172 @@ const SNAP = 2;
 const snapV = v => Math.round(v/SNAP)*SNAP;
 
 // ─── BOTÓN VISUAL ─────────────────────────────────────────────────────────────
-function BandBtn({ btn, bellows, pressed, isHeard, onDown, onUp, draggable=false, onMove, oct=null }) {
+// ═══════════════════════════════════════════════════════════════════════════
+// ─── ARMADOR DE ACORDES (compartido por Bandoneón y Entrenador) ──────────────
+// Se construye por capas: fundamental → tipo → séptima → novena/oncena/trecena.
+// Devuelve las alturas (sin octava) y la etiqueta de intervalo de cada una.
+// ═══════════════════════════════════════════════════════════════════════════
+const ACORDE_BASES = [
+  {id:"M",   label:"Mayor",      ivs:[0,4,7], lab:["R","3","5"]},
+  {id:"m",   label:"menor",      ivs:[0,3,7], lab:["R","b3","5"]},
+  {id:"dim", label:"Disminuido", ivs:[0,3,6], lab:["R","b3","b5"]},
+  {id:"aug", label:"Aumentado",  ivs:[0,4,8], lab:["R","3","#5"]},
+  {id:"sus2",label:"sus2",       ivs:[0,2,7], lab:["R","2","5"]},
+  {id:"sus4",label:"sus4",       ivs:[0,5,7], lab:["R","4","5"]},
+];
+const ACORDE_SEPT = [{id:"none",label:"Sin 7ª"},{id:"b7",label:"7ª menor",iv:10,lab:"b7"},{id:"M7",label:"7ª mayor",iv:11,lab:"7"},{id:"bb7",label:"7ª disminuida",iv:9,lab:"bb7"}];
+const ACORDE_NOV  = [{id:"none",label:"—"},{id:"b9",label:"b9",iv:1,lab:"b9"},{id:"9",label:"9",iv:2,lab:"9"},{id:"#9",label:"#9",iv:3,lab:"#9"}];
+const ACORDE_UND  = [{id:"none",label:"—"},{id:"11",label:"11",iv:5,lab:"11"},{id:"#11",label:"#11",iv:6,lab:"#11"}];
+const ACORDE_TRE  = [{id:"none",label:"—"},{id:"b13",label:"b13",iv:8,lab:"b13"},{id:"13",label:"13",iv:9,lab:"13"}];
+const ACORDE_INI  = {root:"C",base:"M",sept:"none",nov:"none",und:"none",tre:"none",seis:false,sin5:false};
+const ACORDE_RAICES = ["C","C#","Db","D","D#","Eb","E","F","F#","Gb","G","G#","Ab","A","A#","Bb","B"];
+const GRADO_LAB = {"R":0,"2":1,"3":2,"b3":2,"4":3,"5":4,"b5":4,"#5":4,"6":5,"b7":6,"7":6,"bb7":6,"b9":1,"9":1,"#9":1,"11":3,"#11":3,"b13":5,"13":5};
+
+function useAcorde(){
+  const [ac,setAc]     = useState(ACORDE_INI);
+  const [open,setOpen] = useState(false);
+  const set   = (k,v)=>setAc(p=>({...p,[k]:v}));
+  const reset = ()=>setAc(ACORDE_INI);
+  const calc = useMemo(()=>{
+    const r = noteIdx(ac.root);
+    const base = ACORDE_BASES.find(b=>b.id===ac.base);
+    let items = base.ivs.map((iv,i)=>({iv,lab:base.lab[i],up:false}));
+    if(ac.sin5) items = items.filter((_,i)=>i!==2);
+    const add=(list,id,up)=>{ const o=list.find(x=>x.id===id); if(o&&o.iv!==undefined) items.push({iv:o.iv,lab:o.lab,up}); };
+    if(ac.seis) items.push({iv:9,lab:"6",up:false});
+    add(ACORDE_SEPT,ac.sept,false); add(ACORDE_NOV,ac.nov,true); add(ACORDE_UND,ac.und,true); add(ACORDE_TRE,ac.tre,true);
+    const seen=new Set(), tones=[];
+    items.forEach(it=>{
+      const esc = spell(ac.root, it.iv, GRADO_LAB[it.lab]);          // escritura correcta: 3ª = otra letra, etc.
+      const pc  = CHROMATIC[noteIdx(esc)];
+      if(seen.has(pc)) return; seen.add(pc);
+      tones.push({...it,pc,esc,nombre:nombreLat(esc)});
+    });
+    const labelByPc={}; tones.forEach(t=>{labelByPc[t.pc]=t.lab;});
+    const partes=[];
+    if(ac.seis) partes.push("6");
+    if(ac.sept!=="none") partes.push(ACORDE_SEPT.find(x=>x.id===ac.sept).label);
+    if(ac.nov!=="none") partes.push(ac.nov);
+    if(ac.und!=="none") partes.push(ac.und);
+    if(ac.tre!=="none") partes.push(ac.tre);
+    const name = `${nombreLat(ac.root)} ${base.label}`+(ac.sin5?" (sin 5ª)":"")+(partes.length?" + "+partes.join(" + "):"");
+    return {tones,labelByPc,name,rootIdx:r};
+  },[ac]);
+  return {ac,set,reset,open,setOpen,...calc,key:JSON.stringify(ac)};
+}
+
+const tocarAcordeBand = (A)=>{
+  A.tones.forEach((t,i)=>{
+    const a = A.rootIdx + t.iv + (t.up?12:0);
+    setTimeout(()=>playBand(CHROMATIC[a%12], 3+Math.floor(a/12)), i*35);
+  });
+};
+
+function ArmadorAcordes({ a, collapsible=true, children }){
+  const UI={bg:"#121212",line:"#2a2a2a",text:"#e6e6e6",mute:"#8a8a8a"};
+  const pill=(on)=>uiPill(on);
+  const Fila=({titulo,list,campo})=>(
+    <div className="mb-3">
+      <p style={{fontSize:10,letterSpacing:"0.14em",color:UI.mute,textTransform:"uppercase",marginBottom:6}}>{titulo}</p>
+      <div className="flex flex-wrap gap-1.5">
+        {list.map(o=>(<button key={o.id} style={pill(a.ac[campo]===o.id)} onClick={()=>a.set(campo,o.id)}>{o.label}</button>))}
+      </div>
+    </div>
+  );
+  const abierto = !collapsible || a.open;
+  return(
+    <div className="rounded-xl mb-3" style={{background:UI.bg,border:`1px solid ${UI.line}`,padding:"10px 12px"}}>
+      <div className="flex items-center justify-between gap-2 flex-wrap">
+        <div style={{minWidth:0}}>
+          <p style={{fontSize:10,letterSpacing:"0.14em",color:UI.mute,textTransform:"uppercase"}}>🎼 Armar acorde</p>
+          {(abierto||!collapsible) ? null : <p style={{fontSize:12,color:UI.text,marginTop:2}}>{a.name}</p>}
+        </div>
+        {collapsible && (
+          <button onClick={()=>a.setOpen(!a.open)} style={{...pill(a.open),padding:"5px 12px"}}>{a.open?"Ocultar":"Abrir"}</button>
+        )}
+      </div>
+
+      {abierto && (
+        <div className="mt-3">
+          <div className="mb-3">
+            <p style={{fontSize:10,letterSpacing:"0.14em",color:UI.mute,textTransform:"uppercase",marginBottom:6}}>1 · Fundamental</p>
+            <div className="flex flex-wrap gap-1.5">
+              {ACORDE_RAICES.map(x=>(<button key={x} style={pill(a.ac.root===x)} onClick={()=>a.set("root",x)}>{nombreLat(x)}</button>))}
+            </div>
+          </div>
+          <Fila titulo="2 · Tipo de acorde" list={ACORDE_BASES} campo="base"/>
+          <Fila titulo="3 · Séptima" list={ACORDE_SEPT} campo="sept"/>
+          <div className="grid sm:grid-cols-3 gap-x-4">
+            <Fila titulo="4 · Novena" list={ACORDE_NOV} campo="nov"/>
+            <Fila titulo="Oncena" list={ACORDE_UND} campo="und"/>
+            <Fila titulo="Trecena" list={ACORDE_TRE} campo="tre"/>
+          </div>
+          <div className="mb-3">
+            <p style={{fontSize:10,letterSpacing:"0.14em",color:UI.mute,textTransform:"uppercase",marginBottom:6}}>Extras</p>
+            <div className="flex flex-wrap gap-1.5">
+              <button style={pill(a.ac.seis)} onClick={()=>a.set("seis",!a.ac.seis)}>Sexta (6)</button>
+              <button style={pill(a.ac.sin5)} onClick={()=>a.set("sin5",!a.ac.sin5)}>Sin quinta</button>
+              <button style={{...pill(false),marginLeft:"auto"}} onClick={a.reset}>⟳ Limpiar</button>
+            </div>
+          </div>
+
+          {/* Resultado */}
+          <div style={{borderTop:`1px solid ${UI.line}`,paddingTop:10}}>
+            <div className="flex items-center justify-between gap-2 flex-wrap mb-2">
+              <p style={{fontSize:14,fontFamily:"'Libre Baskerville',serif",fontWeight:700,color:UI.text}}>{a.name}</p>
+              <button onClick={()=>tocarAcordeBand(a)} style={{padding:"6px 14px",borderRadius:9,border:`1px solid ${UI.text}`,background:"transparent",color:UI.text,fontWeight:700,fontSize:11,cursor:"pointer",fontFamily:"monospace"}}>▶ Tocar acorde</button>
+            </div>
+            <div className="flex flex-wrap gap-2">
+              {a.tones.map(t=>(
+                <div key={t.pc} style={{display:"flex",flexDirection:"column",alignItems:"center",gap:3}}>
+                  <div style={{width:44,height:44,borderRadius:10,background:nc(t.pc),border:"2px solid rgba(255,255,255,.2)",display:"flex",alignItems:"center",justifyContent:"center",
+                    color:txtSobre(nc(t.pc)),fontFamily:"serif",fontWeight:900,fontSize:13}}>{t.nombre}</div>
+                  <span style={{fontSize:10,fontFamily:"monospace",color:UI.mute}}>{t.lab}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+          {children}
+        </div>
+      )}
+    </div>
+  );
+}
+
+// Cuántos botones de cada mano dan cada nota del acorde (abriendo y cerrando).
+function DisponibilidadAcorde({ tones, leftBtns, rightBtns, bellows }){
+  const cnt=(btns,fu,pc)=>btns.filter(b=>{ const n=fu==="abre"?b.abre:b.cierra; return (LAT[n]||n)===pc; }).length;
+  const cols=[["izq","abre","IZQ ▷",leftBtns],["izq","cierra","IZQ ◁",leftBtns],["der","abre","DER ▷",rightBtns],["der","cierra","DER ◁",rightBtns]];
+  return(
+    <div className="mt-3 overflow-x-auto" style={{borderTop:"1px solid #2a2a2a",paddingTop:10}}>
+      <p style={{fontSize:10,letterSpacing:"0.14em",color:"#8a8a8a",textTransform:"uppercase",marginBottom:6}}>Dónde está cada nota (cantidad de botones)</p>
+      <table style={{borderCollapse:"collapse",fontSize:11,fontFamily:"monospace",width:"100%"}}>
+        <thead>
+          <tr>
+            <th style={{textAlign:"left",padding:"3px 6px",color:"#8a8a8a",fontWeight:600}}>Nota</th>
+            {cols.map(c=>(<th key={c[2]} style={{padding:"3px 6px",color:c[1]===bellows?"#e6e6e6":"#555",fontWeight:700}}>{c[2]}</th>))}
+          </tr>
+        </thead>
+        <tbody>
+          {tones.map(t=>(
+            <tr key={t.pc} style={{borderTop:"1px solid #1a1a1a"}}>
+              <td style={{padding:"4px 6px"}}>
+                <span style={{display:"inline-block",width:10,height:10,borderRadius:3,background:nc(t.pc),marginRight:6,verticalAlign:"middle"}}/>
+                <span style={{color:"#e6e6e6"}}>{t.nombre}</span> <span style={{color:"#8a8a8a"}}>{t.lab}</span>
+              </td>
+              {cols.map(c=>{ const n=cnt(c[3],c[1],t.pc); return(
+                <td key={c[2]} style={{textAlign:"center",padding:"4px 6px",color:n?(c[1]===bellows?"#e6e6e6":"#8a8a8a"):"#444"}}>{n||"—"}</td>
+              );})}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+      <p style={{fontSize:10,color:"#555",marginTop:6,lineHeight:1.5}}>Columna clara = fuelle actual. Si una nota no aparece en una mano con este fuelle, probá la otra mano o el otro sentido del fuelle.</p>
+    </div>
+  );
+}
+
+function BandBtn({ btn, bellows, pressed, isHeard, onDown, onUp, draggable=false, onMove, oct=null, chordActive=false, chordLabel=null }) {
   const note  = bellows === "abre" ? btn.abre  : btn.cierra;
   const color = bellows === "abre" ? btn.color_abre : btn.color_cierra;
   const isOn  = pressed.includes(btn.id);
@@ -1334,10 +1550,16 @@ function BandBtn({ btn, bellows, pressed, isHeard, onDown, onUp, draggable=false
           ? isHeard ? `0 0 22px #fff,0 0 44px ${color}` : `0 0 18px ${color}cc`
           : "0 2px 8px rgba(0,0,0,.7)",
         transform: isHeard?"scale(1.1)":isOn?"scale(0.95)":"scale(1)",
-        transition:"transform .08s,box-shadow .12s",
-        zIndex: isAct?20:1,
+        transition:"transform .08s,box-shadow .12s, opacity .2s",
+        zIndex: isAct?20:(chordLabel?15:1),
+        opacity: chordActive && !chordLabel && !isAct ? 0.25 : 1,
+        ...(chordLabel ? {border:"3px solid #ffffff", boxShadow:`0 0 0 3px #ffffff55, 0 0 16px ${color}`} : {}),
       }}
     >
+      {chordLabel && (
+        <span style={{position:"absolute",top:-6,right:-6,minWidth:17,height:17,padding:"0 3px",borderRadius:9,background:"#fff",color:"#101010",
+          fontSize:9,fontWeight:800,fontFamily:"monospace",display:"flex",alignItems:"center",justifyContent:"center",zIndex:3,boxShadow:"0 1px 4px rgba(0,0,0,.6)"}}>{chordLabel}</span>
+      )}
       <div style={{position:"absolute",top:5,left:9,width:11,height:7,borderRadius:"50%",background:"rgba(255,255,255,.22)",filter:"blur(1px)",pointerEvents:"none"}}/>
       <span style={{fontSize:note.length>2?7:9,fontWeight:800,color:"#fff",fontFamily:"'Courier New',monospace",lineHeight:1,zIndex:1,textShadow:"0 1px 3px rgba(0,0,0,.9)"}}>{note}</span>
       <span style={{fontSize:6.5,color:"rgba(255,255,255,.9)",fontFamily:"monospace",lineHeight:1,zIndex:1,fontWeight:700}}>
@@ -1349,7 +1571,7 @@ function BandBtn({ btn, bellows, pressed, isHeard, onDown, onUp, draggable=false
 
 // ─── CANVAS RESPONSIVE ───────────────────────────────────────────────────────
 function BandCanvas({ buttons, bellows, pressed, heardIds=[], onDown, onUp,
-  draggable=false, onMove, showGrid=false, onSelect=null, selected=null, octMap=null, maxWidth=null, maxScale=1 }) {
+  draggable=false, onMove, showGrid=false, onSelect=null, selected=null, octMap=null, maxWidth=null, maxScale=1, chordMap=null }) {
 
   const W = Math.max(...buttons.map(b=>b.x)) + BTN_SIZE + 16;
   const H = Math.max(...buttons.map(b=>b.y)) + BTN_SIZE + 20;
@@ -1390,7 +1612,9 @@ function BandCanvas({ buttons, bellows, pressed, heardIds=[], onDown, onUp,
           isHeard={heardIds.includes(btn.id)}
           onDown={e=>{onSelect&&onSelect(btn.id); onDown&&onDown(btn);}}
           onUp={onUp} draggable={draggable} onMove={onMove}
-          oct={octMap ? octMap[btn.id] : null}/>
+          oct={octMap ? octMap[btn.id] : null}
+          chordActive={!!chordMap}
+          chordLabel={chordMap ? (chordMap[(()=>{const n=bellows==="abre"?btn.abre:btn.cierra; return LAT[n]||n;})()] || null) : null}/>
       ))}
     </div>
   );
@@ -1526,15 +1750,10 @@ function BandEditor({ initialLeft, initialRight, onSave, onCancel }) {
     return`// Pegá esto en App.jsx reemplazando DEFS_L y DEFS_R\n\n`+fmt(leftBtns,"DEFS_L")+"\n\n"+fmt(rightBtns,"DEFS_R");
   };
 
-  const pill=(active,v="orange")=>({
-    padding:"5px 12px",borderRadius:8,border:"none",
-    fontFamily:"'Courier New',monospace",fontWeight:700,fontSize:10,cursor:"pointer",
-    background:active?"#e6e6e6":"transparent",
-    color:active?"#0a0a0a":"#8a8a8a",
-  });
+  const pill=(active,v="orange")=>uiPill(active);
 
   return (
-    <div style={{fontFamily:"'Courier New',monospace"}}>
+    <div style={{fontFamily:UI_FONT}}>
       {/* Banner */}
       <div style={{marginBottom:12,padding:"8px 14px",background:"#121212",border:"1.5px solid #e6e6e6",borderRadius:10,display:"flex",alignItems:"center",gap:10,flexWrap:"wrap"}}>
         <span style={{color:"#e6e6e6",fontWeight:800,fontSize:12}}>✏️ MODO EDICIÓN</span>
@@ -1961,12 +2180,7 @@ function BandoneonTab() {
     saveBtns(left,right); setFromStorage(true); setShowImport(false);
   },[]);
 
-  const pill=(active,v="orange")=>({
-    padding:"5px 12px",borderRadius:8,border:"none",
-    fontFamily:"'Courier New',monospace",fontWeight:700,fontSize:10,cursor:"pointer",transition:"all .18s",
-    background:active?"#e6e6e6":"transparent",
-    color:active?"#0a0a0a":"#8a8a8a",
-  });
+  const pill=(active,v="orange")=>uiPill(active);
 
   // Detectar móvil
   const [isMobile, setIsMobile] = useState(false);
@@ -1992,6 +2206,8 @@ function BandoneonTab() {
     return () => { ro.disconnect(); window.removeEventListener("resize", update); };
   },[]);
   const bothVisible = view==="ambas";
+  const acorde = useAcorde();
+  const chordMap = acorde.open ? acorde.labelByPc : null;
   const canvasMaxWidth = wrapWidth; // cada teclado usa todo el ancho (apilados) para verse lo más grande posible
 
   if (!leftBtns.length) return <div style={{color:"#555",padding:20,fontSize:13}}>Cargando...</div>;
@@ -2001,7 +2217,7 @@ function BandoneonTab() {
   );
 
   return (
-    <div style={{fontFamily:"'Courier New',monospace"}}>
+    <div style={{fontFamily:UI_FONT}}>
 
       {/* Barra herramientas */}
       <div style={{display:"flex",gap:8,flexWrap:"wrap",alignItems:"center",marginBottom:14,padding:"8px 12px",background:"#0a0a0a",border:"1px solid #1a1a1a",borderRadius:10}}>
@@ -2119,6 +2335,10 @@ function BandoneonTab() {
       )}
       </div>
 
+      <ArmadorAcordes a={acorde}>
+        <DisponibilidadAcorde tones={acorde.tones} leftBtns={leftBtns} rightBtns={rightBtns} bellows={bellows}/>
+      </ArmadorAcordes>
+
       {/* Canvas — se mide el ancho real disponible y se reparte entre los teclados
           que estén visibles, para garantizar que SIEMPRE entren sin recortarse. */}
       <div ref={canvasWrapRef} style={{
@@ -2138,7 +2358,7 @@ function BandoneonTab() {
             <BandCanvas buttons={leftBtns} bellows={bellows}
               pressed={pressedL} heardIds={heardIdsL}
               onDown={downL} onUp={upL} mobile={isMobile}
-              maxWidth={canvasMaxWidth} maxScale={3}
+              maxWidth={canvasMaxWidth} maxScale={3} chordMap={chordMap}
               octMap={bellows==="abre" ? OCT_L_OPEN : OCT_L_CLOSE}/>
           </div>
         )}
@@ -2150,7 +2370,7 @@ function BandoneonTab() {
             <BandCanvas buttons={rightBtns} bellows={bellows}
               pressed={pressedR} heardIds={heardIdsR}
               onDown={downR} onUp={upR} mobile={isMobile}
-              maxWidth={canvasMaxWidth} maxScale={3}
+              maxWidth={canvasMaxWidth} maxScale={3} chordMap={chordMap}
               octMap={bellows==="abre" ? OCT_R_OPEN : OCT_R_CLOSE}/>
           </div>
         )}
@@ -2359,8 +2579,10 @@ const ESCALAS_HERO = [
   {id:"pentaM", corto:"Pent. mayor", nombre:"pentatónica mayor", ivs:[0,2,4,7,9]},
   {id:"pentam", corto:"Pent. menor", nombre:"pentatónica menor", ivs:[0,3,5,7,10]},
   {id:"blues",  corto:"Blues",       nombre:"blues",           ivs:[0,3,5,6,7,10]},
+  {id:"crom",   corto:"Cromática",   nombre:"cromática (los 12 sonidos)", ivs:[0,1,2,3,4,5,6,7,8,9,10,11]},
 ];
 const GRADO_LABEL = {0:"1",1:"b2",2:"2",3:"b3",4:"3",5:"4",6:"b5",7:"5",8:"b6",9:"6",10:"b7",11:"7"};
+const txtSobre = hex => { const [r,g,b]=hexToRgb(hex); return (0.299*r+0.587*g+0.114*b)>150 ? "#14110a" : "#ffffff"; };
 const pasoLabel = d => d===1?"S":d===2?"T":d===3?"T½":String(d);
 
 function Cristal({color, size=64}){
@@ -2387,9 +2609,11 @@ function CristalesColor(){
   useEffect(()=>()=>timers.current.forEach(clearTimeout),[]);
 
   const esc   = ESCALAS_HERO.find(e=>e.id===escId);
-  const r     = CHROMATIC.indexOf(root);
-  const notes = esc.ivs.map(iv=>CHROMATIC[(r+iv)%12]);
-  const gradoDe = {}; esc.ivs.forEach(iv=>{ gradoDe[CHROMATIC[(r+iv)%12]] = GRADO_LABEL[iv]; });
+  const r     = noteIdx(root);
+  const escritas = buildScale(root, esc.ivs);                      // nombres con la enarmonía correcta
+  const notes = escritas.map(n=>CHROMATIC[noteIdx(n)]);            // alturas (para los colores)
+  const nombreDe = {}; escritas.forEach(n=>{ nombreDe[CHROMATIC[noteIdx(n)]] = nombreLat(n); });
+  const gradoDe = {}; esc.ivs.forEach((iv,i)=>{ gradoDe[notes[i]] = GRADO_LABEL[iv]; });
   const pasos = esc.ivs.map((iv,i)=>(i===esc.ivs.length-1?12:esc.ivs[i+1])-iv);
 
   const stop = ()=>{ timers.current.forEach(clearTimeout); timers.current=[]; setPlaying(null); };
@@ -2407,8 +2631,7 @@ function CristalesColor(){
   };
 
   const UI = {bg:"#101010", line:"#262626", text:"#e6e6e6", mute:"#8a8a8a", pillOn:"#e6e6e6"};
-  const pill=(on)=>({padding:"5px 11px",borderRadius:8,fontSize:11,fontFamily:"monospace",fontWeight:600,cursor:"pointer",
-    border:`1px solid ${on?UI.pillOn:UI.line}`,background:on?UI.pillOn:"transparent",color:on?"#101010":UI.mute});
+  const pill=(on)=>uiPill(on);
 
   return(
     <div className="rounded-2xl mb-5" style={{background:UI.bg,border:`1px solid ${UI.line}`,padding:"16px 14px"}}>
@@ -2432,7 +2655,7 @@ function CristalesColor(){
                 filter: sonando ? `drop-shadow(0 6px 14px ${nc(x)}cc)` : on ? `drop-shadow(0 4px 8px ${nc(x)}55)` : "none"}}>
                 <Cristal color={nc(x)}/>
               </div>
-              <span style={{fontSize:11,fontFamily:"serif",fontWeight:700,color:on?UI.text:UI.mute}}>{CROM_SIMPLE[x]}</span>
+              <span style={{fontSize:11,fontFamily:"serif",fontWeight:700,color:on?UI.text:UI.mute}}>{on?nombreDe[x]:CROM_SIMPLE[x]}</span>
               <span style={{fontSize:9,fontFamily:"monospace",color:UI.mute,height:11}}>{on?gradoDe[x]:""}</span>
             </button>
           );
@@ -2443,8 +2666,8 @@ function CristalesColor(){
       <div style={{borderTop:`1px solid ${UI.line}`,paddingTop:12}}>
         <p style={{fontSize:10,letterSpacing:"0.14em",color:UI.mute,textTransform:"uppercase",marginBottom:8}}>Tonalidad</p>
         <div className="flex flex-wrap gap-1.5 mb-3">
-          {CHROMATIC.map(x=>(
-            <button key={x} style={pill(x===root)} onClick={()=>{stop();setRoot(x);}}>{CROM_SIMPLE[x]}</button>
+          {["C","Db","D","Eb","E","F","F#","G","Ab","A","Bb","B"].map(x=>(
+            <button key={x} style={pill(x===root)} onClick={()=>{stop();setRoot(x);}}>{nombreLat(x)}</button>
           ))}
         </div>
         <p style={{fontSize:10,letterSpacing:"0.14em",color:UI.mute,textTransform:"uppercase",marginBottom:8}}>Escala</p>
@@ -2457,10 +2680,10 @@ function CristalesColor(){
         <div className="flex items-center justify-between flex-wrap gap-3">
           <div>
             <p style={{fontSize:15,fontFamily:"'Libre Baskerville',serif",color:UI.text,fontWeight:700}}>
-              {CROM_SIMPLE[root]} {esc.nombre}
+              {nombreLat(root)} {esc.nombre}
             </p>
             <p style={{fontSize:11,fontFamily:"monospace",color:UI.mute,marginTop:3}}>
-              {notes.map(n=>CROM_SIMPLE[n]).join(" · ")}
+              {escritas.map(nombreLat).join(" · ")}
             </p>
             <p style={{fontSize:11,fontFamily:"monospace",color:UI.mute,marginTop:2,letterSpacing:"0.12em"}}>
               {pasos.map(pasoLabel).join(" ")} <span style={{opacity:.6,letterSpacing:0}}>(T tono · S semitono)</span>
@@ -2833,12 +3056,11 @@ function HojaDeColor({ rect, actual, onPick, onErase, onClose }){
 
 // Teclado en blanco, escalado para entrar siempre en el ancho disponible
 // (misma técnica de transform:scale ya usada en BandCanvas).
-function PaintCanvas({ buttons, guesses, keyOf, checked, correctOf, onTapButton, maxWidth, maxScale=3, activeId=null }){
+function PaintCanvas({ buttons, guesses, keyOf, checked, correctOf, onTapButton, maxWidth, maxScale=3, activeId=null, chord=null }){
   const W = Math.max(...buttons.map(b=>b.x)) + BTN_SIZE + 16;
   const H = Math.max(...buttons.map(b=>b.y)) + BTN_SIZE + 20;
   const target = maxWidth || W;
-  // El teclado se ajusta exactamente al ancho disponible (sin scroll lateral):
-  // se agranda o achica según la pantalla, hasta maxScale.
+  // El teclado se ajusta exactamente al ancho disponible (sin scroll lateral).
   const scale = Math.min(maxScale, target / W);
   const scaledW = Math.ceil(W * scale), scaledH = Math.ceil(H * scale);
 
@@ -2853,21 +3075,38 @@ function PaintCanvas({ buttons, guesses, keyOf, checked, correctOf, onTapButton,
         boxShadow:"0 8px 24px rgba(0,0,0,.7)",
       }}>
         {buttons.map(btn=>{
-          const guess = guesses[keyOf(btn.id)];
-          const correct = checked ? correctOf(btn) : null;
-          const isRight = checked && guess && guess===correct;
-          const isWrong = checked && guess && guess!==correct;
+          let bg, borderCss, glow, content=null;
+          if(chord){
+            const sel = chord.isSel(btn), lab = chord.labelOf(btn);
+            const ok = checked && sel && lab, bad = checked && sel && !lab;
+            const miss = checked && !sel && lab && chord.isMissed(btn);
+            const verResp = chord.reveal && lab;
+            bg = verResp ? correctOf(btn) : sel ? "#6a6a6a" : "#1a1a1a";
+            borderCss = ok ? "3px solid #6b9c7c" : bad ? "3px solid #b5564f" : miss ? "3px dashed #ffffff"
+              : (sel||verResp) ? "3px solid #ffffff" : "3px solid #555";
+            glow = btn.id===activeId ? "0 0 0 4px #e6e6e6" : (ok ? "0 0 10px #6b9c7caa" : miss ? "0 0 10px #ffffff88" : "none");
+            if(ok) content=<span style={{fontSize:14,color:"#fff",fontWeight:800}}>✓</span>;
+            else if(bad) content=<span style={{fontSize:13,color:"#fff",fontWeight:800}}>✕</span>;
+            else if(verResp||miss) content=<span style={{fontSize:12,color:miss?"#fff":txtSobre(bg),fontWeight:800,fontFamily:"monospace"}}>{lab}</span>;
+          } else {
+            const guess = guesses[keyOf(btn.id)];
+            const correct = checked ? correctOf(btn) : null;
+            const isRight = checked && guess && guess===correct;
+            const isWrong = checked && guess && guess!==correct;
+            bg = guess || "#1a1a1a";
+            borderCss = `3px solid ${isRight?"#6b9c7c":isWrong?"#b5564f":guess?"rgba(255,255,255,.5)":"#555"}`;
+            glow = btn.id===activeId ? "0 0 0 4px #e6e6e6" : (guess ? `0 0 10px ${guess}99` : "none");
+            if(isRight) content=<span style={{fontSize:13,color:"#fff"}}>✓</span>;
+            if(isWrong) content=<span style={{fontSize:12,color:"#fff"}}>✕</span>;
+          }
           return (
             <button key={btn.id} onClick={(e)=>onTapButton(btn, e.currentTarget.getBoundingClientRect())}
               style={{
                 position:"absolute", left:btn.x, top:btn.y, width:BTN_SIZE, height:BTN_SIZE, borderRadius:"50%",
-                background: guess || "#1a1a1a",
-                border:`3px solid ${isRight?"#6b9c7c":isWrong?"#b5564f":guess?"rgba(255,255,255,.5)":"#555"}`,
-                boxShadow: btn.id===activeId ? "0 0 0 4px #e6e6e6" : (guess ? `0 0 10px ${guess}99` : "none"),
+                background:bg, border:borderCss, boxShadow:glow,
                 cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center",
               }}>
-              {isRight && <span style={{fontSize:13,color:"#fff"}}>✓</span>}
-              {isWrong && <span style={{fontSize:12,color:"#fff"}}>✕</span>}
+              {content}
             </button>
           );
         })}
@@ -2888,6 +3127,11 @@ function EntrenadorTab(){
   const [checked, setChecked] = useState(false);
   const [picker, setPicker]   = useState(null); // botón abierto en la hoja de color
   const [copied, setCopied]   = useState(false);
+  const [modo, setModo]       = useState("colores");   // "colores" | "acordes"
+  const [chordSel, setChordSel] = useState({});         // `${id}|${bellows}` -> true
+  const [reveal, setReveal]     = useState(false);
+  const acorde = useAcorde();
+  useEffect(()=>{ setChecked(false); setReveal(false); },[acorde.key, modo]);
 
   const [isMobile, setIsMobile] = useState(false);
   useEffect(()=>{
@@ -2927,10 +3171,27 @@ function EntrenadorTab(){
   };
 
   const allButtons = useMemo(()=>[...leftBtns, ...rightBtns],[leftBtns,rightBtns]);
+  const pcOf = (btn)=>{ const n = bellows==="abre" ? btn.abre : btn.cierra; return LAT[n]||n; };
+  const isSel = (btn)=>!!chordSel[keyOf(btn.id)];
+  const chordLabelOf = (btn)=>acorde.labelByPc[pcOf(btn)]||null;
+  const toggleSel = (btn)=>{ setChordSel(s=>{ const n={...s}; const k=keyOf(btn.id); if(n[k]) delete n[k]; else n[k]=true; return n; }); setChecked(false); };
+  const selected  = allButtons.filter(isSel);
+  const selOk     = selected.filter(b=>chordLabelOf(b));
+  const selBad    = selected.filter(b=>!chordLabelOf(b));
+  const coveredPcs = new Set(selOk.map(pcOf));
+  const faltanTones = acorde.tones.filter(tn=>!coveredPcs.has(tn.pc));
+  const faltanPcs = new Set(faltanTones.map(tn=>tn.pc));
+  const chordProps = modo==="acordes" ? { isSel, labelOf:chordLabelOf, isMissed:(btn)=>faltanPcs.has(pcOf(btn)), reveal } : null;
+  const tapBtn = (btn, rect)=> modo==="acordes" ? toggleSel(btn) : openPicker(btn, rect);
   const painted = allButtons.filter(b=>guesses[keyOf(b.id)]);
   const correctos = painted.filter(b=>guesses[keyOf(b.id)]===correctOf(b));
 
   const reiniciarFuelle = ()=>{
+    if(modo==="acordes"){
+      setChordSel(s=>{ const n={...s}; allButtons.forEach(b=>delete n[keyOf(b.id)]); return n; });
+      setChecked(false); setReveal(false);
+      return;
+    }
     setGuesses(g=>{
       const n={...g};
       allButtons.forEach(b=>delete n[keyOf(b.id)]);
@@ -2975,17 +3236,12 @@ function EntrenadorTab(){
     }
   };
 
-  const pill=(active,v="orange")=>({
-    padding:"5px 12px",borderRadius:8,border:"none",
-    fontFamily:"'Courier New',monospace",fontWeight:700,fontSize:10,cursor:"pointer",
-    background:active?"#e6e6e6":"transparent",
-    color:active?"#0a0a0a":"#8a8a8a",
-  });
+  const pill=(active,v="orange")=>uiPill(active);
 
   if(!leftBtns.length) return <div style={{color:"#555",padding:20,fontSize:13}}>Cargando...</div>;
 
   return (
-    <div style={{fontFamily:"'Courier New',monospace"}}>
+    <div style={{fontFamily:UI_FONT}}>
       <div className="mb-4">
         <h2 className="text-xl font-bold mb-1" style={{fontFamily:"'Libre Baskerville',serif"}}>
           🎓 Entrenador — Pintá el teclado
@@ -2994,6 +3250,22 @@ function EntrenadorTab(){
           Tocá cada botón y elegí, de memoria, el color que le corresponde. Después tocá "Corregir" para ver qué acertaste.
         </p>
       </div>
+
+      {/* Modo del ejercicio */}
+      <div style={{display:"flex",background:"#121212",border:"1.5px solid #2a2a2a",borderRadius:10,padding:3,gap:2,marginBottom:10,width:"fit-content"}}>
+        {[["colores","🎨 Pintar colores"],["acordes","🎼 Armar acordes"]].map(([m,l])=>(
+          <button key={m} style={{...pill(modo===m),padding:"6px 14px",fontSize:11}} onClick={()=>setModo(m)}>{l}</button>
+        ))}
+      </div>
+
+      {modo==="acordes" && (
+        <>
+          <p className="text-xs text-gray-500 mb-2">
+            Armá el acorde (fundamental, tipo, séptima, extensiones) y marcá en los teclados los botones que lo forman, con una mano o con las dos. Después tocá "Corregir". Podés ir sumando notas al acorde y seguir marcando.
+          </p>
+          <ArmadorAcordes a={acorde} collapsible={false}/>
+        </>
+      )}
 
       {/* Controles */}
       <div style={{display:"flex",gap:6,flexWrap:"wrap",marginBottom:10,alignItems:"center"}}>
@@ -3008,6 +3280,11 @@ function EntrenadorTab(){
           ))}
         </div>
         <div style={{marginLeft:"auto",display:"flex",gap:6}}>
+          {modo==="acordes" && (
+            <button onClick={()=>setReveal(r=>!r)} style={{padding:"6px 12px",borderRadius:9,border:"1px solid #e6e6e6",background:reveal?"#e6e6e6":"transparent",color:reveal?"#0a0a0a":"#e6e6e6",fontWeight:700,fontSize:10,cursor:"pointer"}}>
+              👁 {reveal?"Ocultar respuesta":"Ver respuesta"}
+            </button>
+          )}
           <button onClick={()=>setChecked(true)} style={{padding:"6px 14px",borderRadius:9,border:"none",background:"#e6e6e6",color:"#0a0a0a",fontWeight:800,fontSize:11,cursor:"pointer"}}>
             ✓ Corregir
           </button>
@@ -3019,8 +3296,19 @@ function EntrenadorTab(){
 
       {/* Marcador */}
       <div style={{marginBottom:10,padding:"8px 12px",background:"#121212",border:"1px solid #333333",borderRadius:10,display:"flex",gap:16,flexWrap:"wrap",fontSize:11}}>
-        <span style={{color:"#8a8a8a"}}>Pintados: <b style={{color:"#e6e6e6"}}>{painted.length}/{allButtons.length}</b></span>
-        {checked && <span style={{color:"#8a8a8a"}}>Correctos: <b style={{color:"#e6e6e6"}}>{correctos.length}/{painted.length}</b></span>}
+        {modo==="colores" ? (
+          <>
+            <span style={{color:"#8a8a8a"}}>Pintados: <b style={{color:"#e6e6e6"}}>{painted.length}/{allButtons.length}</b></span>
+            {checked && <span style={{color:"#8a8a8a"}}>Correctos: <b style={{color:"#e6e6e6"}}>{correctos.length}/{painted.length}</b></span>}
+          </>
+        ) : (
+          <>
+            <span style={{color:"#8a8a8a"}}>Marcados: <b style={{color:"#e6e6e6"}}>{selected.length}</b></span>
+            {checked && <span style={{color:"#8a8a8a"}}>Notas del acorde cubiertas: <b style={{color:"#e6e6e6"}}>{acorde.tones.length-faltanTones.length}/{acorde.tones.length}</b></span>}
+            {checked && <span style={{color:"#8a8a8a"}}>Botones que no son del acorde: <b style={{color:selBad.length?"#d98f88":"#e6e6e6"}}>{selBad.length}</b></span>}
+            {checked && faltanTones.length>0 && <span style={{color:"#8a8a8a"}}>Faltan: <b style={{color:"#e6e6e6"}}>{faltanTones.map(tn=>tn.nombre).join(", ")}</b></span>}
+          </>
+        )}
       </div>
 
       {/* Teclados */}
@@ -3028,19 +3316,19 @@ function EntrenadorTab(){
         {(view==="ambas"||view==="izquierda")&&(
           <div style={{width:"100%"}}>
             <p style={{fontSize:11,color:"#8a8a8a",marginBottom:6,letterSpacing:"0.12em"}}>MANO IZQUIERDA · {leftBtns.length} botones</p>
-            <PaintCanvas buttons={leftBtns} guesses={guesses} keyOf={keyOf} checked={checked} correctOf={correctOf} onTapButton={openPicker} maxWidth={maxW} maxScale={3} activeId={picker?.btn.id}/>
+            <PaintCanvas buttons={leftBtns} guesses={guesses} keyOf={keyOf} checked={checked} correctOf={correctOf} onTapButton={tapBtn} maxWidth={maxW} maxScale={3} activeId={picker?.btn.id} chord={chordProps}/>
           </div>
         )}
         {(view==="ambas"||view==="derecha")&&(
           <div style={{width:"100%"}}>
             <p style={{fontSize:11,color:"#8a8a8a",marginBottom:6,letterSpacing:"0.12em"}}>MANO DERECHA · {rightBtns.length} botones</p>
-            <PaintCanvas buttons={rightBtns} guesses={guesses} keyOf={keyOf} checked={checked} correctOf={correctOf} onTapButton={openPicker} maxWidth={maxW} maxScale={3} activeId={picker?.btn.id}/>
+            <PaintCanvas buttons={rightBtns} guesses={guesses} keyOf={keyOf} checked={checked} correctOf={correctOf} onTapButton={tapBtn} maxWidth={maxW} maxScale={3} activeId={picker?.btn.id} chord={chordProps}/>
           </div>
         )}
       </div>
 
       {/* Enviar para revisión */}
-      <div style={{marginTop:14,padding:"10px 14px",background:"#121212",border:"1px solid #2a2a2a",borderRadius:10}}>
+      {modo==="colores" && <div style={{marginTop:14,padding:"10px 14px",background:"#121212",border:"1px solid #2a2a2a",borderRadius:10}}>
         <p style={{fontSize:10,color:"#8a8a8a",marginBottom:8,fontWeight:700}}>📤 MANDAR PARA REVISIÓN</p>
         <p style={{fontSize:10,color:"#555",marginBottom:10,lineHeight:1.5}}>
           La app todavía no tiene un servidor donde juntar esto automáticamente. Por ahora: descargá el CSV o copiá el resumen y mandámelo por WhatsApp o mail.
@@ -3053,9 +3341,9 @@ function EntrenadorTab(){
             {copied?"✓ Copiado":"⧉ Copiar resumen"}
           </button>
         </div>
-      </div>
+      </div>}
 
-      {picker&&<HojaDeColor rect={picker.rect} actual={guesses[keyOf(picker.btn.id)]} onPick={pickColor} onErase={erase} onClose={closePicker}/>}
+      {modo==="colores" && picker&&<HojaDeColor rect={picker.rect} actual={guesses[keyOf(picker.btn.id)]} onPick={pickColor} onErase={erase} onClose={closePicker}/>}
     </div>
   );
 }
@@ -3090,87 +3378,95 @@ export default function HarmoniaApp(){
   useEffect(()=>{const c=parseChord("Dm7");setChord(c);},[]);
 
   const fns=useMemo(()=>chord?getFns(chord.quality):[],[chord]);
-  const voicing=useMemo(()=>chord?buildVoicing(chord.root,chord.quality):null,[chord]);
   const toggleFn=useCallback(i=>setOpenFns(p=>p.includes(i)?p.filter(x=>x!==i):[...p,i]),[]);
 
   const TABS=[
-    {id:"codigo",    label:"El Código",  icon:"📖"},
-    {id:"chord",     label:"Acorde",     icon:"🎼"},
-    {id:"prog",      label:"Progresión", icon:"🔗"},
-    {id:"biblioteca",label:"Biblioteca", icon:"📚"},
-    {id:"bandoneon", label:"Bandoneón",  icon:"🎵"},
-    {id:"entrenador",label:"Entrenador", icon:"🎓"},
-    {id:"circle",    label:"Quintas",    icon:"⭕"},
-    {id:"colors",    label:"Colores",    icon:"🎨"},
-    {id:"modos",     label:"Modos",      icon:"📐"},
+    {id:"codigo",    label:"El Código",  icon:"◐"},
+    {id:"chord",     label:"Acorde",     icon:"♪"},
+    {id:"prog",      label:"Progresión", icon:"→"},
+    {id:"biblioteca",label:"Biblioteca", icon:"▤"},
+    {id:"bandoneon", label:"Bandoneón",  icon:"♬"},
+    {id:"entrenador",label:"Entrenador", icon:"◎"},
+    {id:"circle",    label:"Quintas",    icon:"○"},
+    {id:"colors",    label:"Colores",    icon:"●"},
+    {id:"modos",     label:"Modos",      icon:"≋"},
   ];
 
   return(
     <div className="min-h-screen text-gray-100 flex flex-col" style={{
-      background:"linear-gradient(135deg,#0a0a0a 0%,#121212 50%,#121212 100%)",
+      background:"linear-gradient(160deg,#09090a 0%,#0f0f10 55%,#111113 100%)",
       fontFamily:"'Crimson Text',Georgia,serif",
     }}>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Crimson+Text:ital,wght@0,400;0,600;1,400&family=Libre+Baskerville:wght@400;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Crimson+Text:ital,wght@0,400;0,600;1,400&family=Libre+Baskerville:wght@400;700&family=Inter:wght@400;500;600;700&display=swap');
         .glow-input:focus{outline:none;box-shadow:0 0 0 2px #e6e6e655}
+        button{transition:background-color .15s,border-color .15s,color .15s,transform .12s,opacity .2s,box-shadow .15s,filter .15s}
+        button:not(:disabled):hover{filter:brightness(1.14)}
+        button:not(:disabled):active{transform:scale(.97)}
+        button:focus-visible,select:focus-visible,input:focus-visible{outline:2px solid #ececec;outline-offset:2px}
+        button:disabled{opacity:.4;cursor:default}
+        .nav-item{position:relative}
+        .nav-item:hover{background:#141416}
+        ::selection{background:#ececec;color:#0d0d0e}
         .stagger>*{animation:fadeUp 0.3s ease both}
         .stagger>*:nth-child(1){animation-delay:.03s}.stagger>*:nth-child(2){animation-delay:.08s}
         .stagger>*:nth-child(3){animation-delay:.13s}.stagger>*:nth-child(4){animation-delay:.18s}
         @keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
-        ::-webkit-scrollbar{width:3px}::-webkit-scrollbar-track{background:#111}
-        ::-webkit-scrollbar-thumb{background:#333;border-radius:2px}
+        ::-webkit-scrollbar{width:6px;height:6px}::-webkit-scrollbar-track{background:transparent}
+        ::-webkit-scrollbar-thumb{background:#2c2c30;border-radius:3px}::-webkit-scrollbar-thumb:hover{background:#3d3d42}
       `}</style>
 
       {/* ── HEADER ── */}
-      <div className="border-b border-gray-800 px-4 py-3 flex items-center gap-3 flex-shrink-0">
-        {/* Hamburger para móvil */}
-        <button onClick={()=>setNavOpen(o=>!o)}
-          className="flex flex-col gap-1.5 p-2 rounded-lg border border-gray-700 hover:border-gray-500 flex-shrink-0"
-          style={{background:"#111"}}>
-          <span className="block w-5 h-0.5 bg-gray-400"/>
-          <span className="block w-5 h-0.5 bg-gray-400"/>
-          <span className="block w-5 h-0.5 bg-gray-400"/>
+      <div className="px-4 md:px-6 py-3 flex items-center gap-4 flex-shrink-0"
+        style={{borderBottom:"1px solid #1f1f22",background:"rgba(10,10,11,.88)",backdropFilter:"blur(10px)",position:"sticky",top:0,zIndex:30}}>
+        <button onClick={()=>setNavOpen(o=>!o)} aria-label="Menú"
+          className="md:hidden flex flex-col gap-1 p-2.5 rounded-lg flex-shrink-0"
+          style={{background:"#121214",border:"1px solid #2a2a2e"}}>
+          <span className="block w-4 h-px" style={{background:"#a0a0a6"}}/>
+          <span className="block w-4 h-px" style={{background:"#a0a0a6"}}/>
+          <span className="block w-4 h-px" style={{background:"#a0a0a6"}}/>
         </button>
-        <div>
-          <h1 className="text-2xl font-bold" style={{fontFamily:"'Libre Baskerville',serif",letterSpacing:"0.06em"}}>
-            <span style={{color:"#eee6d6"}}>Har</span>
-            <span style={{color:"#e6e6e6"}}>mo</span>
-            <span style={{color:"#eee6d6"}}>nía</span>
-          </h1>
-          <p className="text-xs text-gray-500 italic">Bandoneón · Tango · Jazz · Colores tonales</p>
+        <div style={{lineHeight:1.15}}>
+          <h1 style={{fontFamily:"'Libre Baskerville',serif",fontSize:19,fontWeight:700,letterSpacing:"0.2em",textTransform:"uppercase",color:"#ececec"}}>Harmonía</h1>
+          <p style={{fontFamily:UI_FONT,fontSize:9.5,letterSpacing:"0.24em",textTransform:"uppercase",color:"#707076",marginTop:3}}>Bandoneón · Tango · Jazz</p>
         </div>
-        {/* Tab actual visible en header */}
-        <div className="ml-auto text-sm text-gray-400">
-          {TABS.find(t=>t.id===tab)?.icon} {TABS.find(t=>t.id===tab)?.label}
+        <div className="ml-auto flex items-center gap-2" style={{fontFamily:UI_FONT,fontSize:12,color:"#9a9aa0",letterSpacing:"0.04em"}}>
+          <span style={{opacity:.6}}>{TABS.find(t=>t.id===tab)?.icon}</span>
+          <span style={{fontWeight:600,color:"#d6d6da"}}>{TABS.find(t=>t.id===tab)?.label}</span>
         </div>
       </div>
 
       <div className="flex flex-1 overflow-hidden">
 
         {/* ── SIDEBAR VERTICAL ── */}
-        <div className={`flex-shrink-0 border-r border-gray-800 transition-all duration-200 ${navOpen?"w-48":"w-0 overflow-hidden md:w-48"}`}
-          style={{background:"#0a0a0a"}}>
-          <nav className="py-3 px-2 space-y-1 w-48">
-            {TABS.map(t=>(
-              <button key={t.id}
-                onClick={()=>{setTab(t.id);setNavOpen(false);}}
-                className="w-full text-left px-3 py-2.5 rounded-xl flex items-center gap-3 text-sm transition-all"
-                style={{
-                  background:tab===t.id?"#1a1a1a":"transparent",
-                  borderLeft:tab===t.id?"3px solid #e6e6e6":"3px solid transparent",
-                  color:tab===t.id?"#e6e6e6":"#666",
-                  fontWeight:tab===t.id?"600":"400",
-                }}>
-                <span>{t.icon}</span>
-                <span>{t.label}</span>
-              </button>
-            ))}
+        <div className={`flex-shrink-0 transition-all duration-200 ${navOpen?"w-52":"w-0 overflow-hidden md:w-52"}`}
+          style={{background:"#0b0b0c",borderRight:"1px solid #1f1f22"}}>
+          <nav className="py-4 px-3 space-y-0.5 w-52">
+            <p style={{...uiLabel,padding:"0 10px 8px",fontSize:9}}>Secciones</p>
+            {TABS.map(t=>{
+              const act=tab===t.id;
+              return(
+                <button key={t.id}
+                  onClick={()=>{setTab(t.id);setNavOpen(false);}}
+                  className="nav-item w-full text-left px-3 py-2.5 rounded-lg flex items-center gap-3"
+                  style={{
+                    fontFamily:UI_FONT,fontSize:13,letterSpacing:"0.01em",
+                    background:act?"#17171a":"transparent",
+                    color:act?"#f0f0f2":"#7d7d84",
+                    fontWeight:act?600:500,
+                    boxShadow:act?"inset 2px 0 0 #ececec":"none",
+                  }}>
+                  <span style={{width:16,textAlign:"center",fontSize:14,opacity:act?1:.55}}>{t.icon}</span>
+                  <span>{t.label}</span>
+                </button>
+              );
+            })}
           </nav>
         </div>
 
         {/* ── CONTENIDO PRINCIPAL ── */}
         <div className="flex-1 overflow-y-auto">
-          <div className="max-w-2xl mx-auto px-3 py-4 md:px-6 md:py-6">
+          <div className={`${(tab==="bandoneon"||tab==="entrenador")?"max-w-6xl":tab==="codigo"?"max-w-3xl":"max-w-2xl"} mx-auto px-3 py-4 md:px-8 md:py-8`}>
 
             {/* ══ EL CÓDIGO ══ */}
             {tab==="codigo"&&<ElCodigoTab/>}
@@ -3203,15 +3499,7 @@ export default function HarmoniaApp(){
                     <div className="flex flex-wrap gap-2 mb-5">
                       {chord.notes.map(n=><Nota key={n} note={n} size="lg"/>)}
                     </div>
-                    {voicing&&(
-                      <div>
-                        <p className="text-xs text-gray-500 uppercase tracking-widest mb-3">Voicing real en piano</p>
-                        <div className="rounded-xl p-3 border border-gray-700" style={{background:"#121212"}}>
-                          <Piano leftVoice={voicing.L} rightVoice={voicing.R}/>
-                        </div>
-                      </div>
-                    )}
-                    <button onClick={()=>playChord(chord.notes)}
+                                        <button onClick={()=>playChord(chord.notes)}
                       className="mt-4 w-full py-2.5 rounded-xl text-sm font-semibold border"
                       style={{background:"#1a1a1a",borderColor:"#333333",color:"#e6e6e6"}}>
                       ▶ Escuchar acorde
