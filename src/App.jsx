@@ -1029,11 +1029,11 @@ function buildOctMaps(leftBtns, rightBtns) {
 // Tablas estáticas de fallback (valores del layout de referencia)
 // Se usan solo si los botones no tienen oct_abre/oct_cierra
 // ─── OCTAVAS REALES POR BOTÓN (fuente: Rheinische 142, layout de referencia) ─────
-// Mano derecha: range A2–G5 / Mano izquierda: range F#1–A3
+// Octavas según el CSV de referencia (2026-10-06). Notación científica: Do4 = Do central.
 const FALLBACK_OCT_R_OPEN = {
-  "R01":2,
+  "R01":5,
   "R02":5,
-  "R03":2,
+  "R03":5,
   "R04":5,
   "R05":5,
   "R06":5,
@@ -1046,7 +1046,47 @@ const FALLBACK_OCT_R_OPEN = {
   "R13":4,
   "R14":5,
   "R15":5,
-  "R16":3,
+  "R16":2,
+  "R17":3,
+  "R18":4,
+  "R19":3,
+  "R20":3,
+  "R21":4,
+  "R22":4,
+  "R23":2,
+  "R24":3,
+  "R25":3,
+  "R26":3,
+  "R27":3,
+  "R28":4,
+  "R29":4,
+  "R30":4,
+  "R31":2,
+  "R32":3,
+  "R33":4,
+  "R34":4,
+  "R35":4,
+  "R36":4,
+  "R37":5,
+  "R38":4
+};
+const FALLBACK_OCT_R_CLOSE = {
+  "R01":5,
+  "R02":5,
+  "R03":5,
+  "R04":5,
+  "R05":5,
+  "R06":5,
+  "R07":5,
+  "R08":3,
+  "R09":5,
+  "R10":3,
+  "R11":3,
+  "R12":3,
+  "R13":3,
+  "R14":3,
+  "R15":5,
+  "R16":2,
   "R17":3,
   "R18":4,
   "R19":3,
@@ -1070,115 +1110,75 @@ const FALLBACK_OCT_R_OPEN = {
   "R37":5,
   "R38":4
 };
-const FALLBACK_OCT_R_CLOSE = {
-  "R01":3,
-  "R02":5,
-  "R03":5,
-  "R04":3,
-  "R05":2,
-  "R06":4,
-  "R07":5,
-  "R08":3,
-  "R09":5,
-  "R10":3,
-  "R11":3,
-  "R12":3,
-  "R13":3,
-  "R14":4,
-  "R15":5,
-  "R16":4,
-  "R17":4,
-  "R18":4,
-  "R19":2,
-  "R20":4,
-  "R21":4,
-  "R22":5,
-  "R23":4,
-  "R24":4,
-  "R25":3,
-  "R26":3,
-  "R27":5,
-  "R28":5,
-  "R29":4,
-  "R30":5,
-  "R31":2,
-  "R32":4,
-  "R33":5,
-  "R34":5,
-  "R35":4,
-  "R36":4,
-  "R37":5,
-  "R38":3
-};
 const FALLBACK_OCT_L_OPEN = {
-  "L01":3,
-  "L02":3,
-  "L03":3,
-  "L04":3,
-  "L05":2,
-  "L06":3,
-  "L07":3,
-  "L08":3,
-  "L09":2,
-  "L10":1,
-  "L11":2,
-  "L12":2,
-  "L13":2,
-  "L14":1,
-  "L15":1,
-  "L16":1,
-  "L17":3,
-  "L18":2,
-  "L19":2,
-  "L20":1,
-  "L21":2,
-  "L22":3,
-  "L23":1,
-  "L24":2,
-  "L25":3,
-  "L26":1,
-  "L27":1,
-  "L28":2,
-  "L29":2,
-  "L30":1,
-  "L31":2,
-  "L32":3,
-  "L33":2
-};
-const FALLBACK_OCT_L_CLOSE = {
-  "L01":3,
-  "L02":2,
+  "L01":1,
+  "L02":1,
   "L03":1,
   "L04":2,
   "L05":3,
-  "L06":3,
-  "L07":2,
-  "L08":1,
-  "L09":3,
-  "L10":2,
+  "L06":1,
+  "L07":1,
+  "L08":2,
+  "L09":2,
+  "L10":3,
   "L11":2,
-  "L12":3,
-  "L13":1,
+  "L12":1,
+  "L13":2,
   "L14":2,
-  "L15":2,
-  "L16":1,
-  "L17":3,
+  "L15":3,
+  "L16":3,
+  "L17":2,
   "L18":1,
   "L19":2,
   "L20":2,
-  "L21":3,
+  "L21":2,
+  "L22":3,
+  "L23":3,
+  "L24":3,
+  "L25":1,
+  "L26":1,
+  "L27":1,
+  "L28":3,
+  "L29":3,
+  "L30":3,
+  "L31":2,
+  "L32":1,
+  "L33":1
+};
+const FALLBACK_OCT_L_CLOSE = {
+  "L01":1,
+  "L02":1,
+  "L03":2,
+  "L04":3,
+  "L05":3,
+  "L06":1,
+  "L07":2,
+  "L08":2,
+  "L09":3,
+  "L10":2,
+  "L11":2,
+  "L12":1,
+  "L13":1,
+  "L14":2,
+  "L15":2,
+  "L16":3,
+  "L17":3,
+  "L18":2,
+  "L19":1,
+  "L20":2,
+  "L21":2,
   "L22":3,
   "L23":3,
   "L24":2,
   "L25":1,
   "L26":1,
-  "L27":1,
-  "L28":1,
-  "L29":1,
-  "L30":1,
-  "L31":1,
+  "L27":2,
+  "L28":3,
+  "L29":3,
+  "L30":3,
+  "L31":2,
   "L32":1,
-  "L33":2
+  "L33":1
 };
 
 
@@ -1187,80 +1187,80 @@ const STORAGE_KEY_L = "bandoneon_left_v1";
 const STORAGE_KEY_R = "bandoneon_right_v1";
 
 const DEFS_L = [
-  { id:"L01", row:0, x:208, y: 46, abre:"SOL#", cierra:"SOL#", color_abre:"#ff6a00", color_cierra:"#ff6a00" , oct_abre:3, oct_cierra:3 },
-  { id:"L02", row:0, x:308, y: 40, abre:"LA#",  cierra:"LA#",  color_abre:"#e63b7a", color_cierra:"#e63b7a" , oct_abre:3, oct_cierra:2 },
-  { id:"L03", row:0, x:416, y: 42, abre:"DO#",  cierra:"RE#",  color_abre:"#01c7fc", color_cierra:"#84cc16" , oct_abre:3, oct_cierra:1 },
-  { id:"L04", row:0, x:526, y: 58, abre:"FA",   cierra:"RE#",  color_abre:"#d38301", color_cierra:"#84cc16" , oct_abre:3, oct_cierra:2 },
-  { id:"L05", row:0, x:640, y: 78, abre:"SOL#", cierra:"SOL",  color_abre:"#ff6a00", color_cierra:"#fefb41" , oct_abre:2, oct_cierra:3 },
-  { id:"L06", row:1, x: 64, y:126, abre:"MI",   cierra:"RE",   color_abre:"#583300", color_cierra:"#587934" , oct_abre:3, oct_cierra:3 },
-  { id:"L07", row:1, x:162, y:106, abre:"LA",   cierra:"RE",   color_abre:"#a62c17", color_cierra:"#587934" , oct_abre:3, oct_cierra:2 },
-  { id:"L08", row:1, x:254, y: 94, abre:"SOL",  cierra:"LA#",  color_abre:"#fefb41", color_cierra:"#e63b7a" , oct_abre:3, oct_cierra:1 },
-  { id:"L09", row:1, x:358, y: 98, abre:"RE#",  cierra:"DO",   color_abre:"#84cc16", color_cierra:"#285ff4" , oct_abre:2, oct_cierra:3 },
-  { id:"L10", row:1, x:472, y:108, abre:"FA",   cierra:"DO#",  color_abre:"#d38301", color_cierra:"#01c7fc" , oct_abre:1, oct_cierra:2 },
-  { id:"L11", row:1, x:576, y:108, abre:"LA#",  cierra:"DO",   color_abre:"#e63b7a", color_cierra:"#285ff4" , oct_abre:2, oct_cierra:2 },
-  { id:"L12", row:1, x:680, y:142, abre:"FA",   cierra:"FA#",  color_abre:"#d38301", color_cierra:"#feb43f" , oct_abre:2, oct_cierra:3 },
-  { id:"L13", row:2, x:110, y:172, abre:"RE",   cierra:"SOL",  color_abre:"#587934", color_cierra:"#fefb41" , oct_abre:2, oct_cierra:1 },
-  { id:"L14", row:2, x:210, y:156, abre:"LA",   cierra:"SOL",  color_abre:"#a62c17", color_cierra:"#fefb41" , oct_abre:1, oct_cierra:2 },
-  { id:"L15", row:2, x:302, y:154, abre:"DO",   cierra:"SI",   color_abre:"#285ff4", color_cierra:"#5e30eb" , oct_abre:1, oct_cierra:2 },
-  { id:"L16", row:2, x:410, y:162, abre:"MI",   cierra:"RE",   color_abre:"#583300", color_cierra:"#587934" , oct_abre:1, oct_cierra:1 },
-  { id:"L17", row:2, x:528, y:164, abre:"DO",   cierra:"FA",   color_abre:"#285ff4", color_cierra:"#d38301" , oct_abre:3, oct_cierra:3 },
-  { id:"L18", row:2, x:618, y:170, abre:"SOL",  cierra:"FA#",  color_abre:"#fefb41", color_cierra:"#feb43f" , oct_abre:2, oct_cierra:1 },
-  { id:"L19", row:3, x: 66, y:252, abre:"MI",   cierra:"LA",   color_abre:"#583300", color_cierra:"#a62c17" , oct_abre:2, oct_cierra:2 },
-  { id:"L20", row:3, x:158, y:230, abre:"SOL#", cierra:"MI",   color_abre:"#ff6a00", color_cierra:"#583300" , oct_abre:1, oct_cierra:2 },
-  { id:"L21", row:3, x:254, y:222, abre:"SI",   cierra:"LA",   color_abre:"#5e30eb", color_cierra:"#a62c17" , oct_abre:2, oct_cierra:3 },
-  { id:"L22", row:3, x:354, y:218, abre:"RE",   cierra:"DO#",  color_abre:"#587934", color_cierra:"#01c7fc" , oct_abre:3, oct_cierra:3 },
-  { id:"L23", row:3, x:458, y:224, abre:"FA#",  cierra:"MI",   color_abre:"#feb43f", color_cierra:"#583300" , oct_abre:1, oct_cierra:3 },
-  { id:"L24", row:3, x:560, y:234, abre:"DO#",  cierra:"SOL#", color_abre:"#00a1d8", color_cierra:"#ff6a00" , oct_abre:2, oct_cierra:2 },
-  { id:"L25", row:3, x:646, y:246, abre:"FA#",  cierra:"SI",   color_abre:"#feb43f", color_cierra:"#5e30eb" , oct_abre:3, oct_cierra:1 },
-  { id:"L26", row:4, x: 26, y:328, abre:"RE",   cierra:"MI",   color_abre:"#587934", color_cierra:"#583300" , oct_abre:1, oct_cierra:1 },
-  { id:"L27", row:4, x:110, y:308, abre:"SI",   cierra:"MI",   color_abre:"#5e30eb", color_cierra:"#583300" , oct_abre:1, oct_cierra:1 },
-  { id:"L28", row:4, x:204, y:294, abre:"MI",   cierra:"SOL",  color_abre:"#583300", color_cierra:"#fefb41" , oct_abre:2, oct_cierra:1 },
-  { id:"L29", row:4, x:298, y:288, abre:"LA",   cierra:"LA",   color_abre:"#a62c17", color_cierra:"#a62c17" , oct_abre:2, oct_cierra:1 },
-  { id:"L30", row:4, x:390, y:286, abre:"RE#",  cierra:"SI",   color_abre:"#84cc16", color_cierra:"#5e30eb" , oct_abre:1, oct_cierra:1 },
-  { id:"L31", row:4, x:496, y:296, abre:"FA#",  cierra:"FA",   color_abre:"#feb43f", color_cierra:"#d38301" , oct_abre:2, oct_cierra:1 },
-  { id:"L32", row:4, x:590, y:306, abre:"RE#",  cierra:"DO#",  color_abre:"#84cc16", color_cierra:"#01c7fc" , oct_abre:3, oct_cierra:1 },
-  { id:"L33", row:4, x:674, y:324, abre:"DO",   cierra:"FA",   color_abre:"#285ff4", color_cierra:"#d38301" , oct_abre:2, oct_cierra:2 },
+  { id:"L01", row:0, x:208, y: 46, abre:"SOL#", cierra:"SOL#", color_abre:"#ff6a00", color_cierra:"#ff6a00", oct_abre:1, oct_cierra:1 },
+  { id:"L02", row:0, x:308, y: 40, abre:"LA#", cierra:"LA#", color_abre:"#e63b7a", color_cierra:"#e63b7a", oct_abre:1, oct_cierra:1 },
+  { id:"L03", row:0, x:416, y: 42, abre:"DO#", cierra:"RE#", color_abre:"#01c7fc", color_cierra:"#84cc16", oct_abre:1, oct_cierra:2 },
+  { id:"L04", row:0, x:526, y: 58, abre:"FA", cierra:"RE#", color_abre:"#d38301", color_cierra:"#84cc16", oct_abre:2, oct_cierra:3 },
+  { id:"L05", row:0, x:640, y: 78, abre:"SOL#", cierra:"SOL", color_abre:"#ff6a00", color_cierra:"#fefb41", oct_abre:3, oct_cierra:3 },
+  { id:"L06", row:1, x: 64, y:126, abre:"MI", cierra:"RE", color_abre:"#583300", color_cierra:"#587934", oct_abre:1, oct_cierra:1 },
+  { id:"L07", row:1, x:162, y:106, abre:"LA", cierra:"RE", color_abre:"#a62c17", color_cierra:"#587934", oct_abre:1, oct_cierra:2 },
+  { id:"L08", row:1, x:258, y: 96, abre:"SOL", cierra:"LA#", color_abre:"#faf600", color_cierra:"#e63b7a", oct_abre:2, oct_cierra:2 },
+  { id:"L09", row:1, x:358, y: 98, abre:"RE#", cierra:"DO", color_abre:"#84cc16", color_cierra:"#285ff4", oct_abre:2, oct_cierra:3 },
+  { id:"L10", row:1, x:472, y:108, abre:"FA", cierra:"DO#", color_abre:"#d38301", color_cierra:"#01c7fc", oct_abre:3, oct_cierra:2 },
+  { id:"L11", row:1, x:576, y:108, abre:"LA#", cierra:"DO", color_abre:"#e63b7a", color_cierra:"#285ff4", oct_abre:2, oct_cierra:2 },
+  { id:"L12", row:1, x:680, y:142, abre:"FA", cierra:"FA#", color_abre:"#d38301", color_cierra:"#feb43f", oct_abre:1, oct_cierra:1 },
+  { id:"L13", row:2, x:110, y:172, abre:"RE", cierra:"SOL", color_abre:"#587934", color_cierra:"#fefb41", oct_abre:2, oct_cierra:1 },
+  { id:"L14", row:2, x:210, y:156, abre:"LA", cierra:"SOL", color_abre:"#a62c17", color_cierra:"#fefb41", oct_abre:2, oct_cierra:2 },
+  { id:"L15", row:2, x:302, y:154, abre:"DO", cierra:"SI", color_abre:"#285ff4", color_cierra:"#5e30eb", oct_abre:3, oct_cierra:2 },
+  { id:"L16", row:2, x:410, y:162, abre:"MI", cierra:"RE", color_abre:"#583300", color_cierra:"#587934", oct_abre:3, oct_cierra:3 },
+  { id:"L17", row:2, x:528, y:164, abre:"DO", cierra:"FA", color_abre:"#285ff4", color_cierra:"#d38301", oct_abre:2, oct_cierra:3 },
+  { id:"L18", row:2, x:618, y:170, abre:"SOL", cierra:"FA#", color_abre:"#fffb00", color_cierra:"#feb43f", oct_abre:1, oct_cierra:2 },
+  { id:"L19", row:3, x: 66, y:252, abre:"MI", cierra:"LA", color_abre:"#583300", color_cierra:"#a62c17", oct_abre:2, oct_cierra:1 },
+  { id:"L20", row:3, x:158, y:230, abre:"SOL#", cierra:"MI", color_abre:"#ff6a00", color_cierra:"#583300", oct_abre:2, oct_cierra:2 },
+  { id:"L21", row:3, x:254, y:222, abre:"SI", cierra:"LA", color_abre:"#5e30eb", color_cierra:"#a62c17", oct_abre:2, oct_cierra:2 },
+  { id:"L22", row:3, x:354, y:218, abre:"RE", cierra:"DO#", color_abre:"#587934", color_cierra:"#01c7fc", oct_abre:3, oct_cierra:3 },
+  { id:"L23", row:3, x:458, y:224, abre:"FA#", cierra:"MI", color_abre:"#feb43f", color_cierra:"#583300", oct_abre:3, oct_cierra:3 },
+  { id:"L24", row:3, x:560, y:234, abre:"DO#", cierra:"SOL#", color_abre:"#00a1d8", color_cierra:"#ff6a00", oct_abre:3, oct_cierra:2 },
+  { id:"L25", row:3, x:646, y:246, abre:"FA#", cierra:"SI", color_abre:"#feb43f", color_cierra:"#5e30eb", oct_abre:1, oct_cierra:1 },
+  { id:"L26", row:4, x: 26, y:328, abre:"RE", cierra:"MI", color_abre:"#587934", color_cierra:"#754400", oct_abre:1, oct_cierra:1 },
+  { id:"L27", row:4, x:110, y:308, abre:"SI", cierra:"MI", color_abre:"#5e30eb", color_cierra:"#583300", oct_abre:1, oct_cierra:2 },
+  { id:"L28", row:4, x:204, y:294, abre:"SOL", cierra:"FA#", color_abre:"#faf200", color_cierra:"#ecac22", oct_abre:3, oct_cierra:3 },
+  { id:"L29", row:4, x:298, y:288, abre:"LA", cierra:"LA", color_abre:"#a62c17", color_cierra:"#a62c17", oct_abre:3, oct_cierra:3 },
+  { id:"L30", row:4, x:390, y:286, abre:"RE#", cierra:"SI", color_abre:"#84cc16", color_cierra:"#5e30eb", oct_abre:3, oct_cierra:3 },
+  { id:"L31", row:4, x:496, y:296, abre:"FA#", cierra:"FA", color_abre:"#fda821", color_cierra:"#d38301", oct_abre:2, oct_cierra:2 },
+  { id:"L32", row:4, x:590, y:306, abre:"RE#", cierra:"DO#", color_abre:"#84cc16", color_cierra:"#01c7fc", oct_abre:1, oct_cierra:1 },
+  { id:"L33", row:4, x:670, y:320, abre:"DO", cierra:"FA", color_abre:"#285ff4", color_cierra:"#d38301", oct_abre:1, oct_cierra:1 },
 ];
 
 const DEFS_R = [
-  { id:"R01", row:0, x:174, y:  0, abre:"SI",   cierra:"SI",   color_abre:"#5e30eb", color_cierra:"#5e30eb" , oct_abre:2, oct_cierra:3 },
-  { id:"R02", row:0, x:274, y:  0, abre:"SOL#", cierra:"SOL#", color_abre:"#ff6a00", color_cierra:"#ff6a00" , oct_abre:5, oct_cierra:5 },
-  { id:"R03", row:0, x:376, y:  0, abre:"SOL",  cierra:"FA#",  color_abre:"#fefb41", color_cierra:"#ffc777" , oct_abre:2, oct_cierra:5 },
-  { id:"R04", row:0, x:484, y:  0, abre:"FA",   cierra:"FA",   color_abre:"#a96800", color_cierra:"#a96800" , oct_abre:5, oct_cierra:3 },
-  { id:"R05", row:0, x:220, y: 38, abre:"LA",   cierra:"SOL",  color_abre:"#a62c17", color_cierra:"#fefb41" , oct_abre:5, oct_cierra:2 },
-  { id:"R06", row:0, x:326, y: 38, abre:"FA#",  cierra:"LA#",  color_abre:"#ffc777", color_cierra:"#e63b7a" , oct_abre:5, oct_cierra:4 },
-  { id:"R07", row:0, x:432, y: 40, abre:"MI",   cierra:"DO",   color_abre:"#583300", color_cierra:"#285ff4" , oct_abre:5, oct_cierra:5 },
-  { id:"R08", row:1, x:128, y: 46, abre:"DO#",  cierra:"DO",   color_abre:"#01c7fc", color_cierra:"#285ff4" , oct_abre:3, oct_cierra:3 },
-  { id:"R09", row:1, x:528, y: 50, abre:"RE#",  cierra:"RE#",  color_abre:"#84cc16", color_cierra:"#84cc16" , oct_abre:5, oct_cierra:5 },
-  { id:"R10", row:1, x: 88, y:104, abre:"DO",   cierra:"RE",   color_abre:"#285ff4", color_cierra:"#587934" , oct_abre:3, oct_cierra:3 },
-  { id:"R11", row:1, x:178, y: 98, abre:"RE",   cierra:"DO#",  color_abre:"#587934", color_cierra:"#01c7fc" , oct_abre:3, oct_cierra:3 },
-  { id:"R12", row:1, x:280, y: 86, abre:"SOL",  cierra:"SOL#", color_abre:"#fefb41", color_cierra:"#ff6a00" , oct_abre:3, oct_cierra:3 },
-  { id:"R13", row:1, x:388, y: 86, abre:"LA#",  cierra:"LA#",  color_abre:"#e63b7a", color_cierra:"#e63b7a" , oct_abre:4, oct_cierra:3 },
-  { id:"R14", row:1, x:484, y: 94, abre:"DO",   cierra:"MI",   color_abre:"#285ff4", color_cierra:"#583300" , oct_abre:5, oct_cierra:4 },
-  { id:"R15", row:1, x:572, y:114, abre:"RE",   cierra:"RE",   color_abre:"#587934", color_cierra:"#587934" , oct_abre:5, oct_cierra:5 },
-  { id:"R16", row:2, x: 42, y:188, abre:"SI",   cierra:"DO",   color_abre:"#5e30eb", color_cierra:"#285ff4" , oct_abre:3, oct_cierra:4 },
-  { id:"R17", row:2, x:136, y:168, abre:"MI",   cierra:"DO#",  color_abre:"#583300", color_cierra:"#01c7fc" , oct_abre:3, oct_cierra:4 },
-  { id:"R18", row:2, x:236, y:156, abre:"DO#",  cierra:"FA#",  color_abre:"#01c7fc", color_cierra:"#ffc777" , oct_abre:4, oct_cierra:4 },
-  { id:"R19", row:2, x:342, y:148, abre:"FA#",  cierra:"SI",   color_abre:"#ffc777", color_cierra:"#5e30eb" , oct_abre:3, oct_cierra:2 },
-  { id:"R20", row:2, x:436, y:156, abre:"LA",   cierra:"SI",   color_abre:"#a62c17", color_cierra:"#5e30eb" , oct_abre:3, oct_cierra:4 },
-  { id:"R21", row:2, x:530, y:164, abre:"DO",   cierra:"RE",   color_abre:"#285ff4", color_cierra:"#587934" , oct_abre:4, oct_cierra:4 },
-  { id:"R22", row:2, x:612, y:184, abre:"MI",   cierra:"SOL",  color_abre:"#583300", color_cierra:"#fefb41" , oct_abre:4, oct_cierra:5 },
-  { id:"R23", row:2, x:  0, y:262, abre:"LA",   cierra:"RE",   color_abre:"#a62c17", color_cierra:"#587934" , oct_abre:2, oct_cierra:4 },
-  { id:"R24", row:2, x: 94, y:246, abre:"FA",   cierra:"FA",   color_abre:"#a96800", color_cierra:"#a96800" , oct_abre:3, oct_cierra:4 },
-  { id:"R25", row:3, x:188, y:232, abre:"LA#",  cierra:"MI",   color_abre:"#e63b7a", color_cierra:"#583300" , oct_abre:3, oct_cierra:3 },
-  { id:"R26", row:3, x:284, y:224, abre:"SOL#", cierra:"LA",   color_abre:"#ff6a00", color_cierra:"#a62c17" , oct_abre:3, oct_cierra:3 },
-  { id:"R27", row:3, x:386, y:224, abre:"SI",   cierra:"DO#",  color_abre:"#5e30eb", color_cierra:"#01c7fc" , oct_abre:4, oct_cierra:5 },
-  { id:"R28", row:3, x:478, y:232, abre:"RE",   cierra:"MI",   color_abre:"#587934", color_cierra:"#583300" , oct_abre:4, oct_cierra:5 },
-  { id:"R29", row:3, x:570, y:246, abre:"SOL#", cierra:"LA",   color_abre:"#ff6a00", color_cierra:"#a62c17" , oct_abre:4, oct_cierra:4 },
-  { id:"R30", row:3, x:654, y:266, abre:"SI",   cierra:"DO#",  color_abre:"#5e30eb", color_cierra:"#01c7fc" , oct_abre:4, oct_cierra:5 },
-  { id:"R31", row:3, x: 26, y:328, abre:"LA#",  cierra:"LA#",  color_abre:"#e63b7a", color_cierra:"#e63b7a" , oct_abre:2, oct_cierra:2 },
-  { id:"R32", row:3, x:122, y:312, abre:"RE#",  cierra:"RE#",  color_abre:"#84cc16", color_cierra:"#84cc16" , oct_abre:3, oct_cierra:4 },
-  { id:"R33", row:4, x:220, y:298, abre:"FA",   cierra:"FA",   color_abre:"#a96800", color_cierra:"#a96800" , oct_abre:4, oct_cierra:5 },
-  { id:"R34", row:4, x:316, y:296, abre:"RE#",  cierra:"MI",   color_abre:"#84cc16", color_cierra:"#583300" , oct_abre:4, oct_cierra:5 },
-  { id:"R35", row:4, x:412, y:300, abre:"FA#",  cierra:"SOL#", color_abre:"#ffc777", color_cierra:"#ff6a00" , oct_abre:4, oct_cierra:4 },
-  { id:"R36", row:4, x:500, y:308, abre:"LA",   cierra:"SI",   color_abre:"#a62c17", color_cierra:"#5e30eb" , oct_abre:4, oct_cierra:4 },
-  { id:"R37", row:4, x:594, y:322, abre:"DO#",  cierra:"MI",   color_abre:"#01c7fc", color_cierra:"#583300" , oct_abre:5, oct_cierra:5 },
-  { id:"R38", row:4, x:680, y:346, abre:"SOL",  cierra:"RE#",  color_abre:"#fefb41", color_cierra:"#84cc16" , oct_abre:4, oct_cierra:3 },
+  { id:"R01", row:0, x:174, y:  0, abre:"SI", cierra:"SI", color_abre:"#5e30eb", color_cierra:"#5e30eb", oct_abre:5, oct_cierra:5 },
+  { id:"R02", row:0, x:274, y:  0, abre:"SOL#", cierra:"SOL#", color_abre:"#ff6a00", color_cierra:"#ff6a00", oct_abre:5, oct_cierra:5 },
+  { id:"R03", row:0, x:376, y:  0, abre:"SOL", cierra:"FA#", color_abre:"#fefb41", color_cierra:"#ffc777", oct_abre:5, oct_cierra:5 },
+  { id:"R04", row:0, x:484, y:  0, abre:"FA", cierra:"FA", color_abre:"#a96800", color_cierra:"#a96800", oct_abre:5, oct_cierra:5 },
+  { id:"R05", row:0, x:220, y: 38, abre:"LA", cierra:"SOL", color_abre:"#a62c17", color_cierra:"#fefb41", oct_abre:5, oct_cierra:5 },
+  { id:"R06", row:0, x:326, y: 38, abre:"FA#", cierra:"LA#", color_abre:"#ffc777", color_cierra:"#e63b7a", oct_abre:5, oct_cierra:5 },
+  { id:"R07", row:0, x:432, y: 40, abre:"MI", cierra:"DO", color_abre:"#583300", color_cierra:"#285ff4", oct_abre:5, oct_cierra:5 },
+  { id:"R08", row:1, x:128, y: 46, abre:"DO#", cierra:"DO", color_abre:"#01c7fc", color_cierra:"#285ff4", oct_abre:3, oct_cierra:3 },
+  { id:"R09", row:1, x:528, y: 50, abre:"RE#", cierra:"RE#", color_abre:"#84cc16", color_cierra:"#84cc16", oct_abre:5, oct_cierra:5 },
+  { id:"R10", row:1, x: 88, y:104, abre:"DO", cierra:"RE", color_abre:"#285ff4", color_cierra:"#587934", oct_abre:3, oct_cierra:3 },
+  { id:"R11", row:1, x:178, y: 98, abre:"RE", cierra:"DO#", color_abre:"#587934", color_cierra:"#01c7fc", oct_abre:3, oct_cierra:3 },
+  { id:"R12", row:1, x:280, y: 86, abre:"SOL", cierra:"SOL#", color_abre:"#fefb41", color_cierra:"#ff6a00", oct_abre:3, oct_cierra:3 },
+  { id:"R13", row:1, x:388, y: 86, abre:"LA#", cierra:"LA#", color_abre:"#e63b7a", color_cierra:"#e63b7a", oct_abre:4, oct_cierra:3 },
+  { id:"R14", row:1, x:484, y: 94, abre:"DO", cierra:"DO", color_abre:"#285ff4", color_cierra:"#285ff4", oct_abre:5, oct_cierra:3 },
+  { id:"R15", row:1, x:572, y:114, abre:"RE", cierra:"RE", color_abre:"#587934", color_cierra:"#587934", oct_abre:5, oct_cierra:5 },
+  { id:"R16", row:2, x: 42, y:188, abre:"SI", cierra:"SI", color_abre:"#5e30eb", color_cierra:"#6230eb", oct_abre:2, oct_cierra:2 },
+  { id:"R17", row:2, x:136, y:168, abre:"MI", cierra:"FA#", color_abre:"#583300", color_cierra:"#ffc777", oct_abre:3, oct_cierra:3 },
+  { id:"R18", row:2, x:236, y:156, abre:"DO#", cierra:"FA#", color_abre:"#01c7fc", color_cierra:"#ffc777", oct_abre:4, oct_cierra:4 },
+  { id:"R19", row:2, x:342, y:148, abre:"FA#", cierra:"SOL", color_abre:"#ffc777", color_cierra:"#fefb41", oct_abre:3, oct_cierra:3 },
+  { id:"R20", row:2, x:436, y:156, abre:"LA", cierra:"SI", color_abre:"#a62c17", color_cierra:"#5e30eb", oct_abre:3, oct_cierra:3 },
+  { id:"R21", row:2, x:530, y:164, abre:"DO", cierra:"RE", color_abre:"#285ff4", color_cierra:"#587934", oct_abre:4, oct_cierra:4 },
+  { id:"R22", row:2, x:612, y:184, abre:"MI", cierra:"SOL", color_abre:"#583300", color_cierra:"#fefb41", oct_abre:4, oct_cierra:4 },
+  { id:"R23", row:2, x:  0, y:262, abre:"LA", cierra:"LA", color_abre:"#b51717", color_cierra:"#b51717", oct_abre:2, oct_cierra:2 },
+  { id:"R24", row:2, x: 94, y:246, abre:"FA", cierra:"FA", color_abre:"#a96800", color_cierra:"#a96800", oct_abre:3, oct_cierra:3 },
+  { id:"R25", row:3, x:188, y:232, abre:"LA#", cierra:"MI", color_abre:"#e63b7a", color_cierra:"#583300", oct_abre:3, oct_cierra:3 },
+  { id:"R26", row:3, x:284, y:224, abre:"SOL#", cierra:"LA", color_abre:"#ff6a00", color_cierra:"#a62c17", oct_abre:3, oct_cierra:3 },
+  { id:"R27", row:3, x:386, y:224, abre:"SI", cierra:"DO#", color_abre:"#5e30eb", color_cierra:"#01c7fc", oct_abre:3, oct_cierra:4 },
+  { id:"R28", row:3, x:478, y:232, abre:"RE", cierra:"MI", color_abre:"#587934", color_cierra:"#583300", oct_abre:4, oct_cierra:4 },
+  { id:"R29", row:3, x:570, y:246, abre:"SOL#", cierra:"LA", color_abre:"#ff6a00", color_cierra:"#a62c17", oct_abre:4, oct_cierra:4 },
+  { id:"R30", row:3, x:654, y:266, abre:"SI", cierra:"DO#", color_abre:"#5e30eb", color_cierra:"#01c7fc", oct_abre:4, oct_cierra:4 },
+  { id:"R31", row:3, x: 26, y:328, abre:"LA#", cierra:"LA#", color_abre:"#e63b7a", color_cierra:"#e63b7a", oct_abre:2, oct_cierra:2 },
+  { id:"R32", row:3, x:122, y:312, abre:"RE#", cierra:"RE#", color_abre:"#84cc16", color_cierra:"#84cc16", oct_abre:3, oct_cierra:3 },
+  { id:"R33", row:4, x:220, y:298, abre:"FA", cierra:"FA", color_abre:"#a96800", color_cierra:"#a96800", oct_abre:4, oct_cierra:4 },
+  { id:"R34", row:4, x:316, y:296, abre:"RE#", cierra:"MI", color_abre:"#84cc16", color_cierra:"#583300", oct_abre:4, oct_cierra:4 },
+  { id:"R35", row:4, x:412, y:300, abre:"FA#", cierra:"SOL#", color_abre:"#ffc777", color_cierra:"#ff6a00", oct_abre:4, oct_cierra:4 },
+  { id:"R36", row:4, x:500, y:308, abre:"LA", cierra:"SI", color_abre:"#a62c17", color_cierra:"#5e30eb", oct_abre:4, oct_cierra:4 },
+  { id:"R37", row:4, x:594, y:322, abre:"DO#", cierra:"MI", color_abre:"#01c7fc", color_cierra:"#583300", oct_abre:5, oct_cierra:5 },
+  { id:"R38", row:4, x:680, y:346, abre:"SOL", cierra:"RE#", color_abre:"#fefb41", color_cierra:"#84cc16", oct_abre:4, oct_cierra:4 },
 ];
 
 function loadBtns() {
@@ -2406,7 +2406,7 @@ function BandoneonTab() {
             <BandCanvas buttons={leftBtns} bellows={bellows}
               pressed={pressedL} heardIds={heardIdsL}
               onDown={downL} onUp={upL} mobile={isMobile}
-              maxWidth={canvasMaxWidth} maxScale={3} chordMap={chordMap}
+              maxWidth={canvasMaxWidth} maxScale={3.6} chordMap={chordMap}
               octMap={bellows==="abre" ? OCT_L_OPEN : OCT_L_CLOSE}/>
           </div>
         )}
@@ -2418,7 +2418,7 @@ function BandoneonTab() {
             <BandCanvas buttons={rightBtns} bellows={bellows}
               pressed={pressedR} heardIds={heardIdsR}
               onDown={downR} onUp={upR} mobile={isMobile}
-              maxWidth={canvasMaxWidth} maxScale={3} chordMap={chordMap}
+              maxWidth={canvasMaxWidth} maxScale={3.6} chordMap={chordMap}
               octMap={bellows==="abre" ? OCT_R_OPEN : OCT_R_CLOSE}/>
           </div>
         )}
@@ -3117,7 +3117,7 @@ function HojaDeColor({ rect, actual, onPick, onErase, onClose }){
 
 // Teclado en blanco, escalado para entrar siempre en el ancho disponible
 // (misma técnica de transform:scale ya usada en BandCanvas).
-function PaintCanvas({ buttons, guesses, keyOf, checked, correctOf, onTapButton, maxWidth, maxScale=3, activeId=null, chord=null }){
+function PaintCanvas({ buttons, guesses, keyOf, checked, correctOf, onTapButton, maxWidth, maxScale=3, activeId=null, chord=null, escala=null }){
   const W = Math.max(...buttons.map(b=>b.x)) + BTN_SIZE + 16;
   const H = Math.max(...buttons.map(b=>b.y)) + BTN_SIZE + 20;
   const target = maxWidth || W;
@@ -3137,7 +3137,9 @@ function PaintCanvas({ buttons, guesses, keyOf, checked, correctOf, onTapButton,
       }}>
         {buttons.map(btn=>{
           let bg, borderCss, glow, content=null;
-          if(chord){
+          if(escala){
+            const st=escala.stateOf(btn); bg=st.bg; borderCss=st.border; glow=st.glow; content=st.content;
+          } else if(chord){
             const sel = chord.isSel(btn), lab = chord.labelOf(btn);
             const ok = checked && sel && lab, bad = checked && sel && !lab;
             const miss = checked && !sel && lab && chord.isMissed(btn);
@@ -3177,6 +3179,50 @@ function PaintCanvas({ buttons, guesses, keyOf, checked, correctOf, onTapButton,
   );
 }
 
+// ─── ESCALAS PARA EL ENTRENADOR ──────────────────────────────────────────────
+const ESC_ENT = [
+  {id:"mayor",  nombre:"Mayor",          ivs:[0,2,4,5,7,9,11]},
+  {id:"menor",  nombre:"Menor natural",  ivs:[0,2,3,5,7,8,10]},
+  {id:"menorA", nombre:"Menor armónica", ivs:[0,2,3,5,7,8,11]},
+  {id:"menorM", nombre:"Menor melódica", ivs:[0,2,3,5,7,9,11]},
+];
+// Botones de una mano con su altura real (nota + octava) para el fuelle indicado
+function itemsMano(btns, bellows){
+  return btns.map(b=>{
+    const lat = bellows==="abre" ? b.abre : b.cierra;
+    const eng = LAT[lat]||lat, pc = noteIdx(eng);
+    const oct = bellows==="abre" ? (b.oct_abre??3) : (b.oct_cierra??3);
+    return {b, pc, oct, midi:12*(oct+1)+pc};
+  });
+}
+// Camino de la escala sobre una mano: la nota siguiente es la más cercana por encima (o por debajo), a no más de 4 semitonos.
+// startIdx < 0 = automático: elige el primer punto de partida desde el que la escala sale completa.
+function rutaEscala(btns, bellows, rootPc, ivs, dir, startIdx){
+  const items = itemsMano(btns, bellows);
+  const asc = [...new Map(items.filter(i=>i.pc===rootPc).sort((a,b)=>a.midi-b.midi).map(i=>[i.midi,i])).values()];
+  const sube = dir!=="baja";
+  const tonics = sube ? asc : [...asc].reverse();
+  if(!tonics.length) return {route:[], missing:[rootPc], tonics, items, startUsed:0};
+  const n = ivs.length;
+  const grados = sube ? [...Array(n).keys(),0] : [0,...[...Array(n-1).keys()].map(k=>n-1-k),0];
+  const pcs = grados.map(k=>(rootPc+ivs[k])%12);
+  const build = (start)=>{
+    const route=[{item:start,deg:0}], missing=[]; let cur=start.midi;
+    for(let k=1;k<pcs.length;k++){
+      const cand = items.filter(i=>i.pc===pcs[k] && (sube ? (i.midi>cur && i.midi-cur<=4) : (i.midi<cur && cur-i.midi<=4)));
+      if(!cand.length){ missing.push(pcs[k]); break; }
+      const it = cand.reduce((a,b)=> sube ? (b.midi<a.midi?b:a) : (b.midi>a.midi?b:a));
+      route.push({item:it,deg:grados[k]}); cur=it.midi;
+    }
+    return {route,missing};
+  };
+  let used = startIdx;
+  if(startIdx<0){ used = tonics.findIndex(t=>build(t).missing.length===0); if(used<0) used=0; }
+  used = Math.min(used, tonics.length-1);
+  const r = build(tonics[used]);
+  return {route:r.route, missing:r.missing, tonics, items, startUsed:used};
+}
+
 function EntrenadorTab(){
   const [leftBtns, setLeftBtns]   = useState([]);
   const [rightBtns, setRightBtns] = useState([]);
@@ -3193,6 +3239,13 @@ function EntrenadorTab(){
   const [reveal, setReveal]     = useState(false);
   const acorde = useAcorde();
   useEffect(()=>{ setChecked(false); setReveal(false); },[acorde.key, modo]);
+  // — Escalas —
+  const [escRoot,setEscRoot]=useState("C"), [escTipo,setEscTipo]=useState("mayor"), [escMano,setEscMano]=useState("der");
+  const [escDir,setEscDir]=useState("sube"), [escStart,setEscStart]=useState(-1), [escModo,setEscModo]=useState("ver");
+  const [prog,setProg]=useState({i:1,err:0,hint:false,wrong:null});
+  const escTimers=useRef([]);
+  useEffect(()=>()=>escTimers.current.forEach(clearTimeout),[]);
+  useEffect(()=>{ setProg({i:1,err:0,hint:false,wrong:null}); },[escRoot,escTipo,escMano,escDir,escStart,escModo,bellows,modo]);
 
   const [isMobile, setIsMobile] = useState(false);
   useEffect(()=>{
@@ -3243,11 +3296,57 @@ function EntrenadorTab(){
   const faltanTones = acorde.tones.filter(tn=>!coveredPcs.has(tn.pc));
   const faltanPcs = new Set(faltanTones.map(tn=>tn.pc));
   const chordProps = modo==="acordes" ? { isSel, labelOf:chordLabelOf, isMissed:(btn)=>faltanPcs.has(pcOf(btn)), reveal } : null;
-  const tapBtn = (btn, rect)=> modo==="acordes" ? toggleSel(btn) : openPicker(btn, rect);
+  const escDef   = ESC_ENT.find(e=>e.id===escTipo);
+  const escIvs   = (escTipo==="menorM" && escDir==="baja") ? ESC_ENT[1].ivs : escDef.ivs;   // melódica: baja como natural
+  const escRootPc = noteIdx(escRoot);
+  const escNombres = buildScale(escRoot, escIvs);
+  const escPcSet = new Set(escNombres.map(noteIdx));
+  const escDeletreo = {}; escNombres.forEach(n=>{ escDeletreo[noteIdx(n)] = nombreLat(n); });
+  const escBtns  = escMano==="izq" ? leftBtns : rightBtns;
+  const escR     = useMemo(()=> modo==="escalas" && escBtns.length ? rutaEscala(escBtns,bellows,escRootPc,escIvs,escDir,escStart) : {route:[],missing:[],tonics:[],items:[]},
+                           [modo,escBtns,bellows,escRootPc,escTipo,escDir,escStart]);
+  const escIdxById = {}; escR.route.forEach((r,i)=>{ escIdxById[r.item.b.id]=i; });
+  const itemDe = (btn)=> itemsMano([btn],bellows)[0];
+  const etiqueta = (it)=> (escDeletreo[it.pc]||CROM_SIMPLE[CHROMATIC[it.pc]]) + it.oct;
+  const tocarItem = (it)=> playBand(CHROMATIC[it.pc], it.oct);
+  const escEscuchar = ()=>{
+    escTimers.current.forEach(clearTimeout); escTimers.current=[];
+    escR.route.forEach((r,i)=>escTimers.current.push(setTimeout(()=>tocarItem(r.item), i*430)));
+  };
+  const escTap = (btn)=>{
+    const it = itemDe(btn); tocarItem(it);
+    if(escModo!=="practica" || prog.i>=escR.route.length) return;
+    const exp = escR.route[prog.i].item;
+    const enMano = escBtns.some(x=>x.id===btn.id);
+    if(enMano && it.midi===exp.midi){ setProg(p=>({...p,i:p.i+1,hint:false,wrong:null})); }
+    else {
+      setProg(p=>({...p,err:p.err+1,wrong:btn.id}));
+      escTimers.current.push(setTimeout(()=>setProg(p=>({...p,wrong:null})),700));
+    }
+  };
+  const escStateOf = (btn)=>{
+    const it = itemDe(btn), col = nc(CHROMATIC[it.pc]), ri = escIdxById[btn.id], enEsc = escPcSet.has(it.pc);
+    const num = (n,sub,bg)=> <span style={{display:"flex",flexDirection:"column",alignItems:"center",lineHeight:1.05,color:txtSobre(bg)}}>
+        <b style={{fontSize:14}}>{n}</b><span style={{fontSize:8.5,fontWeight:800,fontFamily:"monospace"}}>{sub}</span></span>;
+    if(escModo==="ver"){
+      if(ri!==undefined) return {bg:col, border:"3px solid #fff", glow:`0 0 14px ${col}cc`, content:num(ri+1,etiqueta(it),col)};
+      if(enEsc) return {bg:col+"55", border:`2px solid ${col}`, glow:"none", content:<span style={{fontSize:8.5,fontWeight:700,color:"#ddd",fontFamily:"monospace"}}>{etiqueta(it)}</span>};
+      return {bg:"#121212", border:"3px solid #262626", glow:"none", content:null};
+    }
+    // práctica: no se regalan los colores hasta acertar
+    if(ri!==undefined && ri<prog.i) return {bg:col, border:"3px solid #6b9c7c", glow:`0 0 12px ${col}aa`, content:num(ri+1,etiqueta(it),col)};
+    const esProx = prog.hint && escR.route[prog.i] && escR.route[prog.i].item.b.id===btn.id;
+    if(prog.wrong===btn.id) return {bg:"#3a1a1a", border:"3px solid #b5564f", glow:"0 0 10px #b5564f", content:<span style={{color:"#fff",fontWeight:800}}>✕</span>};
+    if(esProx) return {bg:"#1a1a1a", border:"3px dashed #fff", glow:"0 0 10px #ffffff88", content:null};
+    return {bg:"#1a1a1a", border:"3px solid #555", glow:"none", content:null};
+  };
+  const scaleProps = modo==="escalas" ? { stateOf:escStateOf } : null;
+  const tapBtn = (btn, rect)=> modo==="acordes" ? toggleSel(btn) : modo==="escalas" ? escTap(btn) : openPicker(btn, rect);
   const painted = allButtons.filter(b=>guesses[keyOf(b.id)]);
   const correctos = painted.filter(b=>guesses[keyOf(b.id)]===correctOf(b));
 
   const reiniciarFuelle = ()=>{
+    if(modo==="escalas"){ setProg({i:1,err:0,hint:false,wrong:null}); return; }
     if(modo==="acordes"){
       setChordSel(s=>{ const n={...s}; allButtons.forEach(b=>delete n[keyOf(b.id)]); return n; });
       setChecked(false); setReveal(false);
@@ -3314,10 +3413,43 @@ function EntrenadorTab(){
 
       {/* Modo del ejercicio */}
       <div style={{display:"flex",background:"#121212",border:"1.5px solid #2a2a2a",borderRadius:10,padding:3,gap:2,marginBottom:10,width:"fit-content"}}>
-        {[["colores","🎨 Pintar colores"],["acordes","🎼 Armar acordes"]].map(([m,l])=>(
+        {[["colores","🎨 Pintar colores"],["acordes","🎼 Armar acordes"],["escalas","🎶 Escalas"]].map(([m,l])=>(
           <button key={m} style={{...pill(modo===m),padding:"6px 14px",fontSize:11}} onClick={()=>setModo(m)}>{l}</button>
         ))}
       </div>
+
+      {modo==="escalas" && (
+        <div className="rounded-xl mb-3" style={{background:"#121212",border:"1px solid #2a2a2a",padding:"12px 14px"}}>
+          <p className="text-xs text-gray-500 mb-3">Elegí una escala: el teclado te sugiere el camino coloreado, nota por nota y con su octava real. Después pasá a <b>Practicar</b> y tocala de memoria; el color aparece cuando acertás. Usá el botón Abre/Cierra de arriba para cambiar el sentido del fuelle.</p>
+          <p style={uiLabel}>Tónica</p>
+          <div className="flex flex-wrap gap-1.5 mb-3 mt-2">{ACORDE_RAICES.map(x=>(<button key={x} style={uiPill(escRoot===x)} onClick={()=>{setEscRoot(x);setEscStart(-1);}}>{nombreLat(x)}</button>))}</div>
+          <div className="flex flex-wrap gap-x-6 gap-y-3 mb-3">
+            <div><p style={uiLabel}>Escala</p><div className="flex flex-wrap gap-1.5 mt-2">{ESC_ENT.map(e=>(<button key={e.id} style={uiPill(escTipo===e.id)} onClick={()=>setEscTipo(e.id)}>{e.nombre}</button>))}</div></div>
+            <div><p style={uiLabel}>Mano</p><div className="flex gap-1.5 mt-2">{[["der","Derecha"],["izq","Izquierda"]].map(([v,l])=>(<button key={v} style={uiPill(escMano===v)} onClick={()=>{setEscMano(v);setEscStart(-1);}}>{l}</button>))}</div></div>
+            <div><p style={uiLabel}>Sentido</p><div className="flex gap-1.5 mt-2">{[["sube","↑ Sube"],["baja","↓ Baja"]].map(([v,l])=>(<button key={v} style={uiPill(escDir===v)} onClick={()=>{setEscDir(v);setEscStart(-1);}}>{l}</button>))}</div></div>
+          </div>
+          {escR.tonics.length>1 && (<><p style={uiLabel}>Empezar en</p>
+            <div className="flex flex-wrap gap-1.5 mb-3 mt-2">{escR.tonics.map((t,i)=>(<button key={t.midi} style={uiPill(escR.startUsed===i)} onClick={()=>setEscStart(i)}>{etiqueta(t)}</button>))}</div></>)}
+          <div className="flex flex-wrap gap-2 items-center mb-3">
+            {[["ver","👁 Ver la escala"],["practica","✋ Practicar"]].map(([v,l])=>(<button key={v} style={uiPill(escModo===v,{padding:"7px 16px"})} onClick={()=>setEscModo(v)}>{l}</button>))}
+            <button style={uiPill(false)} onClick={escEscuchar}>▶ Escuchar</button>
+            {escModo==="practica" && <button style={uiPill(prog.hint)} onClick={()=>setProg(p=>({...p,hint:!p.hint}))}>💡 Pista</button>}
+          </div>
+          {/* fila coloreada sugerida */}
+          <div style={{display:"flex",gap:6}}>
+            {escR.route.map((r,i)=>{ const col=nc(CHROMATIC[r.item.pc]); const hecho = escModo==="ver" || i<prog.i; return(
+              <div key={i} style={{flex:"1 1 0",minWidth:0,borderRadius:10,padding:"7px 2px",textAlign:"center",background:hecho?col:"#161616",border:`2px solid ${hecho?"rgba(255,255,255,.35)":"#2a2a2a"}`,color:hecho?txtSobre(col):"#555",transition:"background .2s"}}>
+                <div style={{fontSize:9,fontWeight:700,fontFamily:"monospace",opacity:.8}}>{GRADO_LABEL[escIvs[r.deg]]}</div>
+                <div style={{fontSize:13,fontWeight:900,fontFamily:"serif"}}>{hecho?etiqueta(r.item):"?"}</div>
+              </div>);})}
+          </div>
+          {escR.missing.length>0 && <p style={{fontSize:11.5,color:"#c9a25a",margin:"10px 0 0"}}>⚠ Con este fuelle y esta mano no hay {escR.missing.length>1?"notas":"una nota"} más arriba/abajo ({escR.missing.map(pc=>escDeletreo[pc]||CROM_SIMPLE[CHROMATIC[pc]]).join(", ")}). Probá el otro sentido del fuelle, la otra mano u otra octava de inicio.</p>}
+          {escModo==="practica" && (
+            <p style={{fontSize:13,margin:"10px 0 0",color:prog.i>=escR.route.length&&escR.route.length?"#6b9c7c":"#cfcfcf"}}>
+              {prog.i>=escR.route.length&&escR.route.length ? `¡Escala completa! Errores: ${prog.err}` : `Tocá la nota ${prog.i+1} de ${escR.route.length}${prog.err?` · errores: ${prog.err}`:""}`}
+            </p>)}
+        </div>
+      )}
 
       {modo==="acordes" && (
         <>
@@ -3346,9 +3478,9 @@ function EntrenadorTab(){
               👁 {reveal?"Ocultar respuesta":"Ver respuesta"}
             </button>
           )}
-          <button onClick={()=>setChecked(true)} style={{padding:"6px 14px",borderRadius:9,border:"none",background:"#e6e6e6",color:"#0a0a0a",fontWeight:800,fontSize:11,cursor:"pointer"}}>
+          {modo!=="escalas" && <button onClick={()=>setChecked(true)} style={{padding:"6px 14px",borderRadius:9,border:"none",background:"#e6e6e6",color:"#0a0a0a",fontWeight:800,fontSize:11,cursor:"pointer"}}>
             ✓ Corregir
-          </button>
+          </button>}
           <button onClick={reiniciarFuelle} style={{padding:"6px 12px",borderRadius:9,border:"1px solid #2a2a2a",background:"transparent",color:"#8a8a8a",fontSize:10,cursor:"pointer"}}>
             ⟳ Reiniciar
           </button>
@@ -3357,7 +3489,13 @@ function EntrenadorTab(){
 
       {/* Marcador */}
       <div style={{marginBottom:10,padding:"8px 12px",background:"#121212",border:"1px solid #333333",borderRadius:10,display:"flex",gap:16,flexWrap:"wrap",fontSize:11}}>
-        {modo==="colores" ? (
+        {modo==="escalas" ? (
+          <>
+            <span style={{color:"#8a8a8a"}}>Escala: <b style={{color:"#e6e6e6"}}>{nombreLat(escRoot)} {escDef.nombre.toLowerCase()}</b></span>
+            <span style={{color:"#8a8a8a"}}>Fuelle: <b style={{color:"#e6e6e6"}}>{bellows==="abre"?"abriendo":"cerrando"}</b></span>
+            {escModo==="practica" && <span style={{color:"#8a8a8a"}}>Progreso: <b style={{color:"#e6e6e6"}}>{Math.min(prog.i,escR.route.length)}/{escR.route.length}</b> · errores <b style={{color:prog.err?"#d98f88":"#e6e6e6"}}>{prog.err}</b></span>}
+          </>
+        ) : modo==="colores" ? (
           <>
             <span style={{color:"#8a8a8a"}}>Pintados: <b style={{color:"#e6e6e6"}}>{painted.length}/{allButtons.length}</b></span>
             {checked && <span style={{color:"#8a8a8a"}}>Correctos: <b style={{color:"#e6e6e6"}}>{correctos.length}/{painted.length}</b></span>}
@@ -3377,13 +3515,13 @@ function EntrenadorTab(){
         {(view==="ambas"||view==="izquierda")&&(
           <div style={{width:"100%"}}>
             <p style={{fontSize:11,color:"#8a8a8a",marginBottom:6,letterSpacing:"0.12em"}}>MANO IZQUIERDA · {leftBtns.length} botones</p>
-            <PaintCanvas buttons={leftBtns} guesses={guesses} keyOf={keyOf} checked={checked} correctOf={correctOf} onTapButton={tapBtn} maxWidth={maxW} maxScale={3} activeId={picker?.btn.id} chord={chordProps}/>
+            <PaintCanvas buttons={leftBtns} guesses={guesses} keyOf={keyOf} checked={checked} correctOf={correctOf} onTapButton={tapBtn} maxWidth={maxW} maxScale={3.6} activeId={picker?.btn.id} chord={chordProps} escala={scaleProps}/>
           </div>
         )}
         {(view==="ambas"||view==="derecha")&&(
           <div style={{width:"100%"}}>
             <p style={{fontSize:11,color:"#8a8a8a",marginBottom:6,letterSpacing:"0.12em"}}>MANO DERECHA · {rightBtns.length} botones</p>
-            <PaintCanvas buttons={rightBtns} guesses={guesses} keyOf={keyOf} checked={checked} correctOf={correctOf} onTapButton={tapBtn} maxWidth={maxW} maxScale={3} activeId={picker?.btn.id} chord={chordProps}/>
+            <PaintCanvas buttons={rightBtns} guesses={guesses} keyOf={keyOf} checked={checked} correctOf={correctOf} onTapButton={tapBtn} maxWidth={maxW} maxScale={3.6} activeId={picker?.btn.id} chord={chordProps} escala={scaleProps}/>
           </div>
         )}
       </div>
@@ -3843,7 +3981,7 @@ export default function HarmoniaApp(){
       <div className="px-4 md:px-6 py-3 flex items-center gap-4 flex-shrink-0"
         style={{borderBottom:"1px solid #1f1f22",background:"rgba(10,10,11,.88)",backdropFilter:"blur(10px)",position:"sticky",top:0,zIndex:30}}>
         <button onClick={()=>setNavOpen(o=>!o)} aria-label="Menú"
-          className="md:hidden flex flex-col gap-1 p-2.5 rounded-lg flex-shrink-0"
+          className={`${(tab==="bandoneon"||tab==="entrenador")?"":"md:hidden"} flex flex-col gap-1 p-2.5 rounded-lg flex-shrink-0`}
           style={{background:"#121214",border:"1px solid #2a2a2e"}}>
           <span className="block w-4 h-px" style={{background:"#a0a0a6"}}/>
           <span className="block w-4 h-px" style={{background:"#a0a0a6"}}/>
@@ -3862,7 +4000,7 @@ export default function HarmoniaApp(){
       <div className="flex flex-1 overflow-hidden">
 
         {/* ── SIDEBAR VERTICAL ── */}
-        <div className={`flex-shrink-0 transition-all duration-200 ${navOpen?"w-52":"w-0 overflow-hidden md:w-52"}`}
+        <div className={`flex-shrink-0 transition-all duration-200 ${navOpen?"w-52":((tab==="bandoneon"||tab==="entrenador")?"w-0 overflow-hidden":"w-0 overflow-hidden md:w-52")}`}
           style={{background:"#0b0b0c",borderRight:"1px solid #1f1f22"}}>
           <nav className="py-4 px-3 space-y-0.5 w-52">
             <p style={{...uiLabel,padding:"0 10px 8px",fontSize:9}}>Secciones</p>
@@ -3889,7 +4027,7 @@ export default function HarmoniaApp(){
 
         {/* ── CONTENIDO PRINCIPAL ── */}
         <div className="flex-1 overflow-y-auto">
-          <div className={`${(tab==="bandoneon"||tab==="entrenador")?"max-w-6xl":tab==="codigo"?"max-w-3xl":"max-w-2xl"} mx-auto px-3 py-4 md:px-8 md:py-8`}>
+          <div className={`${(tab==="bandoneon"||tab==="entrenador")?"max-w-[1700px]":tab==="codigo"?"max-w-3xl":"max-w-2xl"} mx-auto ${(tab==="bandoneon"||tab==="entrenador")?"px-2 py-4 md:px-5 md:py-6":"px-3 py-4 md:px-8 md:py-8"}`}>
 
             {/* ══ EL CÓDIGO ══ */}
             {tab==="codigo"&&<ElCodigoTab/>}
