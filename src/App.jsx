@@ -1503,6 +1503,38 @@ function DisponibilidadAcorde({ tones, leftBtns, rightBtns, bellows }){
   );
 }
 
+// ─── DISPOSICIÓN DE LOS TECLADOS: lado a lado (izquierda a la izquierda) o apilados ─────────
+const anchoMano = (btns)=> btns.length ? Math.max(...btns.map(b=>b.x))+BTN_SIZE+16 : 740;
+function useDisposicion(){
+  const [lado,setLado]=useState(true);
+  const [full,setFull]=useState(false);
+  useEffect(()=>{
+    const f=()=>setFull(!!document.fullscreenElement);
+    document.addEventListener("fullscreenchange",f);
+    return ()=>document.removeEventListener("fullscreenchange",f);
+  },[]);
+  const toggleFull=()=>{ try{ if(document.fullscreenElement) document.exitFullscreen(); else document.documentElement.requestFullscreen(); }catch(e){} };
+  return {lado,setLado,full,toggleFull};
+}
+// Con ambos teclados y modo "lado a lado", los dos usan la misma escala y llenan todo el ancho.
+function calcAnchos(wrapWidth,L,R,ambas,lado,isMobile){
+  if(ambas && lado && !isMobile){
+    const gap=14, WL=anchoMano(L), WR=anchoMano(R), k=(wrapWidth-gap)/(WL+WR);
+    return {fila:true,gap,aL:Math.floor(WL*k),aR:Math.floor(WR*k)};
+  }
+  return {fila:false,gap:18,aL:wrapWidth,aR:wrapWidth};
+}
+function ControlesDisposicion({d,isMobile}){
+  const on=(v)=>uiPill(v,{padding:"5px 11px"});
+  return(
+    <div style={{display:"flex",background:"#121212",border:"1.5px solid #333333",borderRadius:10,padding:3,gap:2}}>
+      {!isMobile && <button style={on(d.lado)} onClick={()=>d.setLado(true)} title="Izquierda a la izquierda, derecha a la derecha">◫ Lado a lado</button>}
+      {!isMobile && <button style={on(!d.lado)} onClick={()=>d.setLado(false)} title="Uno debajo del otro, más grandes">☰ Apilados</button>}
+      <button style={on(d.full)} onClick={d.toggleFull} title="Usa toda la pantalla">{d.full?"⛶ Salir":"⛶ Pantalla completa"}</button>
+    </div>
+  );
+}
+
 function BandBtn({ btn, bellows, pressed, isHeard, onDown, onUp, draggable=false, onMove, oct=null, chordActive=false, chordLabel=null }) {
   const note  = bellows === "abre" ? btn.abre  : btn.cierra;
   const color = bellows === "abre" ? btn.color_abre : btn.color_cierra;
@@ -2257,6 +2289,8 @@ function BandoneonTab() {
   const acorde = useAcorde();
   const chordMap = acorde.open ? acorde.labelByPc : null;
   const canvasMaxWidth = wrapWidth; // cada teclado usa todo el ancho (apilados) para verse lo más grande posible
+  const disp = useDisposicion();
+  const an = calcAnchos(wrapWidth,leftBtns,rightBtns,view==="ambas",disp.lado,isMobile);
 
   if (!leftBtns.length) return <div style={{color:"#555",padding:20,fontSize:13}}>Cargando...</div>;
 
@@ -2335,6 +2369,7 @@ function BandoneonTab() {
               onClick={()=>setView(v)}>{l}</button>
           ))}
         </div>
+        <ControlesDisposicion d={disp} isMobile={isMobile}/>
         <button onClick={()=>{stopAllNotes();setPressedL([]);setPressedR([]);}}
           style={{padding:"5px 9px",borderRadius:9,border:"1px solid #2a2a2a",background:"transparent",color:"#8a8a8a",fontFamily:"monospace",fontSize:10,cursor:"pointer",marginLeft:"auto"}}>
           ✕
@@ -2391,13 +2426,13 @@ function BandoneonTab() {
           que estén visibles, para garantizar que SIEMPRE entren sin recortarse. */}
       <div ref={canvasWrapRef} style={{
         display: "flex",
-        flexDirection: "column",
-        gap: 18,
-        alignItems: "stretch",
+        flexDirection: an.fila ? "row" : "column",
+        gap: an.gap,
+        alignItems: an.fila ? "flex-start" : "stretch",
         paddingBottom: 8,
       }}>
         {(view==="ambas"||view==="izquierda")&&(
-          <div style={{width:"100%"}}>
+          <div style={{width: an.fila ? an.aL : "100%", flexShrink:0}}>
             <div style={{fontSize:11,color:"#8a8a8a",marginBottom:5,letterSpacing:"0.12em",
               display:"flex",alignItems:"center",gap:6}}>
               <span>MANO IZQUIERDA · {leftBtns.length} botones</span>
@@ -2406,19 +2441,19 @@ function BandoneonTab() {
             <BandCanvas buttons={leftBtns} bellows={bellows}
               pressed={pressedL} heardIds={heardIdsL}
               onDown={downL} onUp={upL} mobile={isMobile}
-              maxWidth={canvasMaxWidth} maxScale={3.6} chordMap={chordMap}
+              maxWidth={an.aL} maxScale={3.6} chordMap={chordMap}
               octMap={bellows==="abre" ? OCT_L_OPEN : OCT_L_CLOSE}/>
           </div>
         )}
         {(view==="ambas"||view==="derecha")&&(
-          <div style={{width:"100%"}}>
+          <div style={{width: an.fila ? an.aR : "100%", flexShrink:0}}>
             <div style={{fontSize:11,color:"#8a8a8a",marginBottom:5,letterSpacing:"0.12em"}}>
               MANO DERECHA · {rightBtns.length} botones
             </div>
             <BandCanvas buttons={rightBtns} bellows={bellows}
               pressed={pressedR} heardIds={heardIdsR}
               onDown={downR} onUp={upR} mobile={isMobile}
-              maxWidth={canvasMaxWidth} maxScale={3.6} chordMap={chordMap}
+              maxWidth={an.aR} maxScale={3.6} chordMap={chordMap}
               octMap={bellows==="abre" ? OCT_R_OPEN : OCT_R_CLOSE}/>
           </div>
         )}
@@ -3266,6 +3301,8 @@ function EntrenadorTab(){
   },[]);
   const bothVisible = view==="ambas";
   const maxW = wrapWidth; // cada teclado usa todo el ancho (apilados), así se ven lo más grandes posible
+  const disp = useDisposicion();
+  const an = calcAnchos(wrapWidth,leftBtns,rightBtns,view==="ambas",disp.lado,isMobile);
 
   const keyOf = useCallback((id)=>`${id}|${bellows}`,[bellows]);
   const correctOf = useCallback((btn)=>{
@@ -3472,6 +3509,7 @@ function EntrenadorTab(){
             <button key={v} style={pill(view===v,"blue")} onClick={()=>setView(v)}>{l}</button>
           ))}
         </div>
+        <ControlesDisposicion d={disp} isMobile={isMobile}/>
         <div style={{marginLeft:"auto",display:"flex",gap:6}}>
           {modo==="acordes" && (
             <button onClick={()=>setReveal(r=>!r)} style={{padding:"6px 12px",borderRadius:9,border:"1px solid #e6e6e6",background:reveal?"#e6e6e6":"transparent",color:reveal?"#0a0a0a":"#e6e6e6",fontWeight:700,fontSize:10,cursor:"pointer"}}>
@@ -3511,17 +3549,17 @@ function EntrenadorTab(){
       </div>
 
       {/* Teclados */}
-      <div ref={wrapRef} style={{display:"flex",flexDirection:"column",gap:18,alignItems:"stretch",paddingBottom:8}}>
+      <div ref={wrapRef} style={{display:"flex",flexDirection:an.fila?"row":"column",gap:an.gap,alignItems:an.fila?"flex-start":"stretch",paddingBottom:8}}>
         {(view==="ambas"||view==="izquierda")&&(
-          <div style={{width:"100%"}}>
+          <div style={{width: an.fila ? an.aL : "100%", flexShrink:0}}>
             <p style={{fontSize:11,color:"#8a8a8a",marginBottom:6,letterSpacing:"0.12em"}}>MANO IZQUIERDA · {leftBtns.length} botones</p>
-            <PaintCanvas buttons={leftBtns} guesses={guesses} keyOf={keyOf} checked={checked} correctOf={correctOf} onTapButton={tapBtn} maxWidth={maxW} maxScale={3.6} activeId={picker?.btn.id} chord={chordProps} escala={scaleProps}/>
+            <PaintCanvas buttons={leftBtns} guesses={guesses} keyOf={keyOf} checked={checked} correctOf={correctOf} onTapButton={tapBtn} maxWidth={an.aL} maxScale={3.6} activeId={picker?.btn.id} chord={chordProps} escala={scaleProps}/>
           </div>
         )}
         {(view==="ambas"||view==="derecha")&&(
-          <div style={{width:"100%"}}>
+          <div style={{width: an.fila ? an.aR : "100%", flexShrink:0}}>
             <p style={{fontSize:11,color:"#8a8a8a",marginBottom:6,letterSpacing:"0.12em"}}>MANO DERECHA · {rightBtns.length} botones</p>
-            <PaintCanvas buttons={rightBtns} guesses={guesses} keyOf={keyOf} checked={checked} correctOf={correctOf} onTapButton={tapBtn} maxWidth={maxW} maxScale={3.6} activeId={picker?.btn.id} chord={chordProps} escala={scaleProps}/>
+            <PaintCanvas buttons={rightBtns} guesses={guesses} keyOf={keyOf} checked={checked} correctOf={correctOf} onTapButton={tapBtn} maxWidth={an.aR} maxScale={3.6} activeId={picker?.btn.id} chord={chordProps} escala={scaleProps}/>
           </div>
         )}
       </div>
