@@ -140,9 +140,29 @@ correlación fuerte, habría que sospechar que se forzó algo.
 - **La tabla de la paleta del `README.md` publicaba siete hexes que no eran los
   del código**, ninguno de los siete. Se corrigió contra `src/App.jsx`.
 
-## Lo que queda abierto
+## Lo que se decidió (7-oct-2026)
 
-Son decisiones de toromboto, no de quien programa:
+Mauro las delegó con un criterio —«la que más se ajuste a los objetivos
+didácticos de la app»— y se aplicaron en `src/App.jsx` por un pedido de cambios
+desde la copia `maurogasta-crypto/harmonia`, para que toromboto lo acepte o no:
+
+1. **El tritono** (capítulo 5): es un complementario exacto **en la rueda
+   teórica** (30° por semitono); en la paleta de estudio esa oposición se
+   atenúa —Fa · Si a unos 115°— y se dice así: oposición de lugar, no de color.
+2. **El capítulo 8** abre aclarando que habla de lugares en la rueda teórica
+   del 5bis. Las figuras y los giros quedan intactos.
+3. **La mezcla en luz lineal NO entra a la app** por ahora: el promedio cumple
+   el objetivo del capítulo 10 (que el color se quede cerca de la tónica). La
+   comparación sigue en `public/codigo.html`. Se revisa cuando se pruebe con
+   alumnos.
+4. **Scriabin** pasa de contraejemplo a precedente, con lo que dicen las fuentes.
+
+Y una frase del capítulo 5: la mezcla de los colores de origen «orienta, no
+determina».
+
+## Lo que quedaba abierto (hasta el 7-oct)
+
+Eran decisiones de toromboto, no de quien programa:
 
 1. **Qué pasa con la frase del tritono** en el capítulo 5 y en el 8 (hoy también
    en `src/App.jsx`, líneas 2435 y 2490).

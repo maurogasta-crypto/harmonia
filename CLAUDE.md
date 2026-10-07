@@ -43,6 +43,16 @@ audio del instrumento de gestos sin copiarlo.
 versión del sistema de colores con la física revisada, y vive aparte porque
 *corrige* al manual en dos puntos: no puede pisar la pestaña «El Código» de
 `src/App.jsx` hasta que toromboto decida qué hace con esas dos correcciones.
+**Desde el 7-oct-2026 las correcciones están decididas** (Mauro las delegó al
+criterio didáctico) y van a `src/App.jsx` por pedido de cambios desde la copia
+`maurogasta-crypto/harmonia`: las acepta toromboto. Ver `EL-CODIGO.md`.
+
+**Ojo con cómo trabaja toromboto:** sube `src/App.jsx` ENTERO por la web
+(«Update App.jsx»), pegando su copia. Un cambio nuestro en ese archivo que él
+no tenga en su copia desaparece en su próximo pegado —ya pasó con el script
+`prueba` de `package.json` el 2-oct—. Por eso lo nuestro va en archivos
+aparte siempre que se pueda, y lo que toca `App.jsx` se le avisa para que
+actualice su copia antes de seguir.
 Que esté en `public/` no es comodidad: es lo que garantiza que no pueda romper
 la app compilada, porque no comparte con ella ni una línea de código.
 
