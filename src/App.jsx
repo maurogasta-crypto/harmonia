@@ -1359,7 +1359,21 @@ const ACORDE_INI  = {root:"C",base:"M",sept:"none",nov:"none",und:"none",tre:"no
 const ACORDE_RAICES = ["C","C#","Db","D","D#","Eb","E","F","F#","Gb","G","G#","Ab","A","A#","Bb","B"];
 const GRADO_LAB = {"R":0,"2":1,"3":2,"b3":2,"4":3,"5":4,"b5":4,"#5":4,"6":5,"b7":6,"7":6,"bb7":6,"b9":1,"9":1,"#9":1,"11":3,"#11":3,"b13":5,"13":5};
 
-function useAcorde(){
+const ROM_N=["I","II","III","IV","V","VI","VII","VIII","IX","X","XI","XII","XIII"];
+// "R","3","b7","9","#11","13","8" → I, III, ♭VII, IX, ♯XI, XIII, VIII
+const aRomano = (lab)=>{
+  if(lab==="R") return "I";
+  const m=/^(bb|b|#)?(\d+)$/.exec(String(lab));
+  if(!m) return lab;
+  const acc=m[1]==="bb"?"♭♭":m[1]==="b"?"♭":m[1]==="#"?"♯":"";
+  return acc+(ROM_N[+m[2]-1]||m[2]);
+};
+function useRomanos(){
+  const [r,setR]=useState(()=>{ try{ const v=localStorage.getItem("harmonia_romanos"); return v===null?true:v==="1"; }catch(e){ return true; } });
+  const set=(v)=>{ setR(v); try{ localStorage.setItem("harmonia_romanos",v?"1":"0"); }catch(e){} };
+  return [r,set];
+}
+function useAcorde(romano=false,setRomano=()=>{}){
   const [ac,setAc]     = useState(ACORDE_INI);
   const [open,setOpen] = useState(false);
   const set   = (k,v)=>setAc(p=>({...p,[k]:v}));
@@ -1379,7 +1393,8 @@ function useAcorde(){
       if(seen.has(pc)) return; seen.add(pc);
       tones.push({...it,pc,esc,nombre:nombreLat(esc)});
     });
-    const labelByPc={}; tones.forEach(t=>{labelByPc[t.pc]=t.lab;});
+    const tonesF=tones.map(t=>({...t,lab:romano?aRomano(t.lab):t.lab}));
+    const labelByPc={}; tonesF.forEach(t=>{labelByPc[t.pc]=t.lab;});
     const partes=[];
     if(ac.seis) partes.push("6");
     if(ac.sept!=="none") partes.push(ACORDE_SEPT.find(x=>x.id===ac.sept).label);
@@ -1387,9 +1402,9 @@ function useAcorde(){
     if(ac.und!=="none") partes.push(ac.und);
     if(ac.tre!=="none") partes.push(ac.tre);
     const name = `${nombreLat(ac.root)} ${base.label}`+(ac.sin5?" (sin 5ª)":"")+(partes.length?" + "+partes.join(" + "):"");
-    return {tones,labelByPc,name,rootIdx:r};
-  },[ac]);
-  return {ac,set,reset,open,setOpen,...calc,key:JSON.stringify(ac)};
+    return {tones:tonesF,labelByPc,name,rootIdx:r};
+  },[ac,romano]);
+  return {ac,set,reset,open,setOpen,romano,setRomano,...calc,key:JSON.stringify(ac)};
 }
 
 const tocarAcordeBand = (A)=>{
@@ -1452,6 +1467,11 @@ function ArmadorAcordes({ a, collapsible=true, children }){
             <div className="flex items-center justify-between gap-2 flex-wrap mb-2">
               <p style={{fontSize:14,fontFamily:"'Libre Baskerville',serif",fontWeight:700,color:UI.text}}>{a.name}</p>
               <button onClick={()=>tocarAcordeBand(a)} style={{padding:"6px 14px",borderRadius:9,border:`1px solid ${UI.text}`,background:"transparent",color:UI.text,fontWeight:700,fontSize:11,cursor:"pointer",fontFamily:"monospace"}}>▶ Tocar acorde</button>
+            </div>
+            <div className="flex gap-1.5 mb-2 items-center">
+              <span style={{fontSize:10,letterSpacing:"0.14em",color:UI.mute,textTransform:"uppercase",marginRight:4}}>Función</span>
+              <button style={pill(a.romano)} onClick={()=>a.setRomano(true)}>I · III · V</button>
+              <button style={pill(!a.romano)} onClick={()=>a.setRomano(false)}>1 · 3 · 5</button>
             </div>
             <div className="flex flex-wrap gap-2">
               {a.tones.map(t=>(
@@ -2290,7 +2310,8 @@ function BandoneonTab() {
   const [canvasWrapRef, wrapMedido] = useAnchoMedido();
   const wrapWidth = wrapMedido || 900;
   const bothVisible = view==="ambas";
-  const acorde = useAcorde();
+  const [romano,setRomano]=useRomanos();
+  const acorde = useAcorde(romano,setRomano);
   const chordMap = acorde.open ? acorde.labelByPc : null;
   const canvasMaxWidth = wrapWidth; // cada teclado usa todo el ancho (apilados) para verse lo más grande posible
   const disp = useDisposicion();
@@ -3276,13 +3297,21 @@ function EntrenadorTab(){
   const [modo, setModo]       = useState("colores");   // "colores" | "acordes"
   const [chordSel, setChordSel] = useState({});         // `${id}|${bellows}` -> true
   const [reveal, setReveal]     = useState(false);
-  const acorde = useAcorde();
+  const [romano,setRomano]=useRomanos();
+  const acorde = useAcorde(romano,setRomano);
   useEffect(()=>{ setChecked(false); setReveal(false); },[acorde.key, modo]);
   // — Escalas —
   const [escRoot,setEscRoot]=useState("C"), [escTipo,setEscTipo]=useState("mayor"), [escMano,setEscMano]=useState("der");
   const [escDir,setEscDir]=useState("sube"), [escStart,setEscStart]=useState(-1), [escModo,setEscModo]=useState("ver");
   const [prog,setProg]=useState({i:1,err:0,hint:false,wrong:null});
   const escTimers=useRef([]);
+  const esProfe = !window.__ALUMNO;
+  const [digBase,setDigBase]=useState({});
+  const [digLocal,setDigLocal]=useState(()=>{ try{ return JSON.parse(localStorage.getItem("harmonia_digitacion")||"{}"); }catch(e){ return {}; } });
+  const [editDed,setEditDed]=useState(false);
+  useEffect(()=>{ let vivo=true;
+    fetch("digitaciones.json",{cache:"no-store"}).then(r=>r.ok?r.json():null).then(j=>{ if(vivo&&j&&typeof j==="object"&&!Array.isArray(j)) setDigBase(j); }).catch(()=>{});
+    return ()=>{vivo=false;}; },[]);
   useEffect(()=>()=>escTimers.current.forEach(clearTimeout),[]);
   useEffect(()=>{ setProg({i:1,err:0,hint:false,wrong:null}); },[escRoot,escTipo,escMano,escDir,escStart,escModo,bellows,modo]);
 
@@ -3342,6 +3371,15 @@ function EntrenadorTab(){
   const itemDe = (btn)=> itemsMano([btn],bellows)[0];
   const etiqueta = (it)=> (escDeletreo[it.pc]||CROM_SIMPLE[CHROMATIC[it.pc]]) + it.oct;
   const tocarItem = (it)=> playBand(CHROMATIC[it.pc], it.oct);
+  // Digitación: dedo recomendado por nota para ESTA escala/mano/sentido/fuelle/nota de inicio (la carga el profesor)
+  const digKey = escR.route.length ? [escTipo,escRoot,escMano,escDir,bellows,etiqueta(escR.route[0].item)].join("|") : "";
+  const digEf  = {...digBase,...digLocal};
+  const dedos  = (digKey && digEf[digKey]) || [];
+  const guardarDig = (arr)=>{ const n={...digLocal,[digKey]:arr}; if(!arr.some(x=>x)) delete n[digKey]; setDigLocal(n); try{ localStorage.setItem("harmonia_digitacion",JSON.stringify(n)); }catch(e){} };
+  const ciclarDedo = (i)=>{ const arr=escR.route.map((_,k)=>dedos[k]||0); arr[i]=((arr[i]||0)+1)%5; guardarDig(arr); };
+  const descargarDig = ()=>{ const b=new Blob([JSON.stringify(digEf,null,1)],{type:"application/json"}), a=document.createElement("a"); a.href=URL.createObjectURL(b); a.download="digitaciones.json"; document.body.appendChild(a); a.click(); a.remove(); };
+  const verDedo = (i)=> escModo==="ver" || i<prog.i || (prog.hint && i===prog.i);
+  const gradoTxt = (r,i)=>{ const n=escIvs.length; const esOct = escR.route.length===n+1 && (escDir!=="baja" ? i===n : i===0); const lab = esOct ? "8" : GRADO_LABEL[escIvs[r.deg]]; return romano ? aRomano(lab) : lab; };
   const escEscuchar = ()=>{
     escTimers.current.forEach(clearTimeout); escTimers.current=[];
     escR.route.forEach((r,i)=>escTimers.current.push(setTimeout(()=>tocarItem(r.item), i*430)));
@@ -3359,15 +3397,16 @@ function EntrenadorTab(){
   };
   const escStateOf = (btn)=>{
     const it = itemDe(btn), col = nc(CHROMATIC[it.pc]), ri = escIdxById[btn.id], enEsc = escPcSet.has(it.pc);
-    const num = (n,sub,bg)=> <span style={{display:"flex",flexDirection:"column",alignItems:"center",lineHeight:1.05,color:txtSobre(bg)}}>
-        <b style={{fontSize:14}}>{n}</b><span style={{fontSize:8.5,fontWeight:800,fontFamily:"monospace"}}>{sub}</span></span>;
+    const num = (n,sub,bg,ded)=> <span style={{display:"flex",flexDirection:"column",alignItems:"center",lineHeight:1.05,color:txtSobre(bg)}}>
+        <b style={{fontSize:String(n).length>2?11:14}}>{n}</b><span style={{fontSize:8.5,fontWeight:800,fontFamily:"monospace"}}>{sub}</span>
+        {ded ? <span style={{position:"absolute",top:-8,right:-8,width:18,height:18,borderRadius:"50%",background:"#fff",color:"#111",fontSize:11,fontWeight:900,display:"flex",alignItems:"center",justifyContent:"center",boxShadow:"0 1px 4px rgba(0,0,0,.7)"}}>{ded}</span> : null}</span>;
     if(escModo==="ver"){
-      if(ri!==undefined) return {bg:col, border:"3px solid #fff", glow:`0 0 14px ${col}cc`, content:num(ri+1,etiqueta(it),col)};
+      if(ri!==undefined) return {bg:col, border:"3px solid #fff", glow:`0 0 14px ${col}cc`, content:num(gradoTxt(escR.route[ri],ri),etiqueta(it),col,verDedo(ri)?dedos[ri]:0)};
       if(enEsc) return {bg:col+"55", border:`2px solid ${col}`, glow:"none", content:<span style={{fontSize:8.5,fontWeight:700,color:"#ddd",fontFamily:"monospace"}}>{etiqueta(it)}</span>};
       return {bg:"#121212", border:"3px solid #262626", glow:"none", content:null};
     }
     // práctica: no se regalan los colores hasta acertar
-    if(ri!==undefined && ri<prog.i) return {bg:col, border:"3px solid #6b9c7c", glow:`0 0 12px ${col}aa`, content:num(ri+1,etiqueta(it),col)};
+    if(ri!==undefined && ri<prog.i) return {bg:col, border:"3px solid #6b9c7c", glow:`0 0 12px ${col}aa`, content:num(gradoTxt(escR.route[ri],ri),etiqueta(it),col,verDedo(ri)?dedos[ri]:0)};
     const esProx = prog.hint && escR.route[prog.i] && escR.route[prog.i].item.b.id===btn.id;
     if(prog.wrong===btn.id) return {bg:"#3a1a1a", border:"3px solid #b5564f", glow:"0 0 10px #b5564f", content:<span style={{color:"#fff",fontWeight:800}}>✕</span>};
     if(esProx) return {bg:"#1a1a1a", border:"3px dashed #fff", glow:"0 0 10px #ffffff88", content:null};
@@ -3468,14 +3507,31 @@ function EntrenadorTab(){
             <button style={uiPill(false)} onClick={escEscuchar}>▶ Escuchar</button>
             {escModo==="practica" && <button style={uiPill(prog.hint)} onClick={()=>setProg(p=>({...p,hint:!p.hint}))}>💡 Pista</button>}
           </div>
+          <div className="flex flex-wrap gap-2 items-center mb-3">
+            <span style={uiLabel}>Función</span>
+            <button style={uiPill(romano)} onClick={()=>setRomano(true)}>I · II · III</button>
+            <button style={uiPill(!romano)} onClick={()=>setRomano(false)}>1 · 2 · 3</button>
+            {esProfe && <>
+              <span style={{width:10}}/>
+              <button style={uiPill(editDed)} onClick={()=>setEditDed(e=>!e)}>✏️ Editar dedos</button>
+              <button style={uiPill(false)} onClick={descargarDig}>⬇ digitaciones.json</button>
+              {dedos.some(x=>x) && <button style={uiPill(false)} onClick={()=>guardarDig([])}>Borrar esta digitación</button>}
+            </>}
+          </div>
           {/* fila coloreada sugerida */}
           <div style={{display:"flex",gap:6}}>
             {escR.route.map((r,i)=>{ const col=nc(CHROMATIC[r.item.pc]); const hecho = escModo==="ver" || i<prog.i; return(
-              <div key={i} style={{flex:"1 1 0",minWidth:0,borderRadius:10,padding:"7px 2px",textAlign:"center",background:hecho?col:"#161616",border:`2px solid ${hecho?"rgba(255,255,255,.35)":"#2a2a2a"}`,color:hecho?txtSobre(col):"#555",transition:"background .2s"}}>
-                <div style={{fontSize:9,fontWeight:700,fontFamily:"monospace",opacity:.8}}>{GRADO_LABEL[escIvs[r.deg]]}</div>
+              <div key={i} onClick={()=>{ if(esProfe&&editDed) ciclarDedo(i); }} style={{flex:"1 1 0",minWidth:0,borderRadius:10,padding:"7px 2px",textAlign:"center",cursor:esProfe&&editDed?"pointer":"default",outline:esProfe&&editDed?"1px dashed #ffffff88":"none",background:hecho?col:"#161616",border:`2px solid ${hecho?"rgba(255,255,255,.35)":"#2a2a2a"}`,color:hecho?txtSobre(col):"#555",transition:"background .2s"}}>
+                <div style={{fontSize:10,fontWeight:800,fontFamily:"monospace",opacity:.85}}>{gradoTxt(r,i)}</div>
                 <div style={{fontSize:13,fontWeight:900,fontFamily:"serif"}}>{hecho?etiqueta(r.item):"?"}</div>
+                <div style={{marginTop:3,minHeight:16,fontSize:11,fontWeight:900,fontFamily:"monospace",opacity:.9}}>{verDedo(i)?(dedos[i]?("☝"+dedos[i]):(esProfe&&editDed?"＋":"·")):""}</div>
               </div>);})}
           </div>
+          <p style={{fontSize:11,color:"#8a8a8a",margin:"8px 0 0"}}>
+            {dedos.some(x=>x) ? "Dedo recomendado (☝): 1 índice · 2 medio · 3 anular · 4 meñique."
+              : esProfe&&editDed ? "Tocá cada nota de la fila para asignarle un dedo (1 índice, 2 medio, 3 anular, 4 meñique). Se guarda en este navegador."
+              : "Digitación: todavía no cargada para esta escala."}
+          </p>
           {escR.missing.length>0 && <p style={{fontSize:11.5,color:"#c9a25a",margin:"10px 0 0"}}>⚠ Con este fuelle y esta mano no hay {escR.missing.length>1?"notas":"una nota"} más arriba/abajo ({escR.missing.map(pc=>escDeletreo[pc]||CROM_SIMPLE[CHROMATIC[pc]]).join(", ")}). Probá el otro sentido del fuelle, la otra mano u otra octava de inicio.</p>}
           {escModo==="practica" && (
             <p style={{fontSize:13,margin:"10px 0 0",color:prog.i>=escR.route.length&&escR.route.length?"#6b9c7c":"#cfcfcf"}}>
