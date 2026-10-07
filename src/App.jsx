@@ -1503,6 +1503,20 @@ function DisponibilidadAcorde({ tones, leftBtns, rightBtns, bellows }){
   );
 }
 
+// Mide el ancho real de un contenedor aunque aparezca después (p. ej. tras cargar los botones).
+function useAnchoMedido(){
+  const [w,setW]=useState(0);
+  const roRef=useRef(null);
+  const ref=useCallback((el)=>{
+    if(roRef.current){ roRef.current.disconnect(); roRef.current=null; }
+    if(!el) return;
+    const upd=()=>setW(Math.floor(el.getBoundingClientRect().width)||el.clientWidth||0);
+    upd();
+    if(typeof ResizeObserver!=="undefined"){ const ro=new ResizeObserver(upd); ro.observe(el); roRef.current=ro; }
+  },[]);
+  return [ref,w];
+}
+
 // ─── DISPOSICIÓN DE LOS TECLADOS: lado a lado (izquierda a la izquierda) o apilados ─────────
 const anchoMano = (btns)=> btns.length ? Math.max(...btns.map(b=>b.x))+BTN_SIZE+16 : 740;
 function useDisposicion(){
@@ -1666,7 +1680,7 @@ function BandCanvas({ buttons, bellows, pressed, heardIds=[], onDown, onUp,
       onClick={()=>onSelect&&onSelect(null)}
       style={{
         position: "relative",
-        width: W, height: H,
+        width: W, height: H, boxSizing: "border-box",
         flexShrink: 0,
         transform: `scale(${scale})`,
         transformOrigin: "top left",
@@ -2273,18 +2287,8 @@ function BandoneonTab() {
 
   // Mide el ancho REAL disponible del contenedor (no una suposición fija)
   // y lo reparte entre los teclados visibles, para que los dos entren siempre.
-  const canvasWrapRef = useRef(null);
-  const [wrapWidth, setWrapWidth] = useState(320);
-  useEffect(()=>{
-    const el = canvasWrapRef.current;
-    if(!el) return;
-    const update = () => setWrapWidth(el.clientWidth || 320);
-    update();
-    const ro = new ResizeObserver(update);
-    ro.observe(el);
-    window.addEventListener("resize", update);
-    return () => { ro.disconnect(); window.removeEventListener("resize", update); };
-  },[]);
+  const [canvasWrapRef, wrapMedido] = useAnchoMedido();
+  const wrapWidth = wrapMedido || 900;
   const bothVisible = view==="ambas";
   const acorde = useAcorde();
   const chordMap = acorde.open ? acorde.labelByPc : null;
@@ -3164,7 +3168,7 @@ function PaintCanvas({ buttons, guesses, keyOf, checked, correctOf, onTapButton,
     <div style={{width:"100%", overflow:"hidden"}}>
     <div style={{width:scaledW, height:scaledH, overflow:"hidden", flexShrink:0, margin:"0 auto"}}>
       <div style={{
-        position:"relative", width:W, height:H,
+        position:"relative", width:W, height:H, boxSizing:"border-box",
         transform:`scale(${scale})`, transformOrigin:"top left",
         background:"linear-gradient(145deg,#1d1d1d,#101010)",
         border:"2px solid #3a3a3a", borderRadius:16,
@@ -3289,16 +3293,8 @@ function EntrenadorTab(){
     return ()=>window.removeEventListener("resize",check);
   },[]);
 
-  const wrapRef = useRef(null);
-  const [wrapWidth, setWrapWidth] = useState(320);
-  useEffect(()=>{
-    const el = wrapRef.current; if(!el) return;
-    const update=()=>setWrapWidth(el.clientWidth||320);
-    update();
-    const ro = new ResizeObserver(update); ro.observe(el);
-    window.addEventListener("resize",update);
-    return ()=>{ ro.disconnect(); window.removeEventListener("resize",update); };
-  },[]);
+  const [wrapRef, wrapMedido] = useAnchoMedido();
+  const wrapWidth = wrapMedido || 900;
   const bothVisible = view==="ambas";
   const maxW = wrapWidth; // cada teclado usa todo el ancho (apilados), así se ven lo más grandes posible
   const disp = useDisposicion();
