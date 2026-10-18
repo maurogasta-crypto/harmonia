@@ -221,6 +221,11 @@ escribe en «La bitácora».
   que sobraba de este lado** —el suavizado, que solo se comía 100 ms—; si con
   eso todavía se siente tarde, lo que sigue es la APK, en un repositorio
   aparte y con la misma lógica de `musica.js` traducida.
+  **Se sintió tarde, y la APK existe desde el 18-oct-2026**: está en `android/`
+  de `maurogasta-crypto/gestos` (no acá, porque Harmonía publica por Vercel y
+  la APK necesita su propio workflow). `Musica.kt` e `Instrumento.kt` son
+  traducciones de `musica.js` e `instrumento.js`: si cambia uno, cambia el
+  otro en la misma tanda.
 - **Pocos gestos.** El pellizco y el puño. Cruzar una zona de la
   pantalla y los gestos de dos manos combinados quedaron para después.
 - **La melodía es monofónica.** Una nota por vez, con ligado. Un acorde con la
