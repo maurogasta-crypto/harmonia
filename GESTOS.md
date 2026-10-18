@@ -14,8 +14,10 @@ servidor.
 
 ## 1. Qué es, y qué no
 
-**Es** un instrumento: la mano derecha elige y hace sonar una nota, la
-izquierda acompaña con un acorde.
+**Es** un instrumento, y desde el 18-oct-2026 un theremin con colores: una
+mano da la altura —continua, con todo el cromatismo y lo que hay entre dos
+semitonos— y la otra el volumen. Hasta esa fecha la derecha caía en franjas de
+una escala y la izquierda sostenía un acorde (ver § 2, «Lo que cambió»).
 
 **No es** parte de la aplicación React. `gestos.html` vive en `public/`, así
 que Vite **lo copia tal cual**, sin compilar. Se abre sola, sin `npm install`,
@@ -35,40 +37,56 @@ lo que se paga por no tener build en esta página, y por eso está anotado.
 
 ## 2. Cómo se toca
 
-### Mano derecha — la melodía
+### La mano de la nota (la derecha, o la izquierda si se elige)
 
 | Gesto | Qué hace |
 |---|---|
-| Mover de izquierda a derecha | Elige la nota. Las franjas de color en pantalla son el teclado. |
-| Juntar pulgar e índice | La nota suena. Separarlos la calla. |
-| Apretar más el pellizco | Más vibrato. El instrumento responde a la presión, no sólo a la posición. |
+| Mover de izquierda a derecha | Cambia la altura **sin cortes**. El fondo es un degradé con el color tonal de cada semitono en su lugar; las líneas marcadas son las notas de la escala, las tenues el resto de los semitonos. |
 | Subir o bajar la mano | Abre o cierra el brillo (el filtro). |
-| Acercarse a la cámara | Sube el volumen. |
+| Apretar pulgar e índice | Vibrato: cuanto más apretado, más tiembla. |
 
-### Mano izquierda — el acompañamiento
+### La otra mano — el volumen
 
 | Gesto | Qué hace |
 |---|---|
-| Mano abierta | Suena un acorde del grado donde esté la mano. |
-| Puño cerrado | Calla el acorde. El punto se pone naranja para avisar que la mano está cerrada. |
+| Subirla | Más fuerte. Abajo del 85 % del cuadro, silencio; arriba del 20 %, el máximo. |
+| Cerrar el puño | Calla en el acto. La barra del costado se pone naranja. |
 
-### Tres decisiones que se sienten al tocar
+**Sin las dos manos a la vista no suena.** Si se pierde la de la nota, seguir
+en la última altura sería una nota que nadie está tocando.
 
-**El pellizco tiene dos umbrales, no uno.** Abre en 0,55 palmos y cierra en
-0,78. Con un solo umbral la nota parpadea justo en el borde — que es
-exactamente donde queda la mano de alguien tocando despacio.
+### Lo que cambió el 18-oct-2026, y por qué
 
-**El puño hay que sostenerlo 700 ms.** Un puño instantáneo aparece solo cada
-vez que la mano sale del cuadro o se cierra para rascarse la nariz. Setecientos
-milisegundos es lo que separa un gesto de un accidente.
+Lo pidió Mauro: «la mano izquierda o derecha hace la nota y la otra mano hace
+el volumen, y el pasaje en la pantalla debería ser continuo y no cortado por
+nota, para tener todo el cromatismo».
 
-**La nota se lee del nudillo del medio, no de la punta del índice.** El nudillo
-casi no se mueve cuando los dedos se abren y se cierran, así que la nota no
-salta al pellizcar. Con la punta del índice, cada ataque cambiaba de nota.
+- **La escala ya no corta: guía.** Marca las líneas fuertes y es adonde tira
+  el **imán** (`imanar` de `musica.js`): en 0 es glissando puro, en 1 vuelve a
+  ser el teclado por notas de antes. Así lo de antes sigue estando, a un
+  deslizador de distancia.
+- **El pellizco dejó de hacer sonar.** Ahora suena la otra mano; el pellizco
+  quedó para el vibrato.
+- **El acorde de la mano izquierda se fue**, porque esa mano es la del
+  volumen. Volvería con un tercer gesto, no quitándole el volumen.
+- **La altura se mueve aunque no suene**: al abrir el volumen entra en la nota
+  a la que se apuntó, sin glissando desde la última.
+- **El suavizado llegaba 123 ms tarde, y era un error.** El filtro de una euro
+  tenía `beta` 0,02 con la velocidad medida en pantallas por segundo, así que
+  nunca se abría: un pasabajos fijo de 1,2 Hz. Con `beta` 3 llega a los 25 ms
+  con el mismo temblor en reposo (1,6 cents). Con notas en franjas no se
+  notaba —la franja tapaba el retraso—; con altura continua es lo primero que
+  se siente.
+
+### La nota se lee del nudillo del medio, no de la punta del índice
+
+El nudillo casi no se mueve cuando los dedos se abren y se cierran, así que la
+altura no se corre al apretar el pellizco para el vibrato.
 
 ### Si las manos salen cambiadas
 
-Tocá **«Cambiar mano»**. MediaPipe etiqueta las manos como si la imagen
+Tocá **«Manos cambiadas»** (hasta el 18-oct se llamaba «Cambiar mano»; se
+renombró para no confundirlo con elegir qué mano da la nota). MediaPipe etiqueta las manos como si la imagen
 estuviera espejada; con la cámara frontal y el cuadro sin espejar, sale al
 revés. Por eso es un botón y no una constante: se comprueba mirando la
 pantalla, no leyendo la documentación.
@@ -89,7 +107,8 @@ public/gestos/
 Se puede cambiar el motor de audio sin tocar la cámara, y probar la cámara sin
 que suene nada. Lo que sale de `manos.js` no son 21 puntos por mano: son cinco
 números con sentido musical (dónde está, qué tan cerca, si pellizca, si cierra
-el puño). El resto de la aplicación no debería saber qué es un *landmark*.
+el puño). `audio.js` le ofrece al instrumento una voz continua —`altura` con
+decimales y `nivel`— y conserva `notaOn`/`notaOff`, que usa la práctica. El resto de la aplicación no debería saber qué es un *landmark*.
 
 ### Dos decisiones técnicas que vale la pena no deshacer
 
@@ -101,7 +120,9 @@ para cuando el sonido llega la mano ya se movió.
 
 **El suavizado es un filtro de una euro, no un promedio.** Cuanto más rápido se
 mueve la mano, menos se la suaviza. Un promedio fijo o tiembla en reposo o
-llega tarde al ataque; esto no hace ni una cosa ni la otra.
+llega tarde al ataque; esto no hace ni una cosa ni la otra — **siempre que
+`beta` esté en la escala de la velocidad**, que va en pantallas por segundo.
+Con 0,02 no se abría nunca (§ 2); el banco mide el retraso.
 
 **MediaPipe se carga al encender la cámara, no al abrir la página.** Con un
 `import` estático arriba de todo, un CDN que no contesta —un ascensor, un tren,
@@ -171,7 +192,18 @@ escribe en «La bitácora».
   (`harmonia:H3`): el control de luces quedó en **remate**, con Firebase Auth,
   y dos puentes a Tuya en el ecosistema era el mismo trabajo hecho dos veces,
   peor de este lado. Si vuelve, vuelve con autenticación de verdad.
-- **Pocos gestos.** El pellizco y la mano abierta. Cruzar una zona de la
+- **¿Una aplicación nativa, por la latencia?** Mauro lo planteó el
+  18-oct-2026. El retraso que se siente es la suma de tres cosas: la cámara
+  (un cuadro cada 33 ms a 30 por segundo), el reconocimiento de MediaPipe
+  (unos 10–30 ms en un teléfono con GPU) y la salida de audio, que en Chrome
+  para Android anda en 40–100 ms según el teléfono. La lectura en vivo muestra
+  ahora esa última («audio N ms»). Una APK con MediaPipe nativo y AAudio/Oboe
+  puede bajar el audio a 10–20 ms en un teléfono que lo soporte bien, y pedir
+  la cámara a 60 cuadros: del orden de 50–80 ms menos. **Antes se arregló lo
+  que sobraba de este lado** —el suavizado, que solo se comía 100 ms—; si con
+  eso todavía se siente tarde, lo que sigue es la APK, en un repositorio
+  aparte y con la misma lógica de `musica.js` traducida.
+- **Pocos gestos.** El pellizco y el puño. Cruzar una zona de la
   pantalla y los gestos de dos manos combinados quedaron para después.
 - **La melodía es monofónica.** Una nota por vez, con ligado. Un acorde con la
   mano derecha necesitaría varias voces, y el pellizco ya no alcanzaría como
@@ -191,7 +223,8 @@ escribe en «La bitácora».
   es fácil: no hay ninguna credencial en el proyecto. Si vuelve a haber una
   función de servidor, la página manda un alias y la función traduce.
 - **Se corre el banco de pruebas antes de subir**: `npm run prueba`. Cubre la
-  teoría musical del instrumento — 8 casos. Lo que necesita cámara o Web Audio
+  teoría musical del instrumento, y desde el 18-oct-2026 el instrumento entero
+contra un lienzo y un motor de mentira y el retraso del suavizado — 17 casos. Lo que necesita cámara o Web Audio
   no se prueba ahí: se prueba con la mano.
 - **Que el JavaScript parsee antes de entregar** (`node --check`): un error de
   sintaxis en un módulo ES deja la página en blanco, sin nada que explique por

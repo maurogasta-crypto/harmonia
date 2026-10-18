@@ -4,7 +4,8 @@
 //   node pruebas/gestos.mjs
 //
 // Sin dependencias y sin navegador: corre la lógica que se puede correr — la
-// teoría musical del instrumento. Lo que necesita cámara o Web Audio no se
+// teoría musical del instrumento, y desde el 18-oct-2026 el instrumento
+// entero contra un lienzo y un motor de mentira. Lo que necesita cámara o Web Audio no se
 // prueba acá, se prueba con la mano.
 // ─────────────────────────────────────────────────────────────────────────────
 
@@ -83,6 +84,129 @@ await prueba("cada nota tiene color, incluidas las alteradas", () => {
 await prueba("la etiqueta latina no se olvida de la octava", () => {
   assert.equal(M.etiquetaDe(60, false), "C4");
   assert.equal(M.etiquetaDe(60, true), "DO4");
+});
+
+
+// ═══ El diapasón continuo (gestos-musica 1.1, instrumento 3.0) ══════════════
+titulo("el diapasón continuo — una mano la altura, la otra el volumen");
+
+await prueba("la altura es continua: entre dos semitonos hay cents, no un salto", () => {
+  const base = 57, semis = 24;
+  const a = M.alturaDe(0.5, base, semis);
+  assert.equal(a, base + 12, "el centro de la pantalla es la octava del medio");
+  // Un paso chico de la mano es un paso chico de altura, en cualquier lugar.
+  for (let i = 0; i < 100; i++) {
+    const x = M.MARGEN + (i / 100) * (1 - 2 * M.MARGEN);
+    const d = M.alturaDe(x + 0.001, base, semis) - M.alturaDe(x, base, semis);
+    assert.ok(d > 0 && d < 0.05, `salto de ${d} semitonos en x=${x}`);
+  }
+});
+
+await prueba("los bordes llegan a las dos puntas del registro y no se pasan", () => {
+  assert.equal(M.alturaDe(0, 57, 24), 57);
+  assert.equal(M.alturaDe(M.MARGEN, 57, 24), 57);
+  assert.equal(M.alturaDe(1 - M.MARGEN, 57, 24), 81);
+  assert.equal(M.alturaDe(1.2, 57, 24), 81);
+});
+
+await prueba("posicionDe es la inversa exacta de alturaDe: la línea está donde suena", () => {
+  for (let m = 57; m <= 81; m += 0.25) {
+    const x = M.posicionDe(m, 57, 24);
+    assert.ok(Math.abs(M.alturaDe(x, 57, 24) - m) < 1e-9, `MIDI ${m}`);
+  }
+});
+
+await prueba("el imán: en 0 no toca nada, en 1 cae en la nota, en el medio acerca", () => {
+  const notas = M.rejilla({ tonica: "A", octava: 3, escala: "pentaMenor", octavas: 2 });
+  assert.equal(M.imanar(58.3, notas, 0), 58.3);
+  assert.equal(M.imanar(58.3, notas, 1), 57);
+  const medio = M.imanar(58.3, notas, 0.5);
+  assert.ok(medio > 57 && medio < 58.3, `quedó en ${medio}`);
+  // Nunca se aleja: sea cual sea la fuerza, queda más cerca de alguna nota.
+  for (let m = 57; m <= 81; m += 0.1) {
+    const d0 = Math.min(...notas.map(n => Math.abs(n - m)));
+    const d1 = Math.min(...notas.map(n => Math.abs(n - M.imanar(m, notas, 0.6))));
+    assert.ok(d1 <= d0 + 1e-9, `MIDI ${m} se alejó`);
+  }
+});
+
+await prueba("una altura se nombra por la nota más cercana y sus cents, ±50", () => {
+  assert.deepEqual(M.afinacionDe(69), { nota: 69, cents: 0 });
+  assert.deepEqual(M.afinacionDe(69.12), { nota: 69, cents: 12 });
+  assert.deepEqual(M.afinacionDe(68.7), { nota: 69, cents: -30 });
+  for (let m = 60; m < 72; m += 0.07) assert.ok(Math.abs(M.afinacionDe(m).cents) <= 50);
+  // Y la frecuencia acepta los decimales: medio semitono es la raíz doceava de 2, a medias.
+  assert.ok(Math.abs(M.frecuenciaDe(69.5) - 440 * Math.pow(2, 0.5 / 12)) < 1e-9);
+});
+
+const I = await import("../public/gestos/instrumento.js");
+
+await prueba("el volumen: arriba fuerte, abajo calla, y nunca sube al bajar la mano", () => {
+  assert.equal(I.nivelDeAltura(0.1), 1);
+  assert.equal(I.nivelDeAltura(0.95), 0);
+  assert.equal(I.nivelDeAltura(0.86), 0, "abajo del piso hay silencio de verdad");
+  let antes = 2;
+  for (let y = 0; y <= 1; y += 0.01) {
+    const n = I.nivelDeAltura(y);
+    assert.ok(n <= antes, `sube en y=${y}`); antes = n;
+  }
+});
+
+// El instrumento entero, contra un lienzo y un motor de mentira: no suena ni
+// dibuja, pero dice qué le pidió a cada uno — y atrapa un NaN antes que la mano.
+function falsos() {
+  const pedidos = { altura: [], nivel: [] };
+  const motor = {
+    altura: (m) => pedidos.altura.push(m), nivel: (v) => pedidos.nivel.push(v),
+    brillo() {}, vibrato() {}, silencio() {},
+  };
+  const ctx = new Proxy({}, { get: (o, k) => k in o ? o[k] : (k === "createLinearGradient" ? () => ({ addColorStop() {} }) : () => {}), set: (o, k, v) => { o[k] = v; return true; } });
+  const canvas = { width: 640, height: 480, getContext: () => ctx };
+  return { pedidos, motor, canvas };
+}
+const mano = (x, y, extra = {}) => ({ x, y, pellizco: 1, puno: false, cercania: 0.5, trazo: null, ...extra });
+
+await prueba("con las dos manos suena; sin la del volumen o con el puño, calla", () => {
+  const { pedidos, motor, canvas } = falsos();
+  let estado = null;
+  const ins = I.crearInstrumento({ canvas, motor, alEstado: (e) => { estado = e; } });
+  ins.cuadro({ derecha: mano(0.5, 0.5), izquierda: mano(0.3, 0.2) }, { fps: 30 });
+  assert.ok(estado.sonando, "no suena con las dos manos");
+  assert.equal(pedidos.altura.at(-1), 57 + 12);
+  assert.ok(Number.isFinite(pedidos.nivel.at(-1)));
+  ins.cuadro({ derecha: mano(0.5, 0.5), izquierda: null }, { fps: 30 });
+  assert.equal(pedidos.nivel.at(-1), 0);
+  ins.cuadro({ derecha: mano(0.5, 0.5), izquierda: mano(0.3, 0.2, { puno: true }) }, { fps: 30 });
+  assert.equal(pedidos.nivel.at(-1), 0);
+  ins.cuadro({ derecha: null, izquierda: mano(0.3, 0.2) }, { fps: 30 });
+  assert.equal(pedidos.nivel.at(-1), 0, "sin la mano de la altura no puede seguir sonando");
+});
+
+await prueba("«la nota con la izquierda» da vuelta los papeles, y la etiqueta lleva los cents", () => {
+  const { pedidos, motor, canvas } = falsos();
+  let estado = null;
+  const ins = I.crearInstrumento({ canvas, motor, ajustes: { manoNota: "izquierda" }, alEstado: (e) => { estado = e; } });
+  const x = 0.06 + (12.3 / 24) * 0.88;  // 12,3 semitonos arriba de LA3
+  ins.cuadro({ izquierda: mano(x, 0.5), derecha: mano(0.8, 0.2) }, { fps: 30 });
+  assert.ok(Math.abs(pedidos.altura.at(-1) - 69.3) < 1e-9);
+  assert.equal(estado.etiqueta, "A4 +30¢");
+  assert.ok(estado.sonando);
+});
+
+await prueba("el suavizado de la mano llega a tiempo: menos de 40 ms en un glissando", async () => {
+  const { crearSuavizador } = await import("../public/gestos/manos.js");
+  // Es el filtro que usa el rastreador (beta 3). Con el beta de antes, 0,02,
+  // esta misma cuenta daba 123 ms: un pasabajos fijo disfrazado de una euro.
+  const f = crearSuavizador({ beta: 3 });
+  let t = 0, atraso = 0, n = 0;
+  for (let i = 0; i < 60; i++) {
+    t += 33.3;
+    const real = i * 0.0333;                 // una pantalla por segundo
+    const visto = f(real, t);
+    if (i > 20) { atraso += real - visto; n++; }
+  }
+  const ms = (atraso / n) * 1000;            // a 1 pantalla/s, la distancia es el tiempo
+  assert.ok(ms < 40, `llega ${ms.toFixed(0)} ms tarde`);
 });
 
 console.log(`\n${pasadas} pasadas, ${fallidas} fallidas\n`);
