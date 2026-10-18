@@ -175,7 +175,7 @@ vuelve a la rama.
   función de servidor, vuelve a ser la frontera que importa: el navegador manda
   un alias, el servidor traduce y firma.
 - **Se corren los bancos de pruebas antes de subir:** `npm run prueba`, que
-  encadena los dos, sin dependencias ni navegador. `pruebas/gestos.mjs` (19
+  encadena los dos, sin dependencias ni navegador. `pruebas/gestos.mjs` (20
   casos) cubre la teoría musical del instrumento, el instrumento entero contra
   un lienzo y un motor de mentira, y el retraso del suavizado; `pruebas/codigo.mjs` (60)
   cubre el motor de color, la teoría y los ejercicios de «El Código».

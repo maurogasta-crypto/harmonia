@@ -157,8 +157,9 @@ await prueba("el volumen: arriba fuerte, abajo calla, y nunca sube al bajar la m
 function falsos() {
   const pedidos = { altura: [], nivel: [] };
   const motor = {
-    altura: (m) => pedidos.altura.push(m), nivel: (v) => pedidos.nivel.push(v),
-    brillo() {}, vibrato() {}, silencio() {},
+    altura: (m, dura) => { pedidos.altura.push(m); (pedidos.dura ||= []).push(dura); },
+    nivel: (v) => pedidos.nivel.push(v),
+    brillo: (v) => (pedidos.brillo ||= []).push(v), vibrato() {}, silencio() {},
   };
   const ctx = new Proxy({}, { get: (o, k) => k in o ? o[k] : (k === "createLinearGradient" ? () => ({ addColorStop() {} }) : () => {}), set: (o, k, v) => { o[k] = v; return true; } });
   const canvas = { width: 640, height: 480, getContext: () => ctx };
@@ -169,7 +170,7 @@ const mano = (x, y, extra = {}) => ({ x, y, pellizco: 1, puno: false, cercania: 
 await prueba("con las dos manos suena; sin la del volumen o con el puño, calla", () => {
   const { pedidos, motor, canvas } = falsos();
   let estado = null;
-  const ins = I.crearInstrumento({ canvas, motor, alEstado: (e) => { estado = e; } });
+  const ins = I.crearInstrumento({ canvas, motor, ajustes: { manoNota: "derecha" }, alEstado: (e) => { estado = e; } });
   ins.cuadro({ derecha: mano(0.5, 0.5), izquierda: mano(0.3, 0.2) }, { fps: 30 });
   assert.ok(estado.sonando, "no suena con las dos manos");
   assert.equal(pedidos.altura.at(-1), 57 + 12);
@@ -211,7 +212,7 @@ await prueba("el suavizado de la mano llega a tiempo: menos de 40 ms en un gliss
 
 await prueba("subir la mano de la nota sube la nota, y moverla de costado no la cambia", () => {
   const { pedidos, motor, canvas } = falsos();
-  const ins = I.crearInstrumento({ canvas, motor });
+  const ins = I.crearInstrumento({ canvas, motor, ajustes: { manoNota: "derecha" } });
   let antes = -Infinity;
   for (let i = 19; i >= 1; i--) {
     const y = i / 20;
@@ -242,6 +243,21 @@ await prueba("todos los imports de public/gestos/ llevan el mismo ?v=, y la pág
   assert.ok(m, "gestos.html pide pagina.js sin ?v=");
   versiones.add(m[1]);
   assert.equal(versiones.size, 1, `hay más de un ?v=: ${[...versiones].join(" ")}`);
+});
+
+await prueba("por defecto la izquierda es la nota; el tono se desliza lo que tarda un cuadro; acercar no cambia nada", () => {
+  const { pedidos, motor, canvas } = falsos();
+  const ins = I.crearInstrumento({ canvas, motor });
+  assert.equal(ins.ajustes.manoNota, "izquierda");
+  let t = 0;
+  for (let i = 0; i < 10; i++) {
+    t += 66;   // 15 cuadros por segundo: un teléfono lento
+    ins.cuadro({ izquierda: mano(0.3, 0.5 - i * 0.02, { cercania: i / 10 }), derecha: mano(0.8, 0.2) }, { fps: 15, t });
+  }
+  const d = pedidos.dura.at(-1);
+  assert.ok(Math.abs(d - 0.066) < 1e-9, `la rampa dura ${d} s y el cuadro tardó 0,066`);
+  for (const x of pedidos.dura) assert.ok(x >= 0.015 && x <= 0.09, `rampa de ${x} s`);
+  assert.ok(pedidos.brillo.length <= 1, "el brillo se movió con la mano");
 });
 
 console.log(`\n${pasadas} pasadas, ${fallidas} fallidas\n`);

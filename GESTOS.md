@@ -37,12 +37,11 @@ lo que se paga por no tener build en esta página, y por eso está anotado.
 
 ## 2. Cómo se toca
 
-### La mano de la nota (la derecha, o la izquierda si se elige)
+### La mano de la nota (la izquierda, o la derecha si se elige)
 
 | Gesto | Qué hace |
 |---|---|
 | Subirla o bajarla | Sube o baja la nota **sin cortes**. El fondo es un degradé de abajo (grave) hacia arriba (agudo) con el color tonal de cada semitono en su lugar; las líneas marcadas son las notas de la escala, las tenues el resto de los semitonos. Moverla de costado no cambia la nota. |
-| Acercarla a la cámara | Abre el brillo (el filtro). |
 | Apretar pulgar e índice | Vibrato: cuanto más apretado, más tiembla. |
 
 ### La otra mano — el volumen
@@ -69,6 +68,16 @@ nota, para tener todo el cromatismo».
   quedó para el vibrato.
 - **El acorde de la mano izquierda se fue**, porque esa mano es la del
   volumen. Volvería con un tercer gesto, no quitándole el volumen.
+- **3.2, el mismo día, después de que Mauro lo tocara:** la izquierda es la
+  nota por defecto y la derecha el volumen (la elección guardada antes se
+  ignora: se había guardado «derecha» sin que nadie la eligiera). **Acercar la
+  mano no cambia nada**: movía el brillo, y un filtro que se abre se oye como
+  más volumen. **El tono se desliza**: hasta la 3.1 se fijaba en 10 ms y se
+  quedaba quieto hasta el cuadro siguiente, una escalera que a 15–30 cuadros
+  por segundo se oía como teclas; ahora va en rampa durante lo que tardó el
+  cuadro («como ir corriéndose en un violín»). Y la cámara: 480×360 hasta 60
+  cuadros, el bucle con `requestVideoFrameCallback`, y la lectura en vivo dice
+  cuánto tarda el modelo («reconoce N ms») y la bitácora si corre en GPU o CPU.
 - **Las dos manos van de arriba a abajo** (3.1, el mismo día). La 3.0 leía
   la nota de izquierda a derecha; Mauro: «la mano derecha tiene que subir y
   bajar el tono, ambas subiendo y bajando las manos». El brillo pasó a la
@@ -234,7 +243,7 @@ escribe en «La bitácora».
 - **Se corre el banco de pruebas antes de subir**: `npm run prueba`. Cubre la
   teoría musical del instrumento, y desde el 18-oct-2026 el instrumento entero
 contra un lienzo y un motor de mentira, el retraso del suavizado y que los
-`?v=` coincidan — 19 casos. Lo que necesita cámara o Web Audio
+`?v=` coincidan — 20 casos. Lo que necesita cámara o Web Audio
   no se prueba ahí: se prueba con la mano.
 - **Que el JavaScript parsee antes de entregar** (`node --check`): un error de
   sintaxis en un módulo ES deja la página en blanco, sin nada que explique por
