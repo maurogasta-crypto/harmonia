@@ -106,6 +106,13 @@ nota, para tener todo el cromatismo».
 El nudillo casi no se mueve cuando los dedos se abren y se cierran, así que la
 altura no se corre al apretar el pellizco para el vibrato.
 
+### El manual
+
+«Cómo se usa», arriba de los ajustes, abierto (18-oct-2026, Mauro: «un
+pequeño manual que explique brevemente cómo se usa y la idea de cada parte,
+lo más simple y claro posible»). Es el mismo texto que `Manual.kt` de la APK,
+y el banco comprueba que nombre cada botón y que tenga los mismos títulos.
+
 ### Si las manos salen cambiadas
 
 Desde la 3.3 no deberían: la mano que se ve a la izquierda de la pantalla es
@@ -254,7 +261,7 @@ escribe en «La bitácora».
 - **Se corre el banco de pruebas antes de subir**: `npm run prueba`. Cubre la
   teoría musical del instrumento, y desde el 18-oct-2026 el instrumento entero
 contra un lienzo y un motor de mentira, el retraso del suavizado y que los
-`?v=` coincidan, y el reparto de las manos por lado — 21 casos. Lo que necesita cámara o Web Audio
+`?v=` coincidan, el reparto de las manos por lado y que el manual nombre cada botón — 22 casos. Lo que necesita cámara o Web Audio
   no se prueba ahí: se prueba con la mano.
 - **Que el JavaScript parsee antes de entregar** (`node --check`): un error de
   sintaxis en un módulo ES deja la página en blanco, sin nada que explique por

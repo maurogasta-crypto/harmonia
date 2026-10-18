@@ -275,5 +275,23 @@ await prueba("las manos se reparten por el lado de la pantalla, no por lo que ad
   assert.ok(r.izquierda === null && r.derecha === null);
 });
 
+await prueba("el manual de la página nombra cada botón, y dice lo mismo que el de la APK", async () => {
+  const { readFileSync } = await import("node:fs");
+  const html = readFileSync(new URL("../public/gestos.html", import.meta.url), "utf8");
+  const i = html.indexOf('id="manual"');
+  assert.ok(i > 0, "falta el manual");
+  const manual = html.slice(i, html.indexOf("</details>", i));
+  for (const id of ["panico", "intercambiar"]) {
+    const rotulo = html.match(new RegExp(`id="${id}"[^>]*>([^<]+)<`))[1];
+    assert.ok(manual.includes(rotulo), `el manual no nombra «${rotulo}»`);
+  }
+  for (const p of ["izquierda", "derecha", "volumen", "imán", "pulgar"]) assert.ok(manual.includes(p), `falta «${p}»`);
+  // El de la APK (Manual.kt) vive en gestos/android: si está al lado, se compara título por título.
+  try {
+    const kt = readFileSync(new URL("../../gestos/android/app/src/main/java/com/maurogasta/gestos/Manual.kt", import.meta.url), "utf8");
+    for (const [, titulo] of kt.matchAll(/"([^"]+)" to\s/g)) assert.ok(manual.includes(titulo), `la página no tiene «${titulo}» del manual de la APK`);
+  } catch (e) { if (e.code !== "ENOENT") throw e; }
+});
+
 console.log(`\n${pasadas} pasadas, ${fallidas} fallidas\n`);
 process.exit(fallidas ? 1 : 0);
