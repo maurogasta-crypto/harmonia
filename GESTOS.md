@@ -68,6 +68,11 @@ nota, para tener todo el cromatismo».
   quedó para el vibrato.
 - **El acorde de la mano izquierda se fue**, porque esa mano es la del
   volumen. Volvería con un tercer gesto, no quitándole el volumen.
+- **3.3 (gestos-manos 1.5): qué mano es cuál lo decide el LADO de la
+  pantalla**, no la etiqueta «Left/Right» del modelo, que con la cámara
+  frontal se equivoca: la primera prueba de la APK salió con la nota en la
+  mano derecha. La pantalla es un espejo, así que la que se ve a la izquierda
+  es la izquierda (`repartirPorLado`). «Manos cambiadas» da vuelta ese reparto.
 - **3.2, el mismo día, después de que Mauro lo tocara:** la izquierda es la
   nota por defecto y la derecha el volumen (la elección guardada antes se
   ignora: se había guardado «derecha» sin que nadie la eligiera). **Acercar la
@@ -103,8 +108,9 @@ altura no se corre al apretar el pellizco para el vibrato.
 
 ### Si las manos salen cambiadas
 
-Tocá **«Manos cambiadas»** (hasta el 18-oct se llamaba «Cambiar mano»; se
-renombró para no confundirlo con elegir qué mano da la nota). MediaPipe etiqueta las manos como si la imagen
+Desde la 3.3 no deberían: la mano que se ve a la izquierda de la pantalla es
+la izquierda. **«Manos cambiadas»** da vuelta ese reparto (hasta el 18-oct se
+llamaba «Cambiar mano», y daba vuelta lo que adivinaba el modelo). MediaPipe etiqueta las manos como si la imagen
 estuviera espejada; con la cámara frontal y el cuadro sin espejar, sale al
 revés. Por eso es un botón y no una constante: se comprueba mirando la
 pantalla, no leyendo la documentación.
@@ -248,7 +254,7 @@ escribe en «La bitácora».
 - **Se corre el banco de pruebas antes de subir**: `npm run prueba`. Cubre la
   teoría musical del instrumento, y desde el 18-oct-2026 el instrumento entero
 contra un lienzo y un motor de mentira, el retraso del suavizado y que los
-`?v=` coincidan — 20 casos. Lo que necesita cámara o Web Audio
+`?v=` coincidan, y el reparto de las manos por lado — 21 casos. Lo que necesita cámara o Web Audio
   no se prueba ahí: se prueba con la mano.
 - **Que el JavaScript parsee antes de entregar** (`node --check`): un error de
   sintaxis en un módulo ES deja la página en blanco, sin nada que explique por

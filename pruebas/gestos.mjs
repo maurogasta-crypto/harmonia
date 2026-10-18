@@ -260,5 +260,20 @@ await prueba("por defecto la izquierda es la nota; el tono se desliza lo que tar
   assert.ok(pedidos.brillo.length <= 1, "el brillo se movió con la mano");
 });
 
+await prueba("las manos se reparten por el lado de la pantalla, no por lo que adivina el modelo", async () => {
+  const { repartirPorLado } = await import("../public/gestos/manos.js");
+  const a = { x: 0.7, palmo: 0.2 }, b = { x: 0.2, palmo: 0.2 }, lejos = { x: 0.5, palmo: 0.05 };
+  let r = repartirPorLado([a, b]);
+  assert.ok(r.izquierda === b && r.derecha === a);
+  r = repartirPorLado([a, b], true);
+  assert.ok(r.izquierda === a && r.derecha === b, "«Manos cambiadas» no las dio vuelta");
+  assert.equal(repartirPorLado([b]).izquierda, b);
+  assert.equal(repartirPorLado([a]).derecha, a);
+  r = repartirPorLado([lejos, a, b]);
+  assert.ok(r.izquierda === b && r.derecha === a, "con tres manos tocan las dos más grandes");
+  r = repartirPorLado([]);
+  assert.ok(r.izquierda === null && r.derecha === null);
+});
+
 console.log(`\n${pasadas} pasadas, ${fallidas} fallidas\n`);
 process.exit(fallidas ? 1 : 0);
