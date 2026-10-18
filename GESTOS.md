@@ -41,8 +41,8 @@ lo que se paga por no tener build en esta página, y por eso está anotado.
 
 | Gesto | Qué hace |
 |---|---|
-| Mover de izquierda a derecha | Cambia la altura **sin cortes**. El fondo es un degradé con el color tonal de cada semitono en su lugar; las líneas marcadas son las notas de la escala, las tenues el resto de los semitonos. |
-| Subir o bajar la mano | Abre o cierra el brillo (el filtro). |
+| Subirla o bajarla | Sube o baja la nota **sin cortes**. El fondo es un degradé de abajo (grave) hacia arriba (agudo) con el color tonal de cada semitono en su lugar; las líneas marcadas son las notas de la escala, las tenues el resto de los semitonos. Moverla de costado no cambia la nota. |
+| Acercarla a la cámara | Abre el brillo (el filtro). |
 | Apretar pulgar e índice | Vibrato: cuanto más apretado, más tiembla. |
 
 ### La otra mano — el volumen
@@ -69,6 +69,15 @@ nota, para tener todo el cromatismo».
   quedó para el vibrato.
 - **El acorde de la mano izquierda se fue**, porque esa mano es la del
   volumen. Volvería con un tercer gesto, no quitándole el volumen.
+- **Las dos manos van de arriba a abajo** (3.1, el mismo día). La 3.0 leía
+  la nota de izquierda a derecha; Mauro: «la mano derecha tiene que subir y
+  bajar el tono, ambas subiendo y bajando las manos». El brillo pasó a la
+  cercanía.
+- **Cada import lleva `?v=`** (3.1). Mauro probó la 3.0 y la mano seguía
+  saltando por nota: era la 2.1, todavía en la caché del teléfono, que Pages
+  guarda diez minutos por archivo. Al cambiar un módulo sube el `?v=` en
+  todos los imports y en `gestos.html` (el banco exige que sean iguales), y el
+  sello del instrumento se ve al pie de la página.
 - **La altura se mueve aunque no suene**: al abrir el volumen entra en la nota
   a la que se apuntó, sin glissando desde la última.
 - **El suavizado llegaba 123 ms tarde, y era un error.** El filtro de una euro
@@ -224,7 +233,8 @@ escribe en «La bitácora».
   función de servidor, la página manda un alias y la función traduce.
 - **Se corre el banco de pruebas antes de subir**: `npm run prueba`. Cubre la
   teoría musical del instrumento, y desde el 18-oct-2026 el instrumento entero
-contra un lienzo y un motor de mentira y el retraso del suavizado — 17 casos. Lo que necesita cámara o Web Audio
+contra un lienzo y un motor de mentira, el retraso del suavizado y que los
+`?v=` coincidan — 19 casos. Lo que necesita cámara o Web Audio
   no se prueba ahí: se prueba con la mano.
 - **Que el JavaScript parsee antes de entregar** (`node --check`): un error de
   sintaxis en un módulo ES deja la página en blanco, sin nada que explique por

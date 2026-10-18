@@ -186,8 +186,8 @@ await prueba("«la nota con la izquierda» da vuelta los papeles, y la etiqueta 
   const { pedidos, motor, canvas } = falsos();
   let estado = null;
   const ins = I.crearInstrumento({ canvas, motor, ajustes: { manoNota: "izquierda" }, alEstado: (e) => { estado = e; } });
-  const x = 0.06 + (12.3 / 24) * 0.88;  // 12,3 semitonos arriba de LA3
-  ins.cuadro({ izquierda: mano(x, 0.5), derecha: mano(0.8, 0.2) }, { fps: 30 });
+  const y = 1 - (0.06 + (12.3 / 24) * 0.88);  // 12,3 semitonos arriba de LA3
+  ins.cuadro({ izquierda: mano(0.3, y), derecha: mano(0.8, 0.2) }, { fps: 30 });
   assert.ok(Math.abs(pedidos.altura.at(-1) - 69.3) < 1e-9);
   assert.equal(estado.etiqueta, "A4 +30¢");
   assert.ok(estado.sonando);
@@ -207,6 +207,41 @@ await prueba("el suavizado de la mano llega a tiempo: menos de 40 ms en un gliss
   }
   const ms = (atraso / n) * 1000;            // a 1 pantalla/s, la distancia es el tiempo
   assert.ok(ms < 40, `llega ${ms.toFixed(0)} ms tarde`);
+});
+
+await prueba("subir la mano de la nota sube la nota, y moverla de costado no la cambia", () => {
+  const { pedidos, motor, canvas } = falsos();
+  const ins = I.crearInstrumento({ canvas, motor });
+  let antes = -Infinity;
+  for (let i = 19; i >= 1; i--) {
+    const y = i / 20;
+    ins.cuadro({ derecha: mano(0.6, y), izquierda: mano(0.2, 0.3) }, { fps: 30 });
+    const m = pedidos.altura.at(-1);
+    assert.ok(m >= antes, `baja al subir la mano (y=${y.toFixed(2)})`); antes = m;
+  }
+  assert.equal(pedidos.altura.at(-1), 57 + 24, "arriba de todo es la nota más aguda");
+  ins.cuadro({ derecha: mano(0.1, 0.5), izquierda: mano(0.2, 0.3) }, { fps: 30 });
+  const a = pedidos.altura.at(-1);
+  ins.cuadro({ derecha: mano(0.9, 0.5), izquierda: mano(0.2, 0.3) }, { fps: 30 });
+  assert.equal(pedidos.altura.at(-1), a, "el costado no es la nota");
+});
+
+await prueba("todos los imports de public/gestos/ llevan el mismo ?v=, y la página también", async () => {
+  const { readFileSync, readdirSync } = await import("node:fs");
+  const dir = new URL("../public/gestos/", import.meta.url);
+  const versiones = new Set();
+  for (const f of readdirSync(dir).filter(f => f.endsWith(".js"))) {
+    const txt = readFileSync(new URL(f, dir), "utf8");
+    for (const m of txt.matchAll(/from "\.\/([a-z]+)\.js(\?v=[^"]*)?"/g)) {
+      assert.ok(m[2], `${f} importa ${m[1]}.js sin ?v=: el teléfono mezclaría versiones`);
+      versiones.add(m[2]);
+    }
+  }
+  const html = readFileSync(new URL("../public/gestos.html", import.meta.url), "utf8");
+  const m = html.match(/gestos\/pagina\.js(\?v=[^"]*)"/);
+  assert.ok(m, "gestos.html pide pagina.js sin ?v=");
+  versiones.add(m[1]);
+  assert.equal(versiones.size, 1, `hay más de un ?v=: ${[...versiones].join(" ")}`);
 });
 
 console.log(`\n${pasadas} pasadas, ${fallidas} fallidas\n`);
